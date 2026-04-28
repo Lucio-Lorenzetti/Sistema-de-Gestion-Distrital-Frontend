@@ -7,6 +7,8 @@ import MainLayout from './components/layouts/MainLayout';
 
 // Vistas Públicas
 import Home from './pages/Public/Home';
+import Noticias from './pages/Public/Noticias';
+import Descargas from './pages/Public/Descargas';
 
 // Vistas de Autenticación
 import Login from './pages/Auth/Login';
@@ -27,8 +29,8 @@ function App() {
         {/* 1. CONTEXTO PÚBLICO (Navbar institucional + Footer) */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/noticias" element={<div className="p-20 text-center text-gray-400 font-bold uppercase tracking-widest">Próximamente: Noticias Públicas</div>} />
-          <Route path="/descargas" element={<div className="p-20 text-center text-gray-400 font-bold uppercase tracking-widest">Próximamente: Descargas Públicas</div>} />
+          <Route path="/noticias" element={<Noticias />} />
+          <Route path="/descargas" element={<Descargas />} />
         </Route>
 
         {/* 2. CONTEXTO DE AUTENTICACIÓN (Sin Layouts, solo el formulario) */}

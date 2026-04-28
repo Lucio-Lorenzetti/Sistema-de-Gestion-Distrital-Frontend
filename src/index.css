@@ -1,12 +1,29 @@
 @import "tailwindcss";
 
-/* Esto es para que use la fuente Inter que se ve en tu calco */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui;
 }
 
-body {
+html, body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+/* Oculta barra en Chrome, Safari y Edge moderno */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mantenemos tu utilidad por si la necesitas en algún div específico luego */
+@layer utilities {
+  .sin-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .sin-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }

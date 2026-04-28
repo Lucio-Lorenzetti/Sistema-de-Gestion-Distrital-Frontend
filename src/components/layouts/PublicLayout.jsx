@@ -1,74 +1,120 @@
+// src/components/layouts/PublicLayout.jsx
 import { Outlet, Link } from 'react-router-dom';
-import { Mail, Linkedin, Github } from 'lucide-react'; // Asegúrate de tener lucide-react instalado
 
 const PublicLayout = () => {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-white">
-      {/* Navbar Institucional */}
-      <nav className="border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-md z-50">
-        <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
+      {/* NAVBAR: Efecto cristal con textos en negro puro */} {/*border-b border-black bg-white/40 backdrop-blur-md*/}
+      <nav className="border-b border-black bg-white/40 backdrop-blur-md sticky top-0 z-50 h-18">
+        <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+          
+          {/* Logo Distrito */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-9 h-9 bg-black rounded-sm flex items-center justify-center text-white font-bold text-sm transition-transform group-hover:scale-105">
               D3
             </div>
             <div className="leading-tight text-left">
-              <span className="block font-bold text-gray-950 tracking-tight text-[15px]">Distrito 3</span>
-              <span className="block text-[11px] text-gray-400 font-medium uppercase tracking-wider">Bahía Blanca</span>
+              <span className="block font-bold text-black tracking-tight text-[15px]">Distrito 3</span>
+              <span className="block text-[11px] text-black font-medium uppercase tracking-wider">Bahía Blanca</span>
             </div>
           </Link>
 
+          {/* Menú de Navegación */}
           <div className="flex items-center gap-8">
-            <div className="hidden md:flex items-center gap-6">
-              <Link to="/" className="text-[13px] font-semibold text-gray-600 hover:text-black transition-colors">Inicio</Link>
-              <Link to="/noticias" className="text-[13px] font-semibold text-gray-600 hover:text-black transition-colors">Noticias</Link>
-              <Link to="/descargas" className="text-[13px] font-semibold text-gray-600 hover:text-black transition-colors">Descargas</Link>
+            <div className="hidden md:flex items-center gap-6 text-[13px] font-bold text-black uppercase tracking-wide">
+              <Link to="/" className="hover:underline decoration-2 underline-offset-4">Inicio</Link>
+              <Link to="/noticias" className="hover:underline decoration-2 underline-offset-4">Noticias</Link>
+              <Link to="/descargas" className="hover:underline decoration-2 underline-offset-4">Descargas</Link>
             </div>
-            <Link to="/login" className="px-5 py-2 bg-black text-white text-[13px] font-bold rounded-sm hover:bg-neutral-800 transition-all shadow-sm">
+            
+            <Link 
+              to="/login" 
+              className="px-5 py-2 bg-black text-white text-[13px] font-bold rounded-sm hover:bg-neutral-800 transition-all shadow-sm"
+            >
               Ingresar
             </Link>
           </div>
+
         </div>
       </nav>
 
+      {/* CONTENIDO DINÁMICO (Home, etc.) */}
       <main className="flex-grow">
         <Outlet />
       </main>
 
-      {/* Footer Personalizado y Centrado */}
-      <footer className="bg-gray-50 border-t border-gray-100 py-14">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
-          <p className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-6">
-            Scouts de Argentina • Distrito 3 • Bahía Blanca
-          </p>
+      {/* FOOTER: Fondo negro total con estructura de 3 columnas */}
+      <footer className="bg-black z-1 text-white pt-20 pb-10">
+        <div className="max-w-7xl mx-auto px-6">
           
-          <div className="mb-8">
-            <p className="text-[15px] text-gray-900 font-bold">
-              Lucio Lorenzetti
-            </p>
-            <p className="text-[13px] text-gray-500 italic mb-4">
-              Ingeniero en Sistemas de Información
-            </p>
+          {/* Grid de Columnas */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
             
-            {/* Redes y Contacto */}
-            <div className="flex items-center justify-center gap-5">
-              <a href="mailto:tu-email@ejemplo.com" className="text-gray-400 hover:text-black transition-colors" title="Email">
-                <Mail size={18} />
-              </a>
-              <a href="https://linkedin.com/in/tu-perfil" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-black transition-colors" title="LinkedIn">
-                <Linkedin size={18} />
-              </a>
-              <a href="https://github.com/tu-usuario" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-black transition-colors" title="GitHub">
-                <Github size={18} />
-              </a>
+            {/* Columna 1: Identidad */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                {/* Logo Invertido para el Footer */}
+                <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center text-black font-black text-sm">
+                  D3
+                </div>
+                <div className="leading-tight text-left">
+                  <span className="block font-bold text-white tracking-tight text-[17px]">Distrito 3</span>
+                  <span className="block text-[11px] text-white opacity-50 font-medium uppercase tracking-wider">Zona 13 • Scouts de Argentina</span>
+                </div>
+              </div>
+              <p className="text-[14px] text-white opacity-40 leading-relaxed max-w-xs">
+                Sistema centralizado para la gestión administrativa, institucional y de programas educativos. 
+              </p>
+            </div>
+
+            {/* Columna 2: Enlaces Rápidos */}
+            <div className="space-y-6">
+              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white border-b border-white/10 pb-2 inline-block">
+                Navegación
+              </h4>
+              <ul className="space-y-4 text-[14px] font-medium">
+                <li><Link to="/" className="hover:opacity-100 opacity-50 transition-opacity">Inicio del Sitio</Link></li>
+                <li><Link to="/noticias" className="hover:opacity-100 opacity-50 transition-opacity">Noticias y Circulares</Link></li>
+                <li><Link to="/descargas" className="hover:opacity-100 opacity-50 transition-opacity">Documentación Oficial</Link></li>
+                <li><Link to="/login" className="hover:opacity-100 opacity-50 transition-opacity font-bold text-white/80">Acceso Privado</Link></li>
+              </ul>
+            </div>
+
+            {/* Columna 3: Firma Técnica (Ingeniero) */}
+            <div className="space-y-6">
+              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white border-b border-white/10 pb-2 inline-block">
+                Desarrollo
+              </h4>
+              <div className="space-y-1">
+                <p className="text-[16px] font-bold">Lucio Lorenzetti</p>
+                <p className="text-[13px] italic opacity-50">Ingeniero en Sistemas de Información</p>
+              </div>
+              <div className="pt-2 space-y-3">
+                <p className="text-[13px] font-medium opacity-70">Arquitectura y Desarrollo de Software</p>
+                <a 
+                  href="mailto:lorenzettilucioadriel@gmail.com" 
+                  className="text-[13px] text-white border-b border-white/20 pb-0.5 hover:border-white transition-colors"
+                >
+                  lorenzettilucioadriel@gmail.com
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Barra Inferior de Copyright */}
+          <div className="border-t border-white/10 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="text-left">
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] opacity-40">
+                © {new Date().getFullYear()} Sistema de Gestión Distrital
+              </p>
+            </div>
+            
+            <div className="text-[10px] font-bold opacity-30 uppercase tracking-widest text-center md:text-right">
+              Bahía Blanca • Buenos Aires • Argentina
             </div>
           </div>
 
-          <div className="border-t border-gray-200 w-16 mb-6"></div>
-
-          <p className="text-[12px] text-gray-400 leading-relaxed">
-            © {new Date().getFullYear()} Sistema de Gestión Distrital. <br className="sm:hidden" />
-            Todos los derechos reservados.
-          </p>
         </div>
       </footer>
     </div>
