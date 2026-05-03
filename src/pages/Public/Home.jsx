@@ -1,164 +1,155 @@
-import { ArrowRight, Download, Megaphone, Shield } from 'lucide-react';
+import React from 'react';
+import { ArrowRight, ChevronRight, FileText, BookOpen, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import bgImage from '../../assets/f-bienvenida.jpg'; 
+import bgHero from '../../assets/f-bienvenida.jpg'; 
+import imgDefault from '../../assets/noticia-default.jpg';
+import { NOTICIAS_MOCK } from '../../data/noticias';
 
-const TechDivider = ({ light }) => (
-  <div className="flex items-center justify-center gap-4 my-10">
-    <div className={`h-[1px] w-12 ${light ? 'bg-white/20' : 'bg-black/10'}`} />
-    <div className={`w-1 h-1 rotate-45 ${light ? 'bg-white' : 'bg-black'}`} />
-    <div className={`h-[1px] w-12 ${light ? 'bg-white/20' : 'bg-black/10'}`} />
-  </div>
-);
+// DATOS DE PRUEBA PARA CURSOS (MOCK)
+const CURSOS_MOCK = [
+    { id: 1, titulo: "Módulo 1: Introducción al Movimiento", nivel: "Inicial", modalidad: "Presencial" },
+    { id: 2, titulo: "Técnicas de Vida en la Naturaleza", nivel: "Intermedio", modalidad: "Híbrido" },
+    { id: 3, titulo: "Psicología del Niño y el Joven", nivel: "Avanzado", modalidad: "Virtual" },
+    { id: 4, titulo: "Gestión y Administración de Grupo", nivel: "Dirigencia", modalidad: "Presencial" }
+];
 
 const Home = () => {
-  return (
-    <div className="relative min-h-[80vh] flex flex-col justify-center overflow-hidden">
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.9] pointer-events-none"
-        style={{ 
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'brightness(0.8)',
-          position: 'fixed'
-        }}
-      />
-
-      <div className="relative z-10 animate-in fade-in duration-1000 slide-in-from-bottom-2">
-        {/* Hero Section */}
-        <section className="h-screen flex flex-col items-center justify-center px-6 max-w-5xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-950 mb-8 tracking-tighter leading-[1.1]">
-            SISTEMA DE GESTIÓN <br /> 
-            <span className="text-gray-300 italic font-medium">DISTRITO 3.</span>
-          </h1>
-          <p className="text-lg md:text-xl text-white mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-            Plataforma centralizada para educadores y autoridades del Distrito 3. 
-            Simplificamos la administración para que el foco esté donde debe: en los jóvenes.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link 
-              to="/login" 
-              className="px-10 py-4 bg-black text-white rounded-sm font-bold flex items-center justify-center gap-3 hover:bg-neutral-800 transition-all group shadow-xl"
-            >
-              Comenzar gestión <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link 
-              to="/descargas"
-              className="px-10 py-4 border border-gray-200 text-gray-700 rounded-sm font-bold hover:bg-gray-50 transition-all text-center bg-white/50 backdrop-blur-sm"
-            >
-              Ver descargas públicas
-            </Link>
-          </div>
-        </section>
-
-        {/* Sección de Características */}
-        <section className="bg-white/40 backdrop-blur-md py-24 border-y border-gray-100">
-          <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-16 text-left">
-            <div className="space-y-5">
-              <Megaphone size={28} className="text-gray-950" />
-              <h3 className="text-lg font-bold text-gray-950 tracking-tight">Noticias y Novedades</h3>
-              <p className="text-[14px] text-black leading-relaxed">Mantenete al día con los eventos distritales, cursos de formación y asambleas institucionales.</p>
-            </div>
-            <div className="space-y-5">
-              <Download size={28} className="text-gray-950" />
-              <h3 className="text-lg font-bold text-gray-950 tracking-tight">Repositorio Oficial</h3>
-              <p className="text-[14px] text-black leading-relaxed">Acceso directo a fichas médicas, reglamentos y documentos oficiales abiertos a la comunidad.</p>
-            </div>
-            <div className="space-y-5">
-              <Shield size={28} className="text-gray-950" />
-              <h3 className="text-lg font-bold text-gray-950 tracking-tight">Acceso Seguro</h3>
-              <p className="text-[14px] text-black leading-relaxed">Gestión protegida de programas de rama y legajos educativos exclusivamente para educadores.</p>
-            </div>
-          </div>
-        </section><div className="h-40" />
-        {/* 3. SECCIÓN: NUESTROS GRUPOS 
-        <section className="bg-white py-32 text-black">
-          <div className="max-w-7xl mx-auto px-6 text-center">
-            <h2 className="text-4xl font-bold tracking-tighter uppercase mb-16">
-              Grupos Scout del Distrito
-            </h2>
+    return (
+        <div className="bg-neutral-50 text-neutral-900 font-sans selection:bg-black selection:text-white">
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                { nro: '1', nombre: 'Pompeya', barrio: 'B° Pompeya' },
-                { nro: '12', nombre: 'Don Bosco', barrio: 'B° Don Bosco' },
-                { nro: '48', nombre: 'San Jorge', barrio: 'Centro' },
-                { nro: '154', nombre: 'N.S. de la Paz', barrio: 'B° Universitario' }
-              ].map((grupo) => (
-                <div key={grupo.nro} className="border-2 border-black p-8 group hover:bg-black hover:text-white transition-all cursor-default">
-                  <span className="block text-5xl font-black mb-4">#{grupo.nro}</span>
-                  <h3 className="text-xl font-bold uppercase tracking-tight">{grupo.nombre}</h3>
-                  <p className="text-sm font-medium mt-2">{grupo.barrio}</p>
+            {/* 1. HERO SECTION */}
+            <section className="relative min-h-screen flex items-center justify-start px-6 md:px-20 overflow-hidden">
+                <div 
+                    className="absolute inset-0 z-0 bg-fixed"
+                    style={{ 
+                        backgroundImage: `url(${bgHero})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                    }}
+                />
+                <div className="absolute inset-0 bg-black/50 md:bg-black/40 z-0" />
+                
+                <div className="relative z-10 max-w-4xl w-full text-left pt-20 md:pt-10">
+                    <h1 className="text-4xl md:text-[90px] font-black tracking-tighter leading-[1] md:leading-[0.85] text-white uppercase mb-6 md:mb-8">
+                        Gestión <br />
+                        <span className="text-white/40 italic">Distrito 3.</span>
+                    </h1>
+                    
+                    <p className="text-xs md:text-lg text-white/80 max-w-xl mb-10 md:mb-12 leading-relaxed font-medium uppercase tracking-wide">
+                        Digitalizando la administración scout para potenciar el servicio. 
+                        Eficiencia técnica para educadores del Distrito 3.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-start justify-start gap-4 md:gap-6 mt-8 md:mt-16 w-full sm:w-auto">
+                        <Link 
+                            to="/login" 
+                            className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-6 border-2 border-white/30 text-white font-black uppercase text-[10px] md:text-[12px] tracking-widest hover:bg-white hover:text-black transition-all backdrop-blur-md rounded-full text-center"
+                        >
+                            Comenzar Gestión
+                        </Link>
+                        <Link 
+                            to="/noticias"
+                            className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-6 border-2 border-white/30 text-white font-black uppercase text-[10px] md:text-[12px] tracking-widest hover:bg-white hover:text-black transition-all backdrop-blur-md rounded-full text-center"
+                        >
+                            Últimas Noticias
+                        </Link>
+                    </div>
                 </div>
-              ))}
-            </div>
+            </section>
 
-            <div className="mt-20">
-              <button className="border-b-2 border-black font-bold uppercase text-sm hover:pb-2 transition-all">
-                  Ver mapa interactivo de ubicaciones
-              </button>
-            </div>
-          </div>
-        </section>*/}
-        <div className="h-40" /> 
-        {/* 3. SECCIÓN: ÚLTIMAS CIRCULARES (FEED MINIMALISTA) */}
-        <section className="bg-white/40 backdrop-blur-md py-24 border-y border-gray-100">
-          <div className="max-w-4xl mx-auto px-6">
-            <h2 className="text-2xl font-black uppercase tracking-tighter mb-12 border-l-4 border-white pl-4">
-              Comunicación Oficial
-            </h2>
-            
-            <div className="space-y-8">
-              {[
-                { fecha: '20 ABR', titulo: 'Apertura de inscripciones para cursos de formación Zona 22' },
-                { fecha: '15 ABR', titulo: 'Convocatoria a Asamblea Distrital Ordinaria 2026' },
-                { fecha: '10 ABR', titulo: 'Actualización obligatoria de fichas médicas en el sistema' }
-              ].map((item, idx) => (
-                <div key={idx} className="flex gap-8 items-start group cursor-pointer">
-                  <span className="text-sm font-black tracking-tighter pt-1">{item.fecha}</span>
-                  <h3 className="text-xl font-bold uppercase tracking-tight group-hover:underline decoration-2 underline-offset-4 leading-tight">
-                    {item.titulo}
-                  </h3>
+            {/* 2. SECCIÓN NOTICIAS */}
+            <section className="min-h-screen flex flex-col justify-center py-16 md:py-24 px-6 md:px-8 max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-6">
+                    <div className="space-y-2 md:space-y-4">
+                        <p className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-neutral-400">Comunicación</p>
+                        <h2 className="text-3xl md:text-6xl font-black uppercase tracking-tighter">Noticias Recientes</h2>
+                    </div>
+                    <Link to="/noticias" className="flex items-center gap-3 text-[9px] md:text-[11px] font-black uppercase tracking-widest border-b-2 border-black/10 pb-2 hover:border-black transition-all">
+                        Feed Completo <ChevronRight size={16} />
+                    </Link>
                 </div>
-              ))}
-            </div>
 
-            <div className="mt-16 pt-8 border-t border-white/20">
-              <Link to="/noticias" className="text-xs font-black uppercase tracking-[0.3em] hover:opacity-70 transition-all">
-                Ver todas las noticias →
-              </Link>
-            </div>
-          </div>
-        </section>
-        <div className="h-40" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+                    {NOTICIAS_MOCK.slice(0, 3).map((n) => (
+                        <div key={n.id} className="group bg-white rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-neutral-100 hover:shadow-2xl transition-all duration-500 flex flex-col">
+                            <div className="h-48 md:h-56 bg-neutral-200 overflow-hidden relative flex items-center justify-center">
+                                <img 
+                                    src={n.img || imgDefault} 
+                                    alt={n.titulo} 
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                                />
+                                <div className="absolute top-4 md:top-6 left-4 md:left-6">
+                                    <span className="bg-black/70 backdrop-blur-xl text-white text-[8px] md:text-[9px] font-black px-3 md:px-4 py-1.5 md:py-2 rounded-full uppercase tracking-widest">
+                                        {n.categoria}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div className="p-6 md:p-8 space-y-3 md:space-y-4 flex-grow text-left">
+                                <h3 className="text-lg md:text-xl font-bold uppercase tracking-tight leading-tight">{n.titulo}</h3>
+                                <p className="text-xs md:text-[13px] text-neutral-500 leading-relaxed line-clamp-2">{n.contenido}</p>
+                                <div className="pt-4 border-t border-neutral-50">
+                                    <Link to="/noticias" className="text-[9px] md:text-[10px] font-black uppercase tracking-widest flex items-center gap-2 group-hover:gap-4 transition-all">
+                                        Leer más <ArrowRight size={14} />
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
 
-        {/* 4. SECCIÓN: EL DISTRITO EN NÚMEROS
-        <section className="bg-white py-32 text-black border-b-2 border-black">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-center">
-              <div>
-                <span className="block text-7xl font-black tracking-tighter italic">12</span>
-                <span className="block text-sm font-bold uppercase mt-2 tracking-widest">Grupos Scout</span>
-              </div>
-              <div>
-                <span className="block text-7xl font-black tracking-tighter italic">+500</span>
-                <span className="block text-sm font-bold uppercase mt-2 tracking-widest">Educadores</span>
-              </div>
-              <div>
-                <span className="block text-7xl font-black tracking-tighter italic">1.5k</span>
-                <span className="block text-sm font-bold uppercase mt-2 tracking-widest">Jóvenes</span>
-              </div>
-              <div>
-                <span className="block text-7xl font-black tracking-tighter italic">2026</span>
-                <span className="block text-sm font-bold uppercase mt-2 tracking-widest">Gestión Digital</span>
-              </div>
-            </div>
-          </div>
-        </section>*/}
+            {/* 3. SECCIÓN CURSOS */}
+            <section className="min-h-screen bg-neutral-100/50 flex flex-col justify-center py-16 md:py-24 px-6 md:px-8 border-y border-neutral-200">
+                <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 items-center text-left">
+                    <div className="lg:col-span-5 space-y-6 md:space-y-10">
+                        <div className="space-y-2 md:space-y-4">
+                            <p className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-neutral-400">Capacitación</p>
+                            <h2 className="text-3xl md:text-6xl font-black uppercase tracking-tighter leading-[1] md:leading-[0.85]">
+                                Esquema de <br /> <span className="text-black/20 italic">Formación.</span>
+                            </h2>
+                        </div>
+                        <p className="text-sm md:text-md text-neutral-500 leading-relaxed uppercase tracking-wider font-medium max-w-sm">
+                            Mejorá tus herramientas educativas con los cursos presenciales y virtuales dictados en la Zona 22.
+                        </p>
+                        <Link to="/login" className="inline-flex items-center gap-4 bg-black text-white px-8 md:px-12 py-4 md:py-6 rounded-full text-[10px] md:text-[12px] font-black uppercase tracking-widest hover:bg-neutral-800 transition-all shadow-xl">
+                            Inscribirse a un curso <BookOpen size={18} />
+                        </Link>
+                    </div>
 
-      </div>
-    </div>
-  );
+                    <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                        {/* NOTA TÉCNICA BACKEND:
+                            Cuando esté la API de cursos, reemplazar este mapeo por:
+                            cursosFromBackend.slice(0, 4).map(...)
+                        */}
+                        {CURSOS_MOCK.map((curso, i) => (
+                            <div key={i} className="p-6 md:p-8 bg-white border border-neutral-200 rounded-[1.5rem] md:rounded-[2.5rem] flex flex-col justify-between hover:border-black transition-all group cursor-pointer h-44 md:h-52 shadow-sm hover:shadow-2xl">
+                                <div className="flex justify-between items-start">
+                                    <div className="p-3 md:p-4 bg-neutral-100 rounded-xl md:rounded-2xl group-hover:bg-black group-hover:text-white transition-colors text-black">
+                                        <GraduationCap size={20} md:size={24} />
+                                    </div>
+                                    <span className="text-[8px] md:text-[9px] font-black text-neutral-400 group-hover:text-black uppercase tracking-widest">
+                                        {curso.modalidad}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className="text-[8px] md:text-[10px] font-bold text-neutral-400 uppercase block mb-1">Nivel {curso.nivel}</span>
+                                    <h3 className="text-sm md:text-md font-bold uppercase tracking-tight">{curso.titulo}</h3>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 4. FOOTER */}
+            <footer className="py-12 md:py-24 text-center bg-white border-t border-neutral-100">
+                <p className="text-[10px] md:text-[12px] font-black text-neutral-300 uppercase tracking-[0.5em] md:tracking-[1.2em] px-4">
+                    Scouts de Argentina • Distrito 3
+                </p>
+            </footer>
+        </div>
+    );
 };
 
 export default Home;
