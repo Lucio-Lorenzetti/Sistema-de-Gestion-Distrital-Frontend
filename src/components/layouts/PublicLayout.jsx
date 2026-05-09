@@ -1,10 +1,10 @@
-// src/components/layouts/PublicLayout.jsx
 import { Outlet, Link } from 'react-router-dom';
 
 const PublicLayout = () => {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-white">
-      {/* NAVBAR: Efecto cristal con textos en negro puro */} {/*border-b border-black bg-white/40 backdrop-blur-md*/}
+      
+      {/* NAVBAR: Efecto cristal con textos en negro puro */}
       <nav className="border-b border-black bg-white/40 backdrop-blur-md sticky top-0 z-50 h-18">
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
           
@@ -19,17 +19,20 @@ const PublicLayout = () => {
             </div>
           </Link>
 
-          {/* Menú de Navegación */}
+          {/* Menú de Navegación Dinámico */}
           <div className="flex items-center gap-8">
-            <div className="hidden md:flex items-center gap-6 text-[13px] font-bold text-black uppercase tracking-wide">
-              <Link to="/" className="hover:underline decoration-2 underline-offset-4">Inicio</Link>
-              <Link to="/noticias" className="hover:underline decoration-2 underline-offset-4">Noticias</Link>
-              <Link to="/descargas" className="hover:underline decoration-2 underline-offset-4">Descargas</Link>
+            <div className="hidden lg:flex items-center gap-6 text-[11px] font-black text-black uppercase tracking-widest">
+              <Link to="/" className="hover:underline decoration-2 underline-offset-8">Inicio</Link>
+              <Link to="/distrito" className="hover:underline decoration-2 underline-offset-8">Distrito</Link>
+              <Link to="/noticias" className="hover:underline decoration-2 underline-offset-8">Noticias</Link>
+              <Link to="/cursos" className="hover:underline decoration-2 underline-offset-8">Cursos</Link>
+              <Link to="/galeria" className="hover:underline decoration-2 underline-offset-8">Galería</Link>
+              <Link to="/descargas" className="hover:underline decoration-2 underline-offset-8">Descargas</Link>
             </div>
             
             <Link 
               to="/login" 
-              className="px-5 py-2 bg-black text-white text-[13px] font-bold rounded-sm hover:bg-neutral-800 transition-all shadow-sm"
+              className="px-6 py-2 bg-black text-white text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-neutral-800 transition-all shadow-lg"
             >
               Ingresar
             </Link>
@@ -38,22 +41,20 @@ const PublicLayout = () => {
         </div>
       </nav>
 
-      {/* CONTENIDO DINÁMICO (Home, etc.) */}
+      {/* CONTENIDO DINÁMICO */}
       <main className="flex-grow">
         <Outlet />
       </main>
 
       {/* FOOTER: Fondo negro total con estructura de 3 columnas */}
-      <footer className="bg-black z-1 text-white pt-20 pb-10">
+      <footer className="bg-black text-white pt-20 pb-10 mt-auto">
         <div className="max-w-7xl mx-auto px-6">
           
-          {/* Grid de Columnas */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
             
             {/* Columna 1: Identidad */}
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                {/* Logo Invertido para el Footer */}
                 <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center text-black font-black text-sm">
                   D3
                 </div>
@@ -67,30 +68,31 @@ const PublicLayout = () => {
               </p>
             </div>
 
-            {/* Columna 2: Enlaces Rápidos */}
+            {/* Columna 2: Enlaces Públicos */}
             <div className="space-y-6">
               <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white border-b border-white/10 pb-2 inline-block">
-                Navegación
+                Portal Público
               </h4>
-              <ul className="space-y-4 text-[14px] font-medium">
-                <li><Link to="/" className="hover:opacity-100 opacity-50 transition-opacity">Inicio del Sitio</Link></li>
-                <li><Link to="/noticias" className="hover:opacity-100 opacity-50 transition-opacity">Noticias y Circulares</Link></li>
-                <li><Link to="/descargas" className="hover:opacity-100 opacity-50 transition-opacity">Documentación Oficial</Link></li>
-                <li><Link to="/login" className="hover:opacity-100 opacity-50 transition-opacity font-bold text-white/80">Acceso Privado</Link></li>
+              <ul className="grid grid-cols-2 gap-4 text-[13px] font-medium">
+                <li><Link to="/" className="opacity-50 hover:opacity-100 transition-opacity">Inicio</Link></li>
+                <li><Link to="/distrito" className="opacity-50 hover:opacity-100 transition-opacity">El Distrito</Link></li>
+                <li><Link to="/noticias" className="opacity-50 hover:opacity-100 transition-opacity">Noticias</Link></li>
+                <li><Link to="/cursos" className="opacity-50 hover:opacity-100 transition-opacity">Cursos</Link></li>
+                <li><Link to="/galeria" className="opacity-50 hover:opacity-100 transition-opacity">Galería</Link></li>
+                <li><Link to="/descargas" className="opacity-50 hover:opacity-100 transition-opacity">Descargas</Link></li>
               </ul>
             </div>
 
-            {/* Columna 3: Firma Técnica (Ingeniero) */}
+            {/* Columna 3: Ingeniería */}
             <div className="space-y-6">
               <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white border-b border-white/10 pb-2 inline-block">
                 Desarrollo
               </h4>
               <div className="space-y-1">
-                <p className="text-[16px] font-bold">Lucio Lorenzetti</p>
-                <p className="text-[13px] italic opacity-50">Ingeniero en Sistemas de Información</p>
+                <p className="text-[16px] font-bold tracking-tight">Lucio Lorenzetti</p>
+                <p className="text-[12px] italic opacity-50 uppercase tracking-widest font-bold">Ingeniero en Sistemas</p>
               </div>
-              <div className="pt-2 space-y-3">
-                <p className="text-[13px] font-medium opacity-70">Arquitectura y Desarrollo de Software</p>
+              <div className="pt-2">
                 <a 
                   href="mailto:lorenzettilucioadriel@gmail.com" 
                   className="text-[13px] text-white border-b border-white/20 pb-0.5 hover:border-white transition-colors"
@@ -102,15 +104,12 @@ const PublicLayout = () => {
 
           </div>
 
-          {/* Barra Inferior de Copyright */}
+          {/* Barra Inferior */}
           <div className="border-t border-white/10 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-left">
-              <p className="text-[11px] font-black uppercase tracking-[0.2em] opacity-40">
-                © {new Date().getFullYear()} Sistema de Gestión Distrital
-              </p>
-            </div>
-            
-            <div className="text-[10px] font-bold opacity-30 uppercase tracking-widest text-center md:text-right">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] opacity-40">
+              © {new Date().getFullYear()} Sistema de Gestión Distrital
+            </p>
+            <div className="text-[10px] font-bold opacity-30 uppercase tracking-widest">
               Bahía Blanca • Buenos Aires • Argentina
             </div>
           </div>

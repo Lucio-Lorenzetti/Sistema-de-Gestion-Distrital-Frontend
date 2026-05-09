@@ -112,7 +112,7 @@ const Home = () => {
                         <p className="text-sm md:text-md text-neutral-500 leading-relaxed uppercase tracking-wider font-medium max-w-sm">
                             Mejorá tus herramientas educativas con los cursos presenciales y virtuales dictados en la Zona 22.
                         </p>
-                        <Link to="/login" className="inline-flex items-center gap-4 bg-black text-white px-8 md:px-12 py-4 md:py-6 rounded-full text-[10px] md:text-[12px] font-black uppercase tracking-widest hover:bg-neutral-800 transition-all shadow-xl">
+                        <Link to="/cursos" className="inline-flex items-center gap-4 bg-black text-white px-8 md:px-12 py-4 md:py-6 rounded-full text-[10px] md:text-[12px] font-black uppercase tracking-widest hover:bg-neutral-800 transition-all shadow-xl">
                             Inscribirse a un curso <BookOpen size={18} />
                         </Link>
                     </div>
