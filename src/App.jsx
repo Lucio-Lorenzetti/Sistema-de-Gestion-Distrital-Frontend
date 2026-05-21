@@ -22,6 +22,7 @@ import ActivateAccount from './pages/Auth/ActivateAccount';
 import SelectFunction from './pages/Auth/SelectFunction';
 
 // Vistas de Dashboard (Privadas / Gestión)
+import Dashboard from './pages/Dashboard/Dashboard'; // 🛠️ MODIFICACIÓN 1: Importamos el nuevo Dashboard
 import Programs from './pages/Dashboard/Programs';
 import Courses from './pages/Dashboard/Courses';
 
@@ -48,9 +49,10 @@ function App() {
         <Route path="/seleccionar-funcion" element={<SelectFunction />} />
 
         {/* 3. CONTEXTO PRIVADO (Gestión Interna) */}
-        {/* Nota: He cambiado los paths para evitar colisiones con las rutas públicas */}
         <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<div className="p-10 text-2xl font-black uppercase tracking-tighter">Bienvenido al Panel de Control</div>} />
+          {/* 🛠️ MODIFICACIÓN 2: Reemplazamos el div de prueba por el componente dinámico */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          
           <Route path="/gestion-documentos" element={<Programs />} />
           <Route path="/gestion-cursos" element={<Courses />} />
           <Route path="/noticias-internas" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Noticias para Educadores</div>} />

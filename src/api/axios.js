@@ -1,12 +1,20 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api', // Tu URL de Laravel
-    withCredentials: true, // Crucial si usas Laravel Sanctum para cookies
+    baseURL: 'http://localhost:8000/api',
+    // Sin withCredentials — no usamos cookies
     headers: {
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'Content-Type': 'application/json',
     }
+});
+
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
 });
 
 export default api;

@@ -22,17 +22,17 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // 1. Pedir el "permiso" CSRF a Laravel (Obligatorio con Sanctum)
-      await api.get('/sanctum/csrf-cookie');
-
-      // 2. Enviar las credenciales
+      // 1. Login directo (sin pedir cookies antes)
       const response = await api.post('/login', { email, password });      
       const res = response.data;
 
-      // 3. Guardamos el usuario en Zustand
-      setUser(res.user);      
+      // 2. Guardamos el token en localStorage
+      localStorage.setItem('auth_token', res.token);
+
+      // 4. Guardamos el usuario en Zustand
+      setUser(res.user);       
       
-      // 4. Lógica de redirección dinámica sincronizada con el Backend
+      // 5. Redirección
       if (res.must_change_password) {
           navigate('/activar-cuenta');
       } else if (res.has_multiple_roles) {
@@ -43,7 +43,6 @@ const Login = () => {
 
     } catch (err) {
       console.error(err);
-      // Manejo de errores más específico
       if (err.response?.status === 422) {
         setError("El correo o la contraseña son incorrectos.");
       } else {

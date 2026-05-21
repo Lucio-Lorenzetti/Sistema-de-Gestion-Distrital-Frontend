@@ -1,14 +1,18 @@
+import { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
+import { Menu, X } from 'lucide-react'; 
 
 const PublicLayout = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen flex flex-col font-sans bg-white">
       
-      {/* NAVBAR: Efecto cristal con textos en negro puro */}
-      <nav className="border-b border-black bg-white/40 backdrop-blur-md sticky top-0 z-50 h-18">
-        <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+      {/* NAVBAR: 100% de ancho e identidad a la izquierda */}
+      <nav className="border-b border-black bg-white/80 backdrop-blur-md sticky top-0 z-50 h-18 w-full px-6 md:px-20">
+        <div className="w-full h-full flex items-center justify-between">
           
-          {/* Logo Distrito */}
+          {/* LADO IZQUIERDO: Identidad Distrital */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-9 h-9 bg-black rounded-sm flex items-center justify-center text-white font-bold text-sm transition-transform group-hover:scale-105">
               D3
@@ -19,37 +23,74 @@ const PublicLayout = () => {
             </div>
           </Link>
 
-          {/* Menú de Navegación Dinámico */}
-          <div className="flex items-center gap-8">
-            <div className="hidden lg:flex items-center gap-6 text-[11px] font-black text-black uppercase tracking-widest">
-              <Link to="/" className="hover:underline decoration-2 underline-offset-8">Inicio</Link>
-              <Link to="/distrito" className="hover:underline decoration-2 underline-offset-8">Distrito</Link>
-              <Link to="/noticias" className="hover:underline decoration-2 underline-offset-8">Noticias</Link>
-              <Link to="/cursos" className="hover:underline decoration-2 underline-offset-8">Cursos</Link>
-              <Link to="/galeria" className="hover:underline decoration-2 underline-offset-8">Galería</Link>
-              <Link to="/descargas" className="hover:underline decoration-2 underline-offset-8">Descargas</Link>
-            </div>
+          {/* LADO DERECHO: Menú Desktop / Botón Hamburguesa Mobile */}
+          
+          {/* Menú de Navegación Tradicional (Desktop) */}
+          <div className="hidden lg:flex items-center gap-6 text-[11px] font-black text-black uppercase tracking-widest">
+            <Link to="/" className="hover:underline decoration-2 underline-offset-8">Inicio</Link>
+            <Link to="/distrito" className="hover:underline decoration-2 underline-offset-8">Distrito</Link>
+            <Link to="/noticias" className="hover:underline decoration-2 underline-offset-8">Noticias</Link>
+            <Link to="/cursos" className="hover:underline decoration-2 underline-offset-8">Cursos</Link>
+            <Link to="/galeria" className="hover:underline decoration-2 underline-offset-8">Galería</Link>
+            <Link to="/descargas" className="hover:underline decoration-2 underline-offset-8">Descargas</Link>
             
             <Link 
               to="/login" 
-              className="px-6 py-2 bg-black text-white text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-neutral-800 transition-all shadow-lg"
+              className="px-6 py-2 bg-black text-white text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-neutral-800 transition-all shadow-lg ml-2"
             >
               Ingresar
             </Link>
           </div>
 
+          {/* Botón Hamburguesa (Mobile) */}
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden p-2 text-black hover:bg-neutral-100 rounded-md transition-colors"
+          >
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+
         </div>
       </nav>
+
+      {/* =========================================================================
+          MENÚ DESPLEGABLE MOBILE (Cortina adaptable para pruebas de UX)
+          ========================================================================= */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-x-0 top-18 bottom-0 bg-white/95 backdrop-blur-md z-40 flex flex-col p-8 animate-in fade-in slide-in-from-top duration-300 lg:hidden border-t border-neutral-100">
+          
+          {/* 💡 GUÍA DE ALINEACIÓN MANUAL:
+            - Variante A (Centrado): Mantener 'text-center items-center'
+            - Variante B (Derecha): Cambiar por 'text-right items-end'
+          */}
+          <div className="flex flex-col gap-5 text-xs font-black text-black uppercase tracking-widest pt-4 text-center items-center">
+            
+            <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="py-3 border-b border-neutral-100 w-full hover:text-neutral-500 transition-colors">Inicio</Link>
+            <Link to="/distrito" onClick={() => setIsMobileMenuOpen(false)} className="py-3 border-b border-neutral-100 w-full hover:text-neutral-500 transition-colors">Distrito</Link>
+            <Link to="/noticias" onClick={() => setIsMobileMenuOpen(false)} className="py-3 border-b border-neutral-100 w-full hover:text-neutral-500 transition-colors">Noticias</Link>
+            <Link to="/cursos" onClick={() => setIsMobileMenuOpen(false)} className="py-3 border-b border-neutral-100 w-full hover:text-neutral-500 transition-colors">Cursos</Link>
+            <Link to="/galeria" onClick={() => setIsMobileMenuOpen(false)} className="py-3 border-b border-neutral-100 w-full hover:text-neutral-500 transition-colors">Galería</Link>
+            <Link to="/descargas" onClick={() => setIsMobileMenuOpen(false)} className="py-3 border-b border-neutral-100 w-full hover:text-neutral-500 transition-colors">Descargas</Link>
+            
+            <Link 
+              to="/login" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="mt-6 w-full py-4 bg-black text-white text-center text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-neutral-800 transition-all shadow-lg"
+            >
+              Ingresar
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* CONTENIDO DINÁMICO */}
       <main className="flex-grow">
         <Outlet />
       </main>
 
-      {/* FOOTER: Fondo negro total con estructura de 3 columnas */}
+      {/* FOOTER */}
       <footer className="bg-black text-white pt-20 pb-10 mt-auto">
         <div className="max-w-7xl mx-auto px-6">
-          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
             
             {/* Columna 1: Identidad */}
