@@ -34,9 +34,6 @@ const Descargas = () => {
             {/* 1. HEADER (IDÉNTICO A NOTICIAS) */}
             <header className={`${isFixedLayout ? 'md:h-[15vh]' : 'py-8'} bg-white/80 backdrop-blur-md border-b border-neutral-200 flex flex-col justify-center px-6 md:px-20`}>
                 <div className="max-w-5xl mx-auto w-full text-left">
-                    <Link to="/" className="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.3em] text-neutral-400 hover:text-black transition-colors mb-1">
-                        <ArrowLeft size={10} /> Inicio
-                    </Link>
                     <h1 className="text-2xl md:text-4xl font-black text-black tracking-tighter uppercase leading-none">
                         Repositorio <span className="text-black/20 italic">Digital PDF</span>
                     </h1>

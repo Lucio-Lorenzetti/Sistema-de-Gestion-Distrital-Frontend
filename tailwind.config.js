@@ -2,7 +2,7 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", // Verifica que no falte ninguna coma o punto
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},

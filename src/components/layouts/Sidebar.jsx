@@ -1,16 +1,29 @@
-import { NavLink } from 'react-router-dom';
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom'; // 🛠️ CORREGIDO: Unificado en una sola línea limpia
 import { LayoutDashboard, FileText, GraduationCap, Megaphone, Users, Settings, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 
 const Sidebar = () => {
   const logout = useAuthStore((state) => state.logout);
+  const navigate = useNavigate(); // Hook de navegación interno
+
+  // Manejador asíncrono para limpiar sesión en Laravel y Zustand, y redirigir
+  const handleLogout = async () => {
+    try {
+      await logout(); // Rompe la sesión en el servidor y limpia Zustand
+      navigate('/'); // Envía de inmediato a la pantalla de Login
+    } catch (error) {
+      console.error("Error al cerrar la sesión institucional:", error);
+    }
+  };
 
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
-    { name: 'Documentos', path: '/documentos', icon: <FileText size={20} /> },
-    { name: 'Cursos', path: '/cursos', icon: <GraduationCap size={20} /> },
+    { name: 'Programas', path: '/programas', icon: <FileText size={20} /> },
     { name: 'Noticias', path: '/noticias-internas', icon: <Megaphone size={20} /> },
+    { name: 'Cursos', path: '/cursos', icon: <GraduationCap size={20} /> },
     { name: 'Usuarios', path: '/usuarios', icon: <Users size={20} /> },
+    { name: 'Documentos', path: '/documentos', icon: <FileText size={20} /> },
     { name: 'Sistema', path: '/sistema', icon: <Settings size={20} /> },
   ];
 
@@ -43,8 +56,8 @@ const Sidebar = () => {
 
       <div className="p-4 border-t border-gray-100">
         <button 
-          onClick={logout}
-          className="flex items-center space-x-3 px-3 py-2 w-full text-sm font-medium text-red-500 hover:bg-red-50 rounded-sm transition-colors"
+          onClick={handleLogout}
+          className="flex items-center space-x-3 px-3 py-2 w-full text-sm font-medium text-red-500 hover:bg-red-50 rounded-sm transition-colors cursor-pointer"
         >
           <LogOut size={20} />
           <span>Cerrar sesión</span>
