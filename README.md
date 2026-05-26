@@ -16,3 +16,7 @@ Interfaz de usuario moderna y reactiva para el Sistema de Gestión Distrital. De
 * **Área Privada (Dashboard):** * Gestión de programas (Mis programas / Subir programas).
     * Gestión de cursos e inscripciones.
     * Administración de usuarios y asignación de roles (según jerarquía).
+
+
+Desarrollado por Lorenzetti Lucio E-mail: lorenzettilucioadriel@gmail.com
+Vercel: https://distrito3zona13.vercel.app/
