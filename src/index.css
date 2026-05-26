@@ -47,3 +47,13 @@ body::-webkit-scrollbar {
     scrollbar-width: none;
   }
 }
+
+.hero-bg {
+  background-image: url('../assets/f-bienvenida-desktop.jpg');
+}
+
+@media (max-width: 768px) {
+  .hero-bg {
+    background-image: url('../assets/f-bienvenida-mobile.jpg');
+  }
+}
