@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom'; // 🛠️ CORREGIDO: Unificado en una sola línea limpia
-import { LayoutDashboard, FileText, GraduationCap, Megaphone, Users, Settings, LogOut } from 'lucide-react';
+import { Home, LayoutDashboard, FileText, GraduationCap, Megaphone, Users, Settings, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 
 const Sidebar = () => {
@@ -11,13 +11,14 @@ const Sidebar = () => {
   const handleLogout = async () => {
     try {
       await logout(); // Rompe la sesión en el servidor y limpia Zustand
-      navigate('/'); // Envía de inmediato a la pantalla de Login
+      navigate('/login'); // Envía de inmediato a la pantalla de Login
     } catch (error) {
       console.error("Error al cerrar la sesión institucional:", error);
     }
   };
 
   const menuItems = [
+    { name: 'Home', path: '/', icon: <Home size={20} /> },
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'Programas', path: '/programas', icon: <FileText size={20} /> },
     { name: 'Noticias', path: '/noticias-internas', icon: <Megaphone size={20} /> },
