@@ -1,17 +1,16 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom'; // 🛠️ CORREGIDO: Unificado en una sola línea limpia
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, LayoutDashboard, FileText, GraduationCap, Megaphone, Users, Settings, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 
 const Sidebar = () => {
   const logout = useAuthStore((state) => state.logout);
-  const navigate = useNavigate(); // Hook de navegación interno
+  const navigate = useNavigate();
 
-  // Manejador asíncrono para limpiar sesión en Laravel y Zustand, y redirigir
   const handleLogout = async () => {
     try {
-      await logout(); // Rompe la sesión en el servidor y limpia Zustand
-      navigate('/login'); // Envía de inmediato a la pantalla de Login
+      await logout();
+      navigate('/login');
     } catch (error) {
       console.error("Error al cerrar la sesión institucional:", error);
     }
@@ -29,10 +28,10 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-100 flex flex-col fixed h-full">
+    <aside className="w-64 bg-scout-bg-card border-r border-scout-border flex flex-col fixed h-full">
       <div className="p-6">
-        <h1 className="text-lg font-bold text-gray-900 tracking-tight">
-          Distrito 3 <span className="text-gray-400 font-medium block text-xs italic">Bahía Blanca</span>
+        <h1 className="text-lg font-bold text-scout-primary tracking-tight">
+          Distrito 3 <span className="text-scout-muted font-medium block text-xs italic">Bahía Blanca</span>
         </h1>
       </div>
 
@@ -42,10 +41,9 @@ const Sidebar = () => {
             key={item.name}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center space-x-3 px-3 py-2.5 rounded-sm text-sm font-medium transition-colors ${
-                isActive 
-                  ? 'bg-gray-100 text-black' 
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-black'
+              `flex items-center space-x-3 px-3 py-2.5 rounded-sm text-sm font-medium transition-colors ${isActive
+                ? 'bg-scout-bg-panel text-scout-primary'
+                : 'text-scout-muted hover:bg-scout-bg-panel hover:text-scout-primary'
               }`
             }
           >
@@ -55,10 +53,10 @@ const Sidebar = () => {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-gray-100">
-        <button 
+      <div className="p-4 border-t border-scout-border">
+        <button
           onClick={handleLogout}
-          className="flex items-center space-x-3 px-3 py-2 w-full text-sm font-medium text-red-500 hover:bg-red-50 rounded-sm transition-colors cursor-pointer"
+          className="flex items-center space-x-3 px-3 py-2 w-full text-sm font-medium text-scout-accent hover:bg-scout-accent-light rounded-sm transition-colors cursor-pointer"
         >
           <LogOut size={20} />
           <span>Cerrar sesión</span>

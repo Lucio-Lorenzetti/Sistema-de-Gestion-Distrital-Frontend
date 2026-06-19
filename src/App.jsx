@@ -1,5 +1,6 @@
 // src/App.jsx
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // Layouts
 import PublicLayout from './components/layouts/PublicLayout';
@@ -22,19 +23,34 @@ import ActivateAccount from './pages/Auth/ActivateAccount';
 import SelectFunction from './pages/Auth/SelectFunction';
 
 // Vistas de Dashboard (Privadas / Gestión)
-import Dashboard from './pages/Dashboard/Dashboard'; // 🛠️ MODIFICACIÓN 1: Importamos el nuevo Dashboard
+import Dashboard from './pages/Dashboard/Dashboard';
 import Programs from './pages/Dashboard/Programs';
 import Courses from './pages/Dashboard/Courses';
+
+// Vistas de Noticias (Privadas / Gestión)
+import CrearNoticia from './pages/Logueado/Noticias/CrearNoticia';
+
+// Componente para arreglar el bug del scroll al cambiar de página
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* 1. CONTEXTO PÚBLICO (Accesible para todos) */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/distrito" element={<Distrito />} />
-          <Route path="/noticias" element={<Noticias />} />          
+          <Route path="/noticias" element={<Noticias />} />
           <Route path="/cursos" element={<Cursos />} />
           <Route path="/galeria" element={<Galeria />} />
           <Route path="/descargas" element={<Descargas />} />
@@ -50,16 +66,15 @@ function App() {
 
         {/* 3. CONTEXTO PRIVADO (Gestión Interna) */}
         <Route element={<MainLayout />}>
-          {/* 🛠️ MODIFICACIÓN 2: Reemplazamos el div de prueba por el componente dinámico */}
           <Route path="/dashboard" element={<Dashboard />} />
-          
           <Route path="/gestion-documentos" element={<Programs />} />
           <Route path="/gestion-cursos" element={<Courses />} />
           <Route path="/noticias-internas" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Noticias para Educadores</div>} />
+          <Route path="/noticias-internas/crear" element={<CrearNoticia />} />
           <Route path="/usuarios" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Gestión de Usuarios</div>} />
           <Route path="/configuracion" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Configuración del Sistema</div>} />
         </Route>
-        
+
         {/* REDIRECCIÓN POR DEFECTO AL HOME PÚBLICO */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

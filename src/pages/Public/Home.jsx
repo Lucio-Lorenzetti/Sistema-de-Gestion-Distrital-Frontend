@@ -1,11 +1,9 @@
-import React from 'react';
-import { ArrowRight, ChevronRight, FileText, BookOpen, GraduationCap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRight, ChevronRight, BookOpen, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import bgHero from '../../assets/f-bienvenida.jpg'; 
+import bgHero from '../../assets/f-bienvenida.jpg';
 import imgDefault from '../../assets/noticia-default.jpg';
-import { NOTICIAS_MOCK } from '../../data/noticias';
 
-// DATOS DE PRUEBA PARA CURSOS (MOCK)
 const CURSOS_MOCK = [
     { id: 1, titulo: "Módulo 1: Introducción al Movimiento", nivel: "Inicial", modalidad: "Presencial" },
     { id: 2, titulo: "Técnicas de Vida en la Naturaleza", nivel: "Intermedio", modalidad: "Híbrido" },
@@ -14,40 +12,49 @@ const CURSOS_MOCK = [
 ];
 
 const Home = () => {
+    const [noticias, setNoticias] = useState([]);
+
+    useEffect(() => {
+        fetch('/api/news?solo_publicadas=true')
+            .then(res => res.json())
+            .then(data => setNoticias(data.slice(0, 3)))
+            .catch(err => console.error('Error al cargar noticias:', err));
+    }, []);
+
     return (
         <div className="bg-scout-bg-panel text-scout-primary font-sans selection:bg-scout-primary selection:text-white">
-            
+
             {/* 1. HERO SECTION */}
             <section className="relative min-h-screen flex items-center justify-start px-6 md:px-20 overflow-hidden">
-                <div 
+                <div
                     className="absolute inset-0 z-0 bg-fixed"
-                    style={{ 
+                    style={{
                         backgroundImage: `url(${bgHero})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                     }}
                 />
                 <div className="absolute inset-0 bg-black/50 md:bg-black/40 z-0" />
-                
+
                 <div className="relative z-10 max-w-4xl w-full text-left pt-20 md:pt-10">
                     <h1 className="text-4xl md:text-[90px] font-black tracking-tighter leading-[1] md:leading-[0.85] text-white uppercase mb-6 md:mb-8">
                         Gestión <br />
                         <span className="text-white/40 italic">Distrito 3.</span>
                     </h1>
-                    
+
                     <p className="text-xs md:text-lg text-white/80 max-w-xl mb-10 md:mb-12 leading-relaxed font-medium uppercase tracking-wide">
-                        Digitalizando la administración scout para potenciar el servicio. 
+                        Digitalizando la administración scout para potenciar el servicio.
                         Eficiencia técnica para educadores del Distrito 3.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-start justify-start gap-4 md:gap-6 mt-8 md:mt-16 w-full sm:w-auto">
-                        <Link 
-                            to="/login" 
+                        <Link
+                            to="/login"
                             className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-6 border-2 border-white/30 text-white font-black uppercase text-[10px] md:text-[12px] tracking-widest hover:bg-white hover:text-black transition-all backdrop-blur-md rounded-full text-center"
                         >
                             Comenzar Gestión
                         </Link>
-                        <Link 
+                        <Link
                             to="/noticias"
                             className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-6 border-2 border-white/30 text-white font-black uppercase text-[10px] md:text-[12px] tracking-widest hover:bg-white hover:text-black transition-all backdrop-blur-md rounded-full text-center"
                         >
@@ -70,13 +77,13 @@ const Home = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
-                    {NOTICIAS_MOCK.slice(0, 3).map((n) => (
+                    {noticias.map((n) => (
                         <div key={n.id} className="group bg-scout-bg-card rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-scout-border hover:shadow-2xl transition-all duration-500 flex flex-col">
                             <div className="h-48 md:h-56 bg-neutral-200 overflow-hidden relative flex items-center justify-center">
-                                <img 
-                                    src={n.img || imgDefault} 
-                                    alt={n.titulo} 
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                                <img
+                                    src={n.imagen || imgDefault}
+                                    alt={n.titulo}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                 />
                                 <div className="absolute top-4 md:top-6 left-4 md:left-6">
                                     <span className="bg-black/70 backdrop-blur-xl text-white text-[8px] md:text-[9px] font-black px-3 md:px-4 py-1.5 md:py-2 rounded-full uppercase tracking-widest">
@@ -84,7 +91,7 @@ const Home = () => {
                                     </span>
                                 </div>
                             </div>
-                            
+
                             <div className="p-6 md:p-8 space-y-3 md:space-y-4 flex-grow text-left">
                                 <h3 className="text-lg md:text-xl font-bold uppercase tracking-tight leading-tight text-scout-primary">{n.titulo}</h3>
                                 <p className="text-xs md:text-[13px] text-scout-muted leading-relaxed line-clamp-2">{n.contenido}</p>
@@ -122,7 +129,7 @@ const Home = () => {
                             <div key={i} className="p-6 md:p-8 bg-scout-bg-card border border-scout-border rounded-[1.5rem] md:rounded-[2.5rem] flex flex-col justify-between hover:border-scout-primary transition-all group cursor-pointer h-44 md:h-52 shadow-sm hover:shadow-2xl">
                                 <div className="flex justify-between items-start">
                                     <div className="p-3 md:p-4 bg-scout-bg-panel rounded-xl md:rounded-2xl group-hover:bg-scout-primary group-hover:text-white transition-colors text-scout-primary">
-                                        <GraduationCap size={20} md:size={24} />
+                                        <GraduationCap size={20} />
                                     </div>
                                     <span className="text-[8px] md:text-[9px] font-black text-scout-muted group-hover:text-scout-primary uppercase tracking-widest">
                                         {curso.modalidad}

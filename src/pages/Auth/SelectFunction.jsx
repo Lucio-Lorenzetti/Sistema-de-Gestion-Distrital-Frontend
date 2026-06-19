@@ -6,13 +6,12 @@ const SelectFunction = () => {
   return (
     <AuthLayout>
       <div className="text-left mb-8">
-        <h2 className="text-3xl font-bold text-gray-950 mb-2">Seleccionar función</h2>
-        <p className="text-gray-600 text-sm">Elija el ámbito y cargo con el que desea ingresar</p>
+        <h2 className="text-3xl font-bold text-scout-primary mb-2">Seleccionar función</h2>
+        <p className="text-scout-muted text-sm">Elija el ámbito y cargo con el que desea ingresar</p>
       </div>
-
       <form onSubmit={(e) => e.preventDefault()}>
-        <Select 
-          label="Organismo / Ámbito" 
+        <Select
+          label="Organismo / Ámbito"
           options={[
             { value: '19-de-mayo', label: '19 de Mayo' },
             { value: 'fatima', label: 'Nuestra Señora de Fátima' },
@@ -23,11 +22,10 @@ const SelectFunction = () => {
             { value: 'san-jorge', label: 'San Jorge' },
             { value: 'san-pantaleon', label: 'San Pantaleon' },
             { value: 'san-pio', label: 'San Pio X' }
-          ]} 
+          ]}
         />
-        
-        <Select 
-          label="Función / Cargo" 
+        <Select
+          label="Función / Cargo"
           options={[
             { value: 'director', label: 'Director de Distrito' },
             { value: 'programa-general', label: 'Auxiliar Programa General' },
@@ -35,11 +33,9 @@ const SelectFunction = () => {
             { value: 'aux-rama', label: 'Auxiliar de Programa Rama' },
             { value: 'jefe-de-grupo', label: 'Jefe de Grupo' },
             { value: 'educador', label: 'Educador' }
-          ]} 
+          ]}
         />
-
-        {/* En la Imagen 6 el botón es azul, así que le pasamos una clase de color personalizada */}
-        <Button type="submit" className="bg-[#0056b3] hover:bg-[#004494] mt-4">
+        <Button type="submit" className="mt-4">
           Ingresar al sistema
         </Button>
       </form>

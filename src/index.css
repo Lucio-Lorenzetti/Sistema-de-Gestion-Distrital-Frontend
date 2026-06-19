@@ -4,32 +4,42 @@
   --font-sans: "Inter", ui-sans-serif, system-ui;
 
   /*PALETA DE COLORES */
-  
+
   /* Fondos y Neutros Maestros */
-  --color-scout-bg-panel: #f9fafb;      /* Tu gris claro base de MainLayout y Dashboard */
-  --color-scout-bg-card: #ffffff;       /* Blanco puro para las tarjetas y el fondo del Layout */
-  
+  --color-scout-bg-panel: #f9fafb;
+  /* Tu gris claro base de MainLayout y Dashboard */
+  --color-scout-bg-card: #ffffff;
+  /* Blanco puro para las tarjetas y el fondo del Layout */
+
   /* Colores de Marca Primarios y Secundarios */
-  --color-scout-primary: #121212;       /* Tu negro puro de botones e identidad (#121212) */
-  --color-scout-primary-hover: #262626; /* Gris oscuro para las transiciones e interactividad (neutral-800) */
-  --color-scout-muted: #6b7280;         /* Gris medio para roles, subtítulos y textos secundarios (gray-500) */
-  
+  --color-scout-primary: #121212;
+  /* Tu negro puro de botones e identidad (#121212) */
+  --color-scout-primary-hover: #262626;
+  /* Gris oscuro para las transiciones e interactividad (neutral-800) */
+  --color-scout-muted: #6b7280;
+  /* Gris medio para roles, subtítulos y textos secundarios (gray-500) */
+
   /* Sistema de Alertas y Contextos (Módulo PDF y Descargas) */
-  --color-scout-accent: #dc2626;        /* Tu rojo PDF oficial (#dc2626) de Descargas */
-  --color-scout-accent-light: #fef2f2;  /* Rojo super suave para el contenedor lateral del modal (red-50) */
-  
+  --color-scout-accent: #dc2626;
+  /* Tu rojo PDF oficial (#dc2626) de Descargas */
+  --color-scout-accent-light: #fef2f2;
+  /* Rojo super suave para el contenedor lateral del modal (red-50) */
+
   /* Estados del Servidor (Badges de Revisión) */
-  --color-scout-success: #16a34a;       /* Verde para el estado 'Revisado' o aprobaciones */
-  --color-scout-border: #f5f5f5;        /* Gris sutil para las líneas divisorias e h-px */
+  --color-scout-success: #16a34a;
+  /* Verde para el estado 'Revisado' o aprobaciones */
+  --color-scout-border: #f5f5f5;
+  /* Gris sutil para las líneas divisorias e h-px */
 
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  scrollbar-width: none; 
-  -ms-overflow-style: none; 
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /* Oculta barra en Chrome, Safari y Edge moderno */
@@ -42,6 +52,7 @@ body::-webkit-scrollbar {
   .sin-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .sin-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
