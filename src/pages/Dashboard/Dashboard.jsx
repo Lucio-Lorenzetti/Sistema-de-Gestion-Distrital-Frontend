@@ -149,6 +149,25 @@ const Dashboard = () => {
       .catch(err => console.error('Error al eliminar noticia:', err));
   };
 
+  const handlePublicarRapido = async (id) => {
+    const token = useAuthStore.getState().token;
+    try {
+      await fetch(`/api/news/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ estado: 'Publicada', publicado_at: new Date().toISOString() })
+      });
+      // Actualizamos el estado local para no recargar la página
+      setNoticias(prev => prev.map(n => n.id === id ? { ...n, estado: 'Publicada' } : n));
+    } catch (err) {
+      console.error('Error al publicar rápidamente:', err);
+    }
+  };
+
   // — Dropdown reutilizable —
   const FiltroDropdown = ({ value, onChange, opciones, filtroRef, open, setOpen }) => (
     <div className="relative" ref={filtroRef}>
@@ -351,6 +370,15 @@ const Dashboard = () => {
                         <td className="py-4 pr-4"><span className="text-[9px] text-scout-muted flex items-center gap-1 whitespace-nowrap"><Clock size={11} /> {noticia.fecha}</span></td>
                         <td className="py-4 text-right">
                           <div className="flex items-center justify-end gap-1">
+                            {noticia.estado === 'Borrador' && (
+                              <button
+                                onClick={() => handlePublicarRapido(noticia.id)}
+                                className="p-1.5 rounded-lg border border-scout-border hover:bg-green-50 text-scout-muted hover:text-scout-success transition-colors cursor-pointer"
+                                title="Publicar ahora"
+                              >
+                                <Send size={13} />
+                              </button>
+                            )}
                             {/* BOTÓN EDITAR */}
                             <Link
                               to={`/noticias-internas/editar/${noticia.id}`}

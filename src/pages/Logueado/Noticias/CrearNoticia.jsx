@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { UploadCloud, Send, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 
 const CrearNoticia = () => {
-    // ✅ token leído con hook en el tope del componente, no dentro del handler
     const token = useAuthStore((state) => state.token);
     const user = useAuthStore((state) => state.user);
+    const formRef = useRef(null);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -40,32 +40,38 @@ const CrearNoticia = () => {
         setPreview(null);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const guardarNoticia = async (estadoDeseado) => {
+        if (formRef.current && !formRef.current.checkValidity()) {
+            formRef.current.reportValidity(); // Esto muestra los carteles de "Complete este campo"
+            return; // Corta la ejecución para que no envíe nada incompleto
+        }
         setIsLoading(true);
         setError(null);
 
-        // ✅ token ya disponible desde el hook de arriba
         const payload = new FormData();
         payload.append('titulo', formData.titulo);
-        payload.append('publicado_at', formData.fecha);
-        payload.append('estado', 'Publicada');
+        payload.append('estado', estadoDeseado);
         payload.append('contenido', `${formData.copete}\n\n${formData.cuerpo}`);
+
+        // Si hay imagen, la agregamos
         if (imagen) payload.append('imagen', imagen);
+
+        // Si hay fecha (para Publicada o Programada), la mandamos
+        if (formData.fecha) payload.append('publicado_at', formData.fecha);
 
         try {
             await axios.post('/api/news', payload, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Accept': 'application/json',
-                    // ✅ Sin Content-Type — axios lo setea solo con FormData
+                    // axios setea el multipart/form-data automáticamente
                 }
             });
             navigate('/dashboard');
         } catch (err) {
             console.error('Error completo:', err.response);
             const errorMsg = err.response?.data?.message || err.message;
-            setError("No se pudo publicar la noticia: " + errorMsg);
+            setError(`No se pudo guardar la noticia como ${estadoDeseado}: ` + errorMsg);
         } finally {
             setIsLoading(false);
         }
@@ -97,7 +103,7 @@ const CrearNoticia = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto">
+                <form ref={formRef} onSubmit={(e) => e.preventDefault()} className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
                         {/* COLUMNA IZQUIERDA */}
@@ -214,20 +220,40 @@ const CrearNoticia = () => {
                         </div>
                     </div>
 
-                    {/* BOTONES */}
-                    <div className="mt-8 pt-6 border-t border-scout-border flex items-center justify-end gap-4 shrink-0">
+                    <div className="mt-8 pt-6 border-t border-scout-border flex flex-wrap items-center justify-end gap-4 shrink-0">
                         <Link
                             to="/dashboard"
                             className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-scout-muted hover:text-scout-primary transition-colors"
                         >
                             Cancelar
                         </Link>
+
                         <button
-                            type="submit"
+                            type="button"
+                            onClick={() => guardarNoticia('Borrador')}
+                            disabled={isLoading}
+                            className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-gray-200 hover:bg-gray-300 text-gray-700 shadow-sm"
+                        >
+                            Guardar en Borrador
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => guardarNoticia('Programada')}
+                            disabled={isLoading || !formData.fecha} // Deshabilitar si no eligió fecha
+                            className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-blue-100 hover:bg-blue-200 text-blue-700 shadow-sm"
+                            title={!formData.fecha ? "Elegí una fecha arriba para programar" : ""}
+                        >
+                            Programar
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => guardarNoticia('Publicada')}
                             disabled={isLoading}
                             className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-md hover:shadow-lg ${isLoading ? 'bg-scout-muted cursor-not-allowed text-white' : 'bg-scout-primary hover:bg-scout-primary-hover text-white'}`}
                         >
-                            {isLoading ? 'Publicando...' : 'Publicar Noticia'} <Send size={14} />
+                            {isLoading ? 'Guardando...' : 'Publicar Ahora'} <Send size={14} />
                         </button>
                     </div>
                 </form>
