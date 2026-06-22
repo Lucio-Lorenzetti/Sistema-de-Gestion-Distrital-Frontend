@@ -4,7 +4,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import {
   Users, FileText, Newspaper, FolderDown, Award,
   ChevronRight, ChevronDown, MessageSquare, Shield, Milestone, Calendar, Clock,
-  ChevronLeft, Plus, Edit3, Eye, Trash2, X
+  ChevronLeft, Plus, Edit3, Eye, Trash2, Send, X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import MetricCard from '../../components/ui/MetricCard';
