@@ -1,33 +1,73 @@
-import React, { useState, useRef } from 'react';
-import { UploadCloud, Send, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { UploadCloud, Send, X, ArrowLeft } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useAuthStore } from '../../../store/useAuthStore';
+import { useAuthStore } from '../../../store/useAuthStore'; // Ajustar ruta si es necesario
 
-const CrearNoticia = () => {
+const EditarNoticia = () => {
+    const { id } = useParams(); // Extraemos el ID de la URL
     const token = useAuthStore((state) => state.token);
     const user = useAuthStore((state) => state.user);
     const formRef = useRef(null);
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
 
-    const getCurrentDate = () => {
-        const now = new Date();
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        return now.toISOString().split('T')[0]; // Cortamos justo en la 'T'
-    };
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingData, setIsLoadingData] = useState(true); // Estado para la carga inicial
+    const [error, setError] = useState(null);
 
     const [formData, setFormData] = useState({
         titulo: '',
-        fecha: getCurrentDate(),
+        fecha: '',
         copete: '',
         cuerpo: ''
     });
     const [imagen, setImagen] = useState(null);
     const [preview, setPreview] = useState(null);
 
-    const esFechaFutura = formData.fecha > getCurrentDate();
+    useEffect(() => {
+        const fetchNoticia = async () => {
+            try {
+                const res = await axios.get(`/api/news/${id}`);
+                const noticia = res.data;
+
+                // Dividimos de forma segura soportando saltos de línea de Windows (\r\n) y Unix (\n)
+                const partes = noticia.contenido ? noticia.contenido.split(/\r?\n\r?\n/) : [];
+
+                let copeteCargado = '';
+                let cuerpoCargado = '';
+
+                if (partes.length === 1) {
+                    // Si no hay separador (noticia vieja), asumimos que todo es el cuerpo
+                    cuerpoCargado = partes[0] || '';
+                } else if (partes.length > 1) {
+                    // Si hay separador, el primero es el copete y unimos el resto para el cuerpo
+                    copeteCargado = partes[0] || '';
+                    cuerpoCargado = partes.slice(1).join('\n\n') || '';
+                }
+
+                setFormData({
+                    titulo: noticia.titulo || '',
+                    // El input type="date" necesita el formato YYYY-MM-DD
+                    fecha: noticia.fecha_iso ? noticia.fecha_iso.split('T')[0] : '',
+                    copete: copeteCargado,
+                    cuerpo: cuerpoCargado
+                });
+
+                // Si la noticia ya tenía una foto, la ponemos en el preview
+                if (noticia.imagen) {
+                    setPreview(noticia.imagen);
+                }
+            } catch (err) {
+                console.error("Error al cargar noticia:", err);
+                setError("No se pudo cargar la información de la noticia.");
+            } finally {
+                setIsLoadingData(false);
+            }
+        };
+
+        fetchNoticia();
+    }, [id]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -49,40 +89,50 @@ const CrearNoticia = () => {
 
     const guardarNoticia = async (estadoDeseado) => {
         if (formRef.current && !formRef.current.checkValidity()) {
-            formRef.current.reportValidity(); // Esto muestra los carteles de "Complete este campo"
-            return; // Corta la ejecución para que no envíe nada incompleto
+            formRef.current.reportValidity();
+            return;
         }
         setIsLoading(true);
         setError(null);
 
         const payload = new FormData();
+
+        // 2. EL TRUCO PARA LARAVEL (FormData + PUT)
+        payload.append('_method', 'PUT');
+
         payload.append('titulo', formData.titulo);
         payload.append('estado', estadoDeseado);
         payload.append('contenido', `${formData.copete}\n\n${formData.cuerpo}`);
 
-        // Si hay imagen, la agregamos
         if (imagen) payload.append('imagen', imagen);
-
-        // Si hay fecha (para Publicada o Programada), la mandamos
         if (formData.fecha) payload.append('publicado_at', formData.fecha);
 
         try {
-            await axios.post('/api/news', payload, {
+            // Mandamos por POST, pero el payload engaña a Laravel haciéndole creer que es PUT
+            await axios.post(`/api/news/${id}`, payload, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Accept': 'application/json',
-                    // axios setea el multipart/form-data automáticamente
                 }
             });
             navigate('/dashboard');
         } catch (err) {
             console.error('Error completo:', err.response);
             const errorMsg = err.response?.data?.message || err.message;
-            setError(`No se pudo guardar la noticia como ${estadoDeseado}: ` + errorMsg);
+            setError(`No se pudo actualizar la noticia como ${estadoDeseado}: ` + errorMsg);
         } finally {
             setIsLoading(false);
         }
     };
+
+    // Pantalla de carga mientras trae los datos de la base
+    if (isLoadingData) {
+        return (
+            <div className="h-full w-full flex items-center justify-center bg-scout-bg-panel">
+                <p className="text-scout-primary font-bold uppercase tracking-widest text-xs animate-pulse">Cargando noticia...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full w-full flex flex-col bg-scout-bg-panel font-sans selection:bg-scout-primary selection:text-white p-6 md:p-10 overflow-hidden text-left">
@@ -91,14 +141,17 @@ const CrearNoticia = () => {
                 {/* HEADER */}
                 <div className="mb-6 shrink-0">
                     <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
-                        Noticias Internas • Nueva noticia
+                        Noticias Internas • Edición
                     </span>
-                    <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase">
-                        Crear Noticia
+                    <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase flex items-center gap-3">
+                        <Link to="/dashboard" className="text-scout-muted hover:text-scout-primary transition-colors">
+                            <ArrowLeft size={24} />
+                        </Link>
+                        Editar Noticia
                     </h1>
                     {user && (
-                        <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest mt-1">
-                            Publicando como: {user.name}
+                        <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest mt-1 ml-9">
+                            Editando como: {user.name}
                         </p>
                     )}
                 </div>
@@ -138,10 +191,9 @@ const CrearNoticia = () => {
                                     Fecha de publicación
                                 </label>
                                 <input
-                                    type="date" // <-- Cambiado a fecha y hora
+                                    type="date"
                                     name="fecha"
                                     value={formData.fecha}
-                                    min={getCurrentDate()} // <-- Bloquea el pasado
                                     onChange={handleChange}
                                     className="w-full border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-primary focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50"
                                     required
@@ -181,7 +233,7 @@ const CrearNoticia = () => {
                                                 <UploadCloud size={24} />
                                             </div>
                                             <p className="text-xs font-bold text-scout-primary mb-1">
-                                                Hacé clic para subir un archivo
+                                                Cambiar la imagen actual
                                             </p>
                                             <p className="text-[9px] font-medium text-scout-muted uppercase tracking-widest">
                                                 JPG, PNG o GIF (Max. 5MB)
@@ -242,20 +294,17 @@ const CrearNoticia = () => {
                             disabled={isLoading}
                             className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-gray-200 hover:bg-gray-300 text-gray-700 shadow-sm"
                         >
-                            Guardar en Borrador
+                            Actualizar Borrador
                         </button>
 
                         <button
                             type="button"
                             onClick={() => guardarNoticia('Programada')}
-                            disabled={isLoading || !esFechaFutura}
-                            className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${!esFechaFutura
-                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
-                                }`}
-                            title={!esFechaFutura ? "Modificá el calendario a una fecha futura para programar" : "Programar publicación"}
+                            disabled={isLoading || !formData.fecha}
+                            className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-blue-100 hover:bg-blue-200 text-blue-700 shadow-sm"
+                            title={!formData.fecha ? "Elegí una fecha arriba para programar" : ""}
                         >
-                            Programar
+                            Reprogramar
                         </button>
 
                         <button
@@ -264,7 +313,7 @@ const CrearNoticia = () => {
                             disabled={isLoading}
                             className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-md hover:shadow-lg ${isLoading ? 'bg-scout-muted cursor-not-allowed text-white' : 'bg-scout-primary hover:bg-scout-primary-hover text-white'}`}
                         >
-                            {isLoading ? 'Guardando...' : 'Publicar Ahora'} <Send size={14} />
+                            {isLoading ? 'Actualizando...' : 'Publicar / Actualizar'} <Send size={14} />
                         </button>
                     </div>
                 </form>
@@ -273,4 +322,4 @@ const CrearNoticia = () => {
     );
 };
 
-export default CrearNoticia;
+export default EditarNoticia;

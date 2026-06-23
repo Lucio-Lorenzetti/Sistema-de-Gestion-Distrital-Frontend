@@ -29,6 +29,7 @@ import Courses from './pages/Dashboard/Courses';
 
 // Vistas de Noticias (Privadas / Gestión)
 import CrearNoticia from './pages/Logueado/Noticias/CrearNoticia';
+import EditarNoticia from './pages/Logueado/Noticias/EditarNoticia';
 
 // Componente para arreglar el bug del scroll al cambiar de página
 const ScrollToTop = () => {
@@ -71,6 +72,7 @@ function App() {
           <Route path="/gestion-cursos" element={<Courses />} />
           <Route path="/noticias-internas" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Noticias para Educadores</div>} />
           <Route path="/noticias-internas/crear" element={<CrearNoticia />} />
+          <Route path="/noticias-internas/editar/:id" element={<EditarNoticia />} />
           <Route path="/usuarios" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Gestión de Usuarios</div>} />
           <Route path="/configuracion" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Configuración del Sistema</div>} />
         </Route>
