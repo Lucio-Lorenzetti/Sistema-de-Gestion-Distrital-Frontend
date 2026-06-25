@@ -58,7 +58,8 @@ const CrearNoticia = () => {
         const payload = new FormData();
         payload.append('titulo', formData.titulo);
         payload.append('estado', estadoDeseado);
-        payload.append('contenido', `${formData.copete}\n\n${formData.cuerpo}`);
+        payload.append('copete', formData.copete); // Campo nuevo
+        payload.append('contenido', formData.cuerpo);
 
         // Si hay imagen, la agregamos
         if (imagen) payload.append('imagen', imagen);

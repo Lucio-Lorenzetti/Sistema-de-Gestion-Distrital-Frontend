@@ -562,11 +562,12 @@ const Dashboard = () => {
             </div>
           </>
         )}
-        {/* 2. PEGAS EL MODAL ACÁ, JUSTO ANTES DEL ÚLTIMO </div> */}
+        {/* MODAL DE NOTICIA EXPANDIDA */}
         {expandedNoticiaId && noticiaExpandida && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
             <div className="absolute inset-0 bg-scout-primary/60 backdrop-blur-md" onClick={() => setExpandedNoticiaId(null)} />
             <div className="relative bg-scout-bg-card w-full max-w-5xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-300">
+
               <button onClick={() => setExpandedNoticiaId(null)} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-scout-bg-card rounded-full hover:scale-110 transition-transform">
                 <X size={20} />
               </button>
@@ -581,12 +582,17 @@ const Dashboard = () => {
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-scout-muted block mb-4 text-left">
                   {noticiaExpandida.categoria || 'General'} • {noticiaExpandida.fecha}
                 </span>
-                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-8 text-scout-primary text-left">
+                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-6 text-scout-primary text-left">
                   {noticiaExpandida.titulo}
                 </h2>
-                <p className="text-scout-muted leading-relaxed text-sm md:text-base text-left">
-                  {noticiaExpandida.contenido || noticiaExpandida.cuerpo}
-                </p>
+                {noticiaExpandida.copete && (
+                  <p className="text-lg font-bold text-scout-primary border-l-4 border-scout-primary pl-4 mb-6 leading-snug text-left">
+                    {noticiaExpandida.copete}
+                  </p>
+                )}
+                <div className="text-scout-muted leading-relaxed text-sm md:text-base text-left whitespace-pre-line">
+                  {noticiaExpandida.contenido}
+                </div>
               </div>
             </div>
           </div>

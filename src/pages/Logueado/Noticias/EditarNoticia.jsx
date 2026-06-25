@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { UploadCloud, Send, X, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useAuthStore } from '../../../store/useAuthStore'; // Ajustar ruta si es necesario
+import { useAuthStore } from '../../../store/useAuthStore';
 
 const EditarNoticia = () => {
     const { id } = useParams(); // Extraemos el ID de la URL
@@ -12,7 +12,7 @@ const EditarNoticia = () => {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
-    const [isLoadingData, setIsLoadingData] = useState(true); // Estado para la carga inicial
+    const [isLoadingData, setIsLoadingData] = useState(true);
     const [error, setError] = useState(null);
 
     const [formData, setFormData] = useState({
@@ -21,6 +21,12 @@ const EditarNoticia = () => {
         copete: '',
         cuerpo: ''
     });
+    const getCurrentDate = () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        return now.toISOString().split('T')[0];
+    };
+    const esFechaFutura = formData.fecha > getCurrentDate();
     const [imagen, setImagen] = useState(null);
     const [preview, setPreview] = useState(null);
 
@@ -30,30 +36,13 @@ const EditarNoticia = () => {
                 const res = await axios.get(`/api/news/${id}`);
                 const noticia = res.data;
 
-                // Dividimos de forma segura soportando saltos de línea de Windows (\r\n) y Unix (\n)
-                const partes = noticia.contenido ? noticia.contenido.split(/\r?\n\r?\n/) : [];
-
-                let copeteCargado = '';
-                let cuerpoCargado = '';
-
-                if (partes.length === 1) {
-                    // Si no hay separador (noticia vieja), asumimos que todo es el cuerpo
-                    cuerpoCargado = partes[0] || '';
-                } else if (partes.length > 1) {
-                    // Si hay separador, el primero es el copete y unimos el resto para el cuerpo
-                    copeteCargado = partes[0] || '';
-                    cuerpoCargado = partes.slice(1).join('\n\n') || '';
-                }
-
                 setFormData({
                     titulo: noticia.titulo || '',
-                    // El input type="date" necesita el formato YYYY-MM-DD
                     fecha: noticia.fecha_iso ? noticia.fecha_iso.split('T')[0] : '',
-                    copete: copeteCargado,
-                    cuerpo: cuerpoCargado
+                    copete: noticia.copete || '',
+                    cuerpo: noticia.contenido || ''
                 });
 
-                // Si la noticia ya tenía una foto, la ponemos en el preview
                 if (noticia.imagen) {
                     setPreview(noticia.imagen);
                 }
@@ -96,36 +85,35 @@ const EditarNoticia = () => {
         setError(null);
 
         const payload = new FormData();
-
-        // 2. EL TRUCO PARA LARAVEL (FormData + PUT)
         payload.append('_method', 'PUT');
 
         payload.append('titulo', formData.titulo);
         payload.append('estado', estadoDeseado);
-        payload.append('contenido', `${formData.copete}\n\n${formData.cuerpo}`);
+
+        payload.append('copete', formData.copete);
+        payload.append('contenido', formData.cuerpo);
 
         if (imagen) payload.append('imagen', imagen);
         if (formData.fecha) payload.append('publicado_at', formData.fecha);
 
         try {
-            // Mandamos por POST, pero el payload engaña a Laravel haciéndole creer que es PUT
             await axios.post(`/api/news/${id}`, payload, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Accept': 'application/json',
+                    'Content-Type': 'multipart/form-data'
                 }
             });
             navigate('/dashboard');
         } catch (err) {
             console.error('Error completo:', err.response);
             const errorMsg = err.response?.data?.message || err.message;
-            setError(`No se pudo actualizar la noticia como ${estadoDeseado}: ` + errorMsg);
+            setError(`No se pudo actualizar la noticia: ` + errorMsg);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Pantalla de carga mientras trae los datos de la base
     if (isLoadingData) {
         return (
             <div className="h-full w-full flex items-center justify-center bg-scout-bg-panel">
@@ -194,6 +182,7 @@ const EditarNoticia = () => {
                                     type="date"
                                     name="fecha"
                                     value={formData.fecha}
+                                    min={getCurrentDate()}
                                     onChange={handleChange}
                                     className="w-full border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-primary focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50"
                                     required
@@ -300,11 +289,14 @@ const EditarNoticia = () => {
                         <button
                             type="button"
                             onClick={() => guardarNoticia('Programada')}
-                            disabled={isLoading || !formData.fecha}
-                            className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-blue-100 hover:bg-blue-200 text-blue-700 shadow-sm"
-                            title={!formData.fecha ? "Elegí una fecha arriba para programar" : ""}
+                            disabled={isLoading || !esFechaFutura}
+                            className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${!esFechaFutura
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
+                                }`}
+                            title={!esFechaFutura ? "Modificá la fecha a una futura para reprogramar" : "Programar publicación"}
                         >
-                            Reprogramar
+                            {isLoading ? 'Guardando...' : 'Reprogramar'}
                         </button>
 
                         <button
