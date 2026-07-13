@@ -87,12 +87,15 @@ const CrearNoticia = () => {
 
     return (
         <div className="h-full w-full flex flex-col bg-scout-bg-panel font-sans selection:bg-scout-primary selection:text-white p-6 md:p-10 overflow-hidden text-left">
-            <div className="w-full max-w-6xl mx-auto flex flex-col h-full min-h-0">
+            <div
+                className="bg-scout-bg-panel text-left relative"
+                style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '1rem' }}
+            >
 
                 {/* HEADER */}
-                <div className="mb-6 shrink-0">
+                <div className="border-b border-scout-border pb-4 shrink-0">
                     <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
-                        Noticias Internas • Nueva noticia
+                        Panel de Control Privado • NUEVA NOTICIA
                     </span>
                     <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase">
                         Crear Noticia
@@ -159,7 +162,7 @@ const CrearNoticia = () => {
                                         (Opcional)
                                     </span>
                                 </div>
-                                <div className={`relative w-full border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all h-[200px] overflow-hidden ${preview ? 'border-scout-primary p-2' : 'border-scout-border hover:bg-scout-bg-panel/50 p-6'}`}>
+                                <div className={`relative w-full border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all h-[150px] overflow-hidden ${preview ? 'border-scout-primary p-2' : 'border-scout-border hover:bg-scout-bg-panel/50 p-6'}`}>
                                     {preview ? (
                                         <div className="relative w-full h-full rounded-xl overflow-hidden group">
                                             <img src={preview} alt="Preview" className="w-full h-full object-cover" />

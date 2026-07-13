@@ -14,14 +14,27 @@ const CURSOS_MOCK = [
 
 const Home = () => {
     const [noticias, setNoticias] = useState([]);
+    const [cursos, setCursos] = useState([]);
     const [expandedId, setExpandedId] = useState(null);
 
     useEffect(() => {
+        //Fetch Noticias
         fetch('/api/news?solo_publicadas=true')
             .then(res => res.json())
             .then(data => setNoticias(data.slice(0, 4)))
             .catch(err => console.error('Error al cargar noticias:', err));
+
+        //Fetch Cursos
+        fetch('/api/courses')
+            .then(res => res.json())
+            .then(data => {
+                const abiertos = data.filter(c => c.estado === 'Abierto').slice(0, 4);
+                setCursos(abiertos);
+            })
+            .catch(err => console.error('Error al cargar cursos:', err));
     }, []);
+
+
 
     return (
         <div className="bg-scout-bg-panel text-scout-primary font-sans selection:bg-scout-primary selection:text-white">
@@ -143,8 +156,8 @@ const Home = () => {
                     </div>
 
                     <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                        {CURSOS_MOCK.map((curso, i) => (
-                            <div key={i} className="p-6 md:p-8 bg-scout-bg-card border border-scout-border rounded-[1.5rem] md:rounded-[2.5rem] flex flex-col justify-between hover:border-scout-primary transition-all group cursor-pointer h-44 md:h-52 shadow-sm hover:shadow-2xl">
+                        {cursos.map((curso) => ( // 3. Usamos el estado 'cursos' en lugar de CURSOS_MOCK
+                            <div key={curso.id} className="p-6 md:p-8 bg-scout-bg-card border border-scout-border rounded-[1.5rem] md:rounded-[2.5rem] flex flex-col justify-between hover:border-scout-primary transition-all group cursor-pointer h-44 md:h-52 shadow-sm hover:shadow-2xl">
                                 <div className="flex justify-between items-start">
                                     <div className="p-3 md:p-4 bg-scout-bg-panel rounded-xl md:rounded-2xl group-hover:bg-scout-primary group-hover:text-white transition-colors text-scout-primary">
                                         <GraduationCap size={20} />
@@ -154,8 +167,12 @@ const Home = () => {
                                     </span>
                                 </div>
                                 <div>
-                                    <span className="text-[8px] md:text-[10px] font-bold text-scout-muted uppercase block mb-1">Nivel {curso.nivel}</span>
-                                    <h3 className="text-sm md:text-md font-bold uppercase tracking-tight text-scout-primary">{curso.titulo}</h3>
+                                    <span className="text-[8px] md:text-[10px] font-bold text-scout-muted uppercase block mb-1">
+                                        Nivel {curso.nivel}
+                                    </span>
+                                    <h3 className="text-sm md:text-md font-bold uppercase tracking-tight text-scout-primary">
+                                        {curso.titulo}
+                                    </h3>
                                 </div>
                             </div>
                         ))}

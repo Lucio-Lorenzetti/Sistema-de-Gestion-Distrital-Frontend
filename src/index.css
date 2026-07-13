@@ -47,6 +47,14 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+/* En tu archivo CSS principal */
+input,
+textarea,
+select {
+  font-weight: 500 !important;
+  /* 700 es el peso 'bold' en Tailwind */
+}
+
 /* Mantenemos tu utilidad por si la necesitas en algún div específico luego */
 @layer utilities {
   .sin-scrollbar::-webkit-scrollbar {

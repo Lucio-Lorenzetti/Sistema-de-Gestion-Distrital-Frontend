@@ -1,42 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronUp, ArrowLeft, ArrowRight, GraduationCap, Calendar, MapPin, DollarSign, User, ExternalLink, X, Layers } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-// 1. 10 CURSOS DE PRUEBA (MOCK)
-const CURSOS_MOCK = [
-    { id: 1, titulo: "MÓDULO 1: INTRODUCCIÓN AL MOVIMIENTO", ramas: "Todas las ramas", fecha: "15/05/2026", nivel: "Inicial", costo: "$5.000", lugar: "Grupo 1 - Pompeya", modalidad: "Presencial", formador: "IM. Juan Perez", resumen: "Primer encuentro de formación para nuevos educadores. Bases del escultismo y método.", form_url: "https://forms.google.com" },
-    { id: 2, titulo: "TÉCNICAS DE VIDA EN LA NATURALEZA", ramas: "Unidad Scout", fecha: "22/05/2026", nivel: "Intermedio", costo: "$7.500", lugar: "Campo Escuela D3", modalidad: "Presencial", formador: "IM. Ricardo Gomez", resumen: "Taller práctico de construcciones, pionerismo y seguridad en el campamento.", form_url: "https://forms.google.com" },
-    { id: 3, titulo: "PSICOLOGÍA DEL JOVEN Y EL NIÑO", ramas: "Manada / Rovers", fecha: "05/06/2026", nivel: "Avanzado", costo: "$3.000", lugar: "Sede Distrito 3", modalidad: "Virtual", formador: "Lic. Marta Diaz", resumen: "Análisis de las etapas evolutivas y cómo adaptar el programa educativo.", form_url: "https://forms.google.com" },
-    { id: 4, titulo: "GESTIÓN INSTITUCIONAL Y GRUPAL", ramas: "Dirigencia", fecha: "12/06/2026", nivel: "Intermedio", costo: "$4.000", lugar: "Grupo 48 - San Jorge", modalidad: "Híbrido", formador: "MS. Lucio Lorenzetti", resumen: "Herramientas administrativas para Jefes de Grupo y de Unidad.", form_url: "https://forms.google.com" },
-    { id: 5, titulo: "PRIMEROS AUXILIOS EN ZONAS AGRESTES", ramas: "Todas las ramas", fecha: "20/06/2026", nivel: "Inicial", costo: "$6.000", lugar: "Parque de Mayo", modalidad: "Presencial", formador: "Dr. Carlos Paz", resumen: "Protocolos de emergencia y estabilización en contextos de naturaleza.", form_url: "https://forms.google.com" },
-    { id: 6, titulo: "PROGRAMA EDUCATIVO: RAMA LOBATOS", ramas: "Manada", fecha: "02/07/2026", nivel: "Inicial", costo: "$3.500", lugar: "Virtual (Zoom)", modalidad: "Virtual", formador: "IM. Ana Valle", resumen: "Implementación del nuevo esquema de progresión para la rama Lobatos.", form_url: "https://forms.google.com" },
-    { id: 7, titulo: "ANIMACIÓN DE LA UNIDAD SCOUT", ramas: "Caminantes", fecha: "10/07/2026", nivel: "Intermedio", costo: "$5.500", lugar: "Sede Distrito 3", modalidad: "Presencial", formador: "IM. Esteban Quito", resumen: "Liderazgo y motivación para jóvenes de 14 a 17 años.", form_url: "https://forms.google.com" },
-    { id: 8, titulo: "TALLER DE ESPECIALIDADES", ramas: "Todas las ramas", fecha: "18/07/2026", nivel: "Avanzado", costo: "$2.000", lugar: "Google Meet", modalidad: "Virtual", formador: "IM. Sofia Luna", resumen: "Cómo guiar a los jóvenes en la elección y desarrollo de sus especialidades.", form_url: "https://forms.google.com" },
-    { id: 9, titulo: "CAMPISMO Y ORIENTACIÓN", ramas: "Rovers", fecha: "25/07/2026", nivel: "Inicial", costo: "$6.500", lugar: "Sierra de la Ventana", modalidad: "Presencial", formador: "IM. Pablo Sierra", resumen: "Uso de brújula, GPS y lectura de mapas en terreno real.", form_url: "https://forms.google.com" },
-    { id: 10, titulo: "DISEÑO DE PROYECTOS ROVERS", ramas: "Rovers", fecha: "01/08/2026", nivel: "Intermedio", costo: "$3.000", lugar: "Sede Distrito 3", modalidad: "Presencial", formador: "MS. Pedro Alva", resumen: "Metodología de proyectos para el servicio comunitario Rover.", form_url: "https://forms.google.com" }
-];
+import axios from 'axios';
 
 const Cursos = () => {
+    const [cursos, setCursos] = useState([]);
     const [expandedId, setExpandedId] = useState(null);
     const [itemsPerPage, setItemsPerPage] = useState(4);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const totalItems = CURSOS_MOCK.length;
+    useEffect(() => {
+        axios.get('/api/courses')
+            .then(res => setCursos(res.data))
+            .catch(err => console.error('Error al cargar cursos:', err));
+    }, []);
+
+    const totalItems = cursos.length;
     const isAll = itemsPerPage === 'all';
     const limit = isAll ? totalItems : itemsPerPage;
     const totalPages = Math.ceil(totalItems / limit);
 
     const startIndex = (currentPage - 1) * limit;
-    const currentCursos = isAll ? CURSOS_MOCK : CURSOS_MOCK.slice(startIndex, startIndex + limit);
+    const currentCursos = isAll ? cursos : cursos.slice(startIndex, startIndex + limit);
 
-    const toggleExpand = (id) => setExpandedId(expandedId === id ? null : id);
-
+    // Layout fijo solo cuando estamos en 4 y no hay modal abierto
     const isFixedLayout = itemsPerPage === 4 && !expandedId;
 
     return (
-        <div className={`bg-[var(--color-scout-bg-panel)] font-sans selection:bg-[var(--color-scout-primary)] selection:text-white min-h-screen ${isFixedLayout ? 'md:h-screen md:overflow-hidden' : ''}`}>
+        <div className={`bg-[var(--color-scout-bg-panel)] font-sans selection:bg-[var(--color-scout-primary)] selection:text-white min-h-screen`}>
 
-            <header className={`${isFixedLayout ? 'md:h-[15vh]' : 'py-8'} bg-[var(--color-scout-bg-card)]/80 backdrop-blur-md border-b border-[var(--color-scout-border)] flex flex-col justify-center px-6 md:px-20`}>
+            <header className="py-8 bg-[var(--color-scout-bg-card)]/80 backdrop-blur-md border-b border-[var(--color-scout-border)] flex flex-col justify-center px-6 md:px-20">
                 <div className="max-w-5xl mx-auto w-full text-left">
                     <h1 className="text-2xl md:text-4xl font-black text-[var(--color-scout-primary)] tracking-tighter uppercase leading-none">
                         Cursos de <span className="text-[var(--color-scout-primary)]/20 italic">Formación</span>
@@ -44,11 +37,11 @@ const Cursos = () => {
                 </div>
             </header>
 
-            <main className={`max-w-6xl mx-auto px-6 flex flex-col ${isFixedLayout ? 'md:h-[75vh] md:justify-start md:pt-4' : 'py-6'}`}>
+            <main className="max-w-6xl mx-auto px-6 flex flex-col py-6">
 
-                <div className={`flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4 px-2 ${isFixedLayout ? 'md:h-[4vh]' : ''}`}>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4 px-2">
                     <p className="text-[10px] font-bold text-[var(--color-scout-muted)] uppercase tracking-widest text-left">
-                        Página {currentPage} de {totalPages} • {totalItems} propuestas educativas
+                        Página {currentPage} de {totalPages || 1} • {totalItems} propuestas educativas
                     </p>
                     <div className="flex items-center gap-2">
                         {[4, 6, 8, 'all'].map((opt) => (
@@ -56,8 +49,8 @@ const Cursos = () => {
                                 key={opt}
                                 onClick={() => { setItemsPerPage(opt); setCurrentPage(1); }}
                                 className={`text-[8px] font-black uppercase px-3 py-1 border rounded-full transition-all ${itemsPerPage === opt
-                                        ? 'bg-[var(--color-scout-primary)] text-white border-[var(--color-scout-primary)] shadow-md'
-                                        : 'bg-[var(--color-scout-bg-card)] text-[var(--color-scout-muted)] border-[var(--color-scout-border)] hover:border-[var(--color-scout-primary)]'
+                                    ? 'bg-[var(--color-scout-primary)] text-white border-[var(--color-scout-primary)] shadow-md'
+                                    : 'bg-[var(--color-scout-bg-card)] text-[var(--color-scout-muted)] border-[var(--color-scout-border)] hover:border-[var(--color-scout-primary)]'
                                     }`}
                             >
                                 {opt === 'all' ? 'Todo' : opt}
@@ -66,14 +59,14 @@ const Cursos = () => {
                     </div>
                 </div>
 
-                <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${isFixedLayout ? 'md:h-[68vh]' : ''}`}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {currentCursos.map((curso) => (
                         <article
                             key={curso.id}
                             onClick={() => setExpandedId(curso.id)}
-                            className={`group relative bg-[var(--color-scout-bg-card)] rounded-[2rem] overflow-hidden border border-[var(--color-scout-border)] transition-all duration-300 flex flex-col md:flex-row cursor-pointer hover:shadow-xl ${isFixedLayout ? 'md:h-[20vh]' : 'h-auto py-4 md:py-0'}`}
+                            className="group relative bg-[var(--color-scout-bg-card)] rounded-[2rem] overflow-hidden border border-[var(--color-scout-border)] transition-all duration-300 flex flex-col md:flex-row cursor-pointer hover:shadow-xl h-44 md:h-40 w-full"
                         >
-                            <div className={`relative overflow-hidden flex-shrink-0 w-full h-32 md:h-full md:w-[25%] bg-[var(--color-scout-primary)] flex items-center justify-center text-white`}>
+                            <div className="relative overflow-hidden flex-shrink-0 w-full h-32 md:h-full md:w-[25%] bg-[var(--color-scout-primary)] flex items-center justify-center text-white">
                                 <GraduationCap size={32} className="opacity-20 group-hover:scale-110 transition-transform" />
                                 <div className="absolute top-3 left-3">
                                     <span className="bg-white/10 backdrop-blur-md text-white text-[7px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest">
@@ -97,8 +90,8 @@ const Cursos = () => {
                     ))}
                 </div>
 
-                {!isAll && totalPages > 1 && (
-                    <footer className={`flex justify-center items-center gap-3 px-6 mt-6 md:mt-0 ${isFixedLayout ? 'md:h-[10vh]' : 'py-8'}`}>
+                {totalPages > 1 && (
+                    <footer className="flex justify-center items-center gap-3 px-6 py-8 mt-25">
                         <div className="flex items-center gap-2 bg-[var(--color-scout-bg-card)] px-4 py-2 rounded-full border border-[var(--color-scout-border)] shadow-sm">
                             <span className="text-[9px] font-black uppercase text-[var(--color-scout-muted)] mr-2">Páginas:</span>
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -106,8 +99,8 @@ const Cursos = () => {
                                     key={page}
                                     onClick={(e) => { e.stopPropagation(); setCurrentPage(page); }}
                                     className={`w-7 h-7 md:w-8 md:h-8 text-[9px] md:text-[10px] font-black rounded-full border transition-all ${currentPage === page
-                                            ? 'bg-[var(--color-scout-primary)] text-white border-[var(--color-scout-primary)] shadow-lg scale-110'
-                                            : 'bg-[var(--color-scout-bg-card)] text-[var(--color-scout-muted)] border-[var(--color-scout-border)] hover:border-[var(--color-scout-primary)]'
+                                        ? 'bg-[var(--color-scout-primary)] text-white border-[var(--color-scout-primary)] shadow-lg scale-110'
+                                        : 'bg-[var(--color-scout-bg-card)] text-[var(--color-scout-muted)] border-[var(--color-scout-border)] hover:border-[var(--color-scout-primary)]'
                                         }`}
                                 >
                                     {page}
@@ -117,45 +110,39 @@ const Cursos = () => {
                     </footer>
                 )}
             </main>
-
             {expandedId && (() => {
-                const c = CURSOS_MOCK.find(item => item.id === expandedId);
+                const c = cursos.find(item => item.id === expandedId);
                 if (!c) return null;
                 return (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
                         <div className="absolute inset-0 bg-[var(--color-scout-primary)]/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
-
                         <div className="relative bg-[var(--color-scout-bg-card)] w-full max-w-5xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-300 text-left">
                             <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:scale-110 transition-transform">
                                 <X size={20} />
                             </button>
-
                             <div className="md:w-2/5 bg-[var(--color-scout-primary)] flex flex-col items-center justify-center text-white p-12 text-center space-y-6 flex-shrink-0">
                                 <GraduationCap size={80} className="opacity-20" />
                                 <div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40 block mb-2 text-white">Nivel del Curso</span>
-                                    <p className="text-2xl font-black uppercase">{c.nivel}</p>
+                                    {/*<span className="text-[10px] font-black uppercase tracking-widest opacity-40 block mb-2 text-white">Nivel del Curso</span>
+                                    <p className="text-2xl font-black uppercase">{c.nivel}</p>*/}
                                 </div>
-                                <a href={c.form_url} target="_blank" rel="noopener noreferrer" className="w-full bg-[var(--color-scout-bg-card)] text-[var(--color-scout-primary)] py-4 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 hover:bg-[var(--color-scout-border)] transition-all">
+                                <a href={c.link_formulario} target="_blank" rel="noopener noreferrer" className="w-full bg-[var(--color-scout-bg-card)] text-[var(--color-scout-primary)] py-4 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 hover:bg-[var(--color-scout-border)] transition-all">
                                     Inscribirse <ExternalLink size={14} />
                                 </a>
                             </div>
-
                             <div className="md:w-3/5 p-8 md:p-16 overflow-y-auto">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-scout-muted)] block mb-4">{c.ramas}*</span>
-                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-primary)]">{c.titulo}*</h2>
-
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-scout-muted)] block mb-4">{c.ramas}</span>
+                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-primary)]">{c.titulo}</h2>
                                 <div className="grid grid-cols-2 gap-y-8 gap-x-4 mb-10 border-y border-[var(--color-scout-border)] py-10">
-                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Fecha*</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><Calendar size={16} /> {c.fecha}</div></div>
-                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Lugar*</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><MapPin size={16} /> {c.lugar}</div></div>
-                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Costo*</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><DollarSign size={16} /> {c.costo}</div></div>
+                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Fecha</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><Calendar size={16} /> {c.fecha_fin}</div></div>
+                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Lugar</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><MapPin size={16} /> {c.lugar}</div></div>
+                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Costo</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><DollarSign size={16} /> {c.costo}</div></div>
                                     <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Modalidad</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><Layers size={16} /> {c.modalidad}</div></div>
                                     <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Formador</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><User size={16} /> {c.formador}</div></div>
                                 </div>
-
                                 <div className="space-y-4">
                                     <p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Resumen del Curso</p>
-                                    <p className="text-[var(--color-scout-muted)] leading-relaxed text-sm md:text-base">{c.resumen}</p>
+                                    <p className="text-[var(--color-scout-muted)] leading-relaxed text-sm md:text-base">{c.descripcion}</p>
                                 </div>
                             </div>
                         </div>

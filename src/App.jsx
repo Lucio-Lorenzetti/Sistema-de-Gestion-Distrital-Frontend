@@ -25,11 +25,16 @@ import SelectFunction from './pages/Auth/SelectFunction';
 // Vistas de Dashboard (Privadas / Gestión)
 import Dashboard from './pages/Dashboard/Dashboard';
 import Programs from './pages/Dashboard/Programs';
+
 import Courses from './pages/Dashboard/Courses';
 
 // Vistas de Noticias (Privadas / Gestión)
 import CrearNoticia from './pages/Logueado/Noticias/CrearNoticia';
 import EditarNoticia from './pages/Logueado/Noticias/EditarNoticia';
+
+// Vistas de Cursos - CRUD (Privadas / Gestión, Auxiliar de Comunicación)
+import CrearCurso from './pages/Logueado/Cursos/CrearCurso';
+import EditarCurso from './pages/Logueado/Cursos/EditarCurso';
 
 // Componente para arreglar el bug del scroll al cambiar de página
 const ScrollToTop = () => {
@@ -69,7 +74,20 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/gestion-documentos" element={<Programs />} />
+
+          {/*
+            ⚠️ DECISIÓN PENDIENTE:
+            Antes acá vivía el calendario del Director en /gestion-cursos.
+            Ahora Courses.jsx tiene el listado CRUD (para auxiliar_comunicacion).
+            Por eso, temporalmente, dejé UNA sola ruta para ambos casos.
+            Si el calendario del Director era contenido real que se perdió,
+            hay que rehacerlo aparte y volver a separar las dos rutas.
+          */}
           <Route path="/gestion-cursos" element={<Courses />} />
+          <Route path="/gestion-cursos/administrar" element={<Courses />} />
+
+          <Route path="/gestion-cursos/crear" element={<CrearCurso />} />
+          <Route path="/gestion-cursos/editar/:id" element={<EditarCurso />} />
           <Route path="/noticias-internas" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Noticias para Educadores</div>} />
           <Route path="/noticias-internas/crear" element={<CrearNoticia />} />
           <Route path="/noticias-internas/editar/:id" element={<EditarNoticia />} />

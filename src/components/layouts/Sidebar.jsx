@@ -19,12 +19,11 @@ const Sidebar = () => {
   const menuItems = [
     { name: 'Home', path: '/', icon: <Home size={20} /> },
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
-    { name: 'Programas', path: '/programas', icon: <FileText size={20} /> },
+    { name: 'Programas', path: '/gestion-documentos', icon: <FileText size={20} /> },
     { name: 'Noticias', path: '/noticias-internas', icon: <Megaphone size={20} /> },
-    { name: 'Cursos', path: '/cursos', icon: <GraduationCap size={20} /> },
+    { name: 'Cursos', path: '/gestion-cursos/administrar', icon: <GraduationCap size={20} /> },
     { name: 'Usuarios', path: '/usuarios', icon: <Users size={20} /> },
-    { name: 'Documentos', path: '/documentos', icon: <FileText size={20} /> },
-    { name: 'Sistema', path: '/sistema', icon: <Settings size={20} /> },
+    { name: 'Sistema', path: '/configuracion', icon: <Settings size={20} /> },
   ];
 
   return (
