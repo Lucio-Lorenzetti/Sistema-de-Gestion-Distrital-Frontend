@@ -1,0 +1,141 @@
+Todo este arbol que me hiciste hacer:
+
+src/pages/dashboard/
+
+│
+
+├── Dashboard.jsx                    # Orquestador: decide qué paneles renderiza
+
+├── DashboardLayout.jsx              # Header de bienvenida + wrapper (isFullHeight, etc.)
+
+├── dashboard.permissions.js         # Matriz de acceso: panel → roles permitidos
+
+│
+
+├── panels/
+
+│   ├── general/
+
+│   │   ├── GeneralPanel.jsx         # Compone metrics + activity + quicklinks (solo director)
+
+│   │   ├── GeneralMetrics.jsx
+
+│   │   ├── ActivityFeed.jsx
+
+│   │   ├── QuickAccessLinks.jsx
+
+│   │   └── general.mocks.js
+
+│   │
+
+│   ├── noticias/
+
+│   │   ├── NoticiasPanel.jsx        # Contenedor: metrics + tabla + modal
+
+│   │   ├── NoticiasMetrics.jsx
+
+│   │   ├── NoticiasTable.jsx
+
+│   │   ├── NoticiaExpandModal.jsx
+
+│   │   └── useNoticias.js           # fetch, delete, publicarRapido
+
+│   │
+
+│   ├── cursos/
+
+│   │   ├── CursosPanel.jsx
+
+│   │   ├── CursosMetrics.jsx
+
+│   │   ├── CursosTable.jsx
+
+│   │   └── useCursos.js
+
+│   │
+
+│   ├── documentacion/
+
+│   │   ├── DocumentacionPanel.jsx
+
+│   │   ├── DocumentacionMetrics.jsx
+
+│   │   ├── DocumentacionTable.jsx
+
+│   │   └── useDocumentacion.js
+
+│   │
+
+│   ├── programas/
+
+│   │   ├── ProgramasPanel.jsx
+
+│   │   ├── ProgramasMetrics.jsx
+
+│   │   ├── ProgramasTable.jsx
+
+│   │   └── programas.mocks.js
+
+│   │
+
+│   └── usuarios/
+
+│       ├── UsuariosPanel.jsx
+
+│       ├── UsuariosMetrics.jsx
+
+│       ├── UsuariosTable.jsx
+
+│       └── usuarios.mocks.js
+
+│
+
+├── shared/
+
+│   ├── FiltroDropdown.jsx
+
+│   ├── EstadoBadge.jsx
+
+│   ├── Pagination.jsx
+
+│   ├── ActivityItem.jsx
+
+│   ├── QuickLink.jsx
+
+│   └── EmptyState.jsx               # el "no hay X con ese estado" que se repite
+
+│
+
+└── hooks/
+
+    ├── useUserRole.js                # encapsula getFunctionalRole()
+
+    ├── usePaginatedFilter.js         # paginación + filtro genérico (lo vimos antes)
+
+    ├── useClickOutside.js            # cierre de dropdowns, genérico y reusable
+
+    └── useAuthorizedFetch.js         # wrapper de fetch con Bearer token + json parsing
+
+
+
+Va todo adentro de la carpeta pages/Dashboard?, no nada que vaya en algunas de estas carpetas?
+
+src\components
+
+src\components\layouts
+
+src\components\ui
+
+src\data
+
+src\hooks
+
+
+
+Necesito que me digas si tengo que mover alguno de los archivos para esas carptas, ademas, necesito que me des el código de todas las cosas relacionadas a 
+
+General
+
+Noticias
+
+Cursos
