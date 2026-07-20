@@ -23,8 +23,8 @@ const FILTROS_ESTADO = [
 // — Calcula el estado real del curso en base a las fechas —
 const getEstadoCurso = (curso) => {
   const hoy = new Date().toISOString().split('T')[0];
-  if (curso.fecha_fin && hoy > curso.fecha_fin) return 'Finalizado';
-  if (curso.fecha_cierre && hoy > curso.fecha_cierre) return 'Cerrado';
+  if (curso.fecha_fin && hoy >= curso.fecha_fin) return 'Finalizado';
+  if (curso.fecha_cierre && hoy >= curso.fecha_cierre) return 'Cerrado';
   return 'Abierto';
 };
 

@@ -13,7 +13,18 @@ export function useAuthorizedFetch() {
                 ...options.headers,
             },
         });
-        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+
+        if (!res.ok) {
+            let detail = '';
+            try {
+                const errorBody = await res.json();
+                detail = errorBody.message || JSON.stringify(errorBody.errors || errorBody);
+            } catch {
+                detail = res.statusText;
+            }
+            throw new Error(`Request failed: ${res.status} - ${detail}`);
+        }
+
         return res.json();
     };
 

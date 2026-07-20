@@ -8,7 +8,7 @@ const NoticiasResumenCard = () => {
     const { noticias } = useNoticias();
     const ultimas = [...noticias]
         .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
-        .slice(0, 4);
+        .slice(0, 6);
 
     return (
         <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-6 shadow-sm flex flex-col h-full">
@@ -16,7 +16,7 @@ const NoticiasResumenCard = () => {
                 <h2 className="text-sm font-black uppercase tracking-tight text-scout-primary flex items-center gap-2">
                     <Newspaper size={16} /> Noticias
                 </h2>
-                <Link to="/gestion-noticias" className="text-scout-muted hover:text-scout-primary transition-colors">
+                <Link to="/noticias-internas" className="text-scout-muted hover:text-scout-primary transition-colors">
                     <ChevronRight size={16} />
                 </Link>
             </div>

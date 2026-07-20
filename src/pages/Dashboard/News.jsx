@@ -52,9 +52,10 @@ const News = () => {
     };
 
     const handlePublicarRapido = (id) => {
+        const noticia = noticias.find((n) => n.id === id);
         authorizedFetch(`${NOTICIAS_ENDPOINT}/${id}`, {
             method: 'PUT',
-            body: JSON.stringify({ estado: 'Publicada', publicado_at: new Date().toISOString() }),
+            body: JSON.stringify({ ...noticia, estado: 'Publicada', publicado_at: new Date().toISOString() }),
         })
             .then(() => setNoticias((prev) => prev.map((n) => (n.id === id ? { ...n, estado: 'Publicada' } : n))))
             .catch((err) => console.error('Error al publicar rápidamente:', err));

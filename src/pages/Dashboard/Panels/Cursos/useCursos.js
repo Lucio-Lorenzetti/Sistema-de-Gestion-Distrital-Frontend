@@ -1,9 +1,21 @@
-// src/pages/Dashboard/panels/cursos/useCursos.js
-import { useState } from 'react';
-import { CURSOS_MOCK } from '../../../../data/general.mocks';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
-export function useCursos() {
-    // TODO: reemplazar por fetch real cuando exista el endpoint /api/courses
-    const [cursos] = useState(CURSOS_MOCK);
-    return { cursos, loading: false };
-}
+export const useCursos = () => {
+    const [cursos, setCursos] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        axios.get('/api/courses')
+            .then(res => {
+                setCursos(res.data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Error al cargar cursos:', err);
+                setLoading(false);
+            });
+    }, []);
+
+    return { cursos, loading };
+};

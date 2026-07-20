@@ -6,7 +6,7 @@ import { useCursos } from '../Panels/Cursos/useCursos';
 
 const CursosResumenCard = () => {
     const { cursos } = useCursos();
-    const ultimos = [...cursos].slice(0, 4);
+    const ultimos = [...cursos].slice(0, 6);
 
     return (
         <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-6 shadow-sm flex flex-col h-full">

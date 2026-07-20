@@ -18,6 +18,12 @@ const CrearNoticia = () => {
         return now.toISOString().split('T')[0]; // Cortamos justo en la 'T'
     };
 
+    const generarCopeteAutomatico = (texto) => {
+        const palabras = texto.trim().split(/\s+/);
+        const primeras50 = palabras.slice(0, 50).join(' ');
+        return palabras.length > 50 ? `${primeras50}...` : primeras50;
+    };
+
     const [formData, setFormData] = useState({
         titulo: '',
         fecha: getCurrentDate(),
@@ -49,16 +55,20 @@ const CrearNoticia = () => {
 
     const guardarNoticia = async (estadoDeseado) => {
         if (formRef.current && !formRef.current.checkValidity()) {
-            formRef.current.reportValidity(); // Esto muestra los carteles de "Complete este campo"
-            return; // Corta la ejecución para que no envíe nada incompleto
+            formRef.current.reportValidity();
+            return;
         }
         setIsLoading(true);
         setError(null);
 
+        const copeteFinal = formData.copete.trim()
+            ? formData.copete.trim()
+            : generarCopeteAutomatico(formData.cuerpo);
+
         const payload = new FormData();
         payload.append('titulo', formData.titulo);
         payload.append('estado', estadoDeseado);
-        payload.append('copete', formData.copete); // Campo nuevo
+        payload.append('copete', copeteFinal); // Campo nuevo
         payload.append('contenido', formData.cuerpo);
 
         // Si hay imagen, la agregamos
@@ -72,10 +82,9 @@ const CrearNoticia = () => {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Accept': 'application/json',
-                    // axios setea el multipart/form-data automáticamente
                 }
             });
-            navigate('/dashboard');
+            navigate('/noticias-internas');
         } catch (err) {
             console.error('Error completo:', err.response);
             const errorMsg = err.response?.data?.message || err.message;
@@ -211,7 +220,6 @@ const CrearNoticia = () => {
                                     placeholder="Breve descripción que aparecerá en las tarjetas de inicio..."
                                     rows={3}
                                     className="w-full border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-primary focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50 resize-none placeholder:text-scout-muted/50"
-                                    required
                                 />
                             </div>
 
@@ -234,7 +242,7 @@ const CrearNoticia = () => {
 
                     <div className="mt-8 pt-6 border-t border-scout-border flex flex-wrap items-center justify-end gap-4 shrink-0">
                         <Link
-                            to="/dashboard"
+                            to="/noticias-internas"
                             className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-scout-muted hover:text-scout-primary transition-colors"
                         >
                             Cancelar

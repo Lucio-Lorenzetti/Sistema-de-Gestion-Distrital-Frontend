@@ -6,7 +6,7 @@ import { useDocumentacion } from '../Panels/Documentacion/useDocumentacion';
 
 const DocumentacionResumenCard = () => {
     const { documentos } = useDocumentacion();
-    const ultimos = [...documentos].slice(0, 4);
+    const ultimos = [...documentos].slice(0, 7);
 
     return (
         <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-6 shadow-sm flex flex-col h-full">

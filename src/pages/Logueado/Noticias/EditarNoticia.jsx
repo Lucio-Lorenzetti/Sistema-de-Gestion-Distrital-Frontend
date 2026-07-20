@@ -38,7 +38,7 @@ const EditarNoticia = () => {
 
                 setFormData({
                     titulo: noticia.titulo || '',
-                    fecha: noticia.fecha_iso ? noticia.fecha_iso.split('T')[0] : '',
+                    fecha: getCurrentDate(),
                     copete: noticia.copete || '',
                     cuerpo: noticia.contenido || ''
                 });
@@ -104,7 +104,7 @@ const EditarNoticia = () => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            navigate('/dashboard');
+            navigate('/noticias-internas');
         } catch (err) {
             console.error('Error completo:', err.response);
             const errorMsg = err.response?.data?.message || err.message;
@@ -271,7 +271,7 @@ const EditarNoticia = () => {
 
                     <div className="mt-8 pt-6 border-t border-scout-border flex flex-wrap items-center justify-end gap-4 shrink-0">
                         <Link
-                            to="/dashboard"
+                            to="/noticias-internas"
                             className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-scout-muted hover:text-scout-primary transition-colors"
                         >
                             Cancelar
