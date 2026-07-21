@@ -83,6 +83,10 @@ const CrearCurso = () => {
             ramas: formData.categoria === 'Programa' ? formData.ramas : [],
             fecha_cierre: formData.fecha_cierre,
             fecha_fin: formData.fecha_fin,
+            lugar: formData.lugar,
+            costo: formData.costo ? Number(formData.costo) : null,
+            modalidad: formData.modalidad,
+            formador: formData.formador,
         };
 
         try {

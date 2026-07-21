@@ -14,7 +14,7 @@ const DocumentacionResumenCard = () => {
                 <h2 className="text-sm font-black uppercase tracking-tight text-scout-primary flex items-center gap-2">
                     <FolderDown size={16} /> Documentación
                 </h2>
-                <Link to="/gestion-documentos" className="text-scout-muted hover:text-scout-primary transition-colors">
+                <Link to="/library" className="text-scout-muted hover:text-scout-primary transition-colors">
                     <ChevronRight size={16} />
                 </Link>
             </div>
@@ -34,7 +34,7 @@ const DocumentacionResumenCard = () => {
             )}
 
             <Link
-                to="/gestion-documentos"
+                to="/library"
                 className="mt-4 text-[10px] font-black uppercase tracking-widest text-scout-primary hover:text-scout-primary-hover transition-colors flex items-center gap-1"
             >
                 Ver todos <ChevronRight size={12} />

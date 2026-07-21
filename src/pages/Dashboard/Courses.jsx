@@ -4,7 +4,7 @@ import axios from 'axios';
 import {
   GraduationCap, CalendarCheck, CalendarClock, CalendarOff,
   ChevronRight, ChevronDown, ChevronLeft, Plus, Edit3, Eye, Trash2,
-  ExternalLink, Zap
+  ExternalLink, Zap, Unlock, X, Clock
 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import MetricCard from '../../components/ui/MetricCard';
@@ -28,6 +28,21 @@ const getEstadoCurso = (curso) => {
   return 'Abierto';
 };
 
+const formatearFecha = (fechaStr) => {
+    if (!fechaStr) return '—';
+    const partes = fechaStr.split(/[-/]/); 
+    if (partes.length !== 3) return fechaStr;    
+    const [anio, mes, dia] = partes;
+    return `${dia}/${mes}/${anio}`;
+};
+
+// — Suma N días a una fecha 'YYYY-MM-DD' y devuelve el mismo formato —
+const addDays = (fechaStr, dias) => {
+  const fecha = new Date(fechaStr);
+  fecha.setDate(fecha.getDate() + dias);
+  return fecha.toISOString().split('T')[0];
+};
+
 const EstadoBadge = ({ estado }) => {
   const styles =
     estado === 'Abierto' ? 'bg-scout-success text-white' :
@@ -48,6 +63,7 @@ const GestionCursos = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filtroEstado, setFiltroEstado] = useState('Todos');
   const [filtroOpen, setFiltroOpen] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
   const filtroRef = useRef(null);
 
   useEffect(() => {
@@ -88,6 +104,25 @@ const GestionCursos = () => {
       .catch(err => console.error('Error al actualizar fecha:', err));
   };
 
+  // — Reabrir: retrasa fecha_cierre 5 días, sin superar fecha_fin —
+  const handleReabrir = (id) => {
+    const curso = cursos.find((c) => c.id === id);
+    if (!curso?.fecha_cierre) return;
+
+    let nuevaFechaCierre = addDays(curso.fecha_cierre, 5);
+
+    if (curso.fecha_fin && nuevaFechaCierre > curso.fecha_fin) {
+      nuevaFechaCierre = curso.fecha_fin;
+    }
+
+    const token = useAuthStore.getState().token;
+    axios.patch(`${CURSOS_ENDPOINT}/${id}`, { fecha_cierre: nuevaFechaCierre }, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }
+    })
+      .then(() => setCursos(prev => prev.map(c => c.id === id ? { ...c, fecha_cierre: nuevaFechaCierre } : c)))
+      .catch(err => console.error('Error al reabrir curso:', err));
+  };
+
   const cursosConEstado = cursos.map(c => ({ ...c, estadoCalculado: getEstadoCurso(c) }));
   const cursosFiltrados = filtroEstado === 'Todos'
     ? cursosConEstado
@@ -101,6 +136,8 @@ const GestionCursos = () => {
   const totalAbiertos = cursosConEstado.filter(c => c.estadoCalculado === 'Abierto').length;
   const totalCerrados = cursosConEstado.filter(c => c.estadoCalculado === 'Cerrado').length;
   const totalFinalizados = cursosConEstado.filter(c => c.estadoCalculado === 'Finalizado').length;
+
+  const cursoExpandido = cursosConEstado.find((c) => c.id === expandedId);
 
   return (
     <div
@@ -203,8 +240,8 @@ const GestionCursos = () => {
                         {curso.categoria === 'Programa' && curso.ramas?.length > 0 ? curso.ramas.join(', ') : '—'}
                       </td>
                       <td className="py-4 text-center"><EstadoBadge estado={curso.estadoCalculado} /></td>
-                      <td className="py-4 text-xs text-scout-muted whitespace-nowrap text-center">{curso.fecha_cierre || '—'}</td>
-                      <td className="py-4 text-xs text-scout-muted whitespace-nowrap text-center">{curso.fecha_fin || '—'}</td>
+                      <td className="py-4 text-xs text-scout-muted whitespace-nowrap text-center">{formatearFecha(curso.fecha_cierre) || '—'}</td>
+                      <td className="py-4 text-xs text-scout-muted whitespace-nowrap text-center">{formatearFecha(curso.fecha_fin) || '—'}</td>
                       <td className="py-4 text-center">
                         <div className="flex items-center justify-center gap-1">
                           {curso.link_formulario && (
@@ -212,16 +249,33 @@ const GestionCursos = () => {
                               <ExternalLink size={13} />
                             </a>
                           )}
+                          <button
+                            onClick={() => setExpandedId(curso.id)}
+                            className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer"
+                            title="Ver"
+                          >
+                            <Eye size={13} />
+                          </button>
                           {curso.estadoCalculado === 'Abierto' && (
-                            <button onClick={() => handleForzarFecha(curso.id, 'fecha_cierre')} className="p-1.5 rounded-lg border border-scout-border hover:bg-yellow-50 text-scout-muted hover:text-yellow-700 transition-colors cursor-pointer" title="Cerrar inscripción ahora">
-                              <Zap size={13} />
-                            </button>
-                          )}
-                          {curso.estadoCalculado === 'Cerrado' && (
-                            <button onClick={() => handleForzarFecha(curso.id, 'fecha_fin')} className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer" title="Finalizar curso ahora">
-                              <Zap size={13} />
-                            </button>
-                          )}
+                          <button 
+                            onClick={() => handleForzarFecha(curso.id, 'fecha_cierre')} 
+                            className="p-1.5 rounded-lg border border-scout-border hover:bg-yellow-50 text-scout-muted hover:text-yellow-700 transition-colors cursor-pointer" 
+                            title="Cerrar inscripción ahora"
+                          >
+                            <Zap size={13} />
+                          </button>
+                        )}
+
+                        {/* Si el curso está Cerrado: Muestra únicamente reabrir inscripción */}
+                        {curso.estadoCalculado === 'Cerrado' && (
+                          <button 
+                            onClick={() => handleReabrir(curso.id)} 
+                            className="p-1.5 rounded-lg border border-scout-border hover:bg-green-50 text-scout-muted hover:text-scout-success transition-colors cursor-pointer" 
+                            title="Reabrir inscripción (+5 días)"
+                          >
+                            <Unlock size={13} />
+                          </button>
+                        )}
                           <Link to={`/gestion-cursos/editar/${curso.id}`} className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer" title="Editar">
                             <Edit3 size={13} />
                           </Link>
@@ -252,6 +306,93 @@ const GestionCursos = () => {
           )}
         </div>
       </div>
+
+      {/* MODAL VER CURSO */}
+      {cursoExpandido && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-scout-primary/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
+          <div className="relative bg-scout-bg-card w-full max-w-2xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl p-8 md:p-16 overflow-y-auto animate-in zoom-in-95 duration-300">
+            <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-scout-bg-card rounded-full hover:scale-110 transition-transform">
+              <X size={20} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <CategoriaBadge categoria={cursoExpandido.categoria || 'Sin Información'} />
+              <EstadoBadge estado={cursoExpandido.estadoCalculado || 'Sin Información'} />
+            </div>
+
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-6 text-scout-primary text-left">
+              {cursoExpandido.titulo || 'Sin Información'}
+            </h2>
+
+            {/* Categoría / Ramas / Gestión */}
+            <div className="bg-scout-bg-panel rounded-xl p-4 mb-6">
+              <span className="text-[9px] font-black uppercase tracking-widest text-scout-muted flex items-center gap-1 mb-1">
+                Categoría y Ramas / Gestión
+              </span>
+              <p className="text-sm font-bold text-scout-primary">
+                {cursoExpandido.categoria === 'Programa' && cursoExpandido.ramas?.length > 0
+                  ? `Programa — Ramas: ${cursoExpandido.ramas.join(', ')}`
+                  : cursoExpandido.categoria || 'Sin Información'}
+              </p>
+            </div>
+
+            {/* Fechas de Cierre e Inicio/Fin */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="bg-scout-bg-panel rounded-xl p-4">
+                <span className="text-[9px] font-black uppercase tracking-widest text-scout-muted flex items-center gap-1 mb-1">
+                  <Clock size={11} /> Cierre Inscripción
+                </span>
+                <p className="text-sm font-bold text-scout-primary">{formatearFecha(cursoExpandido.fecha_cierre) || 'Sin Información'}</p>
+              </div>
+              <div className="bg-scout-bg-panel rounded-xl p-4">
+                <span className="text-[9px] font-black uppercase tracking-widest text-scout-muted flex items-center gap-1 mb-1">
+                  <Clock size={11} /> Fin del Curso
+                </span>
+                <p className="text-sm font-bold text-scout-primary">{formatearFecha(cursoExpandido.fecha_fin) || 'Sin Información'}</p>
+              </div>
+            </div>
+
+            {/* Detalles Adicionales: Lugar, Modalidad, Costo, Formador */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="bg-scout-bg-panel rounded-xl p-3">
+                <span className="text-[8px] font-black uppercase tracking-widest text-scout-muted block mb-1">Lugar</span>
+                <p className="text-xs font-bold text-scout-primary">{cursoExpandido.lugar || 'Sin Información'}</p>
+              </div>
+              <div className="bg-scout-bg-panel rounded-xl p-3">
+                <span className="text-[8px] font-black uppercase tracking-widest text-scout-muted block mb-1">Modalidad</span>
+                <p className="text-xs font-bold text-scout-primary">{cursoExpandido.modalidad || 'Sin Información'}</p>
+              </div>
+              <div className="bg-scout-bg-panel rounded-xl p-3">
+                <span className="text-[8px] font-black uppercase tracking-widest text-scout-muted block mb-1">Costo</span>
+                <p className="text-xs font-bold text-scout-primary">{cursoExpandido.costo || 'Sin Información'}</p>
+              </div>
+              <div className="bg-scout-bg-panel rounded-xl p-3">
+                <span className="text-[8px] font-black uppercase tracking-widest text-scout-muted block mb-1">Formador</span>
+                <p className="text-xs font-bold text-scout-primary">{cursoExpandido.formador || 'Sin Información'}</p>
+              </div>
+            </div>
+
+            {/* Descripción */}
+            <div className="text-scout-muted leading-relaxed text-sm md:text-base text-left whitespace-pre-line mb-6">
+              <span className="text-[9px] font-black uppercase tracking-widest text-scout-muted block mb-1">Descripción</span>
+              {cursoExpandido.descripcion || 'Sin Información'}
+            </div>
+
+            {/* Link de Formulario */}
+            {cursoExpandido.link_formulario && (
+              <a
+                href={cursoExpandido.link_formulario}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-scout-primary hover:text-scout-primary-hover transition-colors"
+              >
+                Ver formulario de inscripción <ExternalLink size={12} />
+              </a>
+            )}            
+          </div>
+        </div>
+      )}
     </div>
   );
 };

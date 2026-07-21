@@ -4,12 +4,17 @@ import { useAuthStore } from '../store/useAuthStore';
 export function useAuthorizedFetch() {
     const authorizedFetch = async (url, options = {}) => {
         const token = useAuthStore.getState().token;
+        
+        // Verificamos si el cuerpo enviado es un FormData
+        const isFormData = options.body instanceof FormData;
+
         const res = await fetch(url, {
             ...options,
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: 'application/json',
-                ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+                // Si es FormData, NO agregamos 'Content-Type' para que el navegador configure el multipart/form-data automáticamente
+                ...(!isFormData && options.body ? { 'Content-Type': 'application/json' } : {}),
                 ...options.headers,
             },
         });

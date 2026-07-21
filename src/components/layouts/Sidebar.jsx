@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, LayoutDashboard, FileText, GraduationCap, Megaphone, Users, Settings, LogOut } from 'lucide-react';
+import { Home, LayoutDashboard, FileText, FolderArchive, GraduationCap, Megaphone, Users, Settings, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 
 const Sidebar = () => {
@@ -21,7 +21,8 @@ const Sidebar = () => {
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'Programas', path: '/gestion-documentos', icon: <FileText size={20} /> },
     { name: 'Noticias', path: '/noticias-internas', icon: <Megaphone size={20} /> },
-    { name: 'Cursos', path: '/gestion-cursos/administrar', icon: <GraduationCap size={20} /> },
+    { name: 'Cursos', path: '/gestion-cursos/administrar', icon: <GraduationCap size={20} /> },    
+    { name: 'Biblioteca', path: '/library', icon: <FolderArchive size={20} /> },
     { name: 'Usuarios', path: '/usuarios', icon: <Users size={20} /> },
     { name: 'Sistema', path: '/configuracion', icon: <Settings size={20} /> },
   ];

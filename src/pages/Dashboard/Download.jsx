@@ -70,12 +70,6 @@ const Bibliografia = () => {
     const totalArchivos = items.filter((i) => i.tipo === 'archivo').length;
     const totalLinks = items.filter((i) => i.tipo === 'link').length;
 
-    const esteMes = items.filter((i) => {
-        const fecha = new Date(i.created_at);
-        const hoy = new Date();
-        return fecha.getMonth() === hoy.getMonth() && fecha.getFullYear() === hoy.getFullYear();
-    }).length;
-
     const itemExpandido = items.find((i) => i.id === expandedId);
 
     return (
@@ -99,7 +93,7 @@ const Bibliografia = () => {
                 <MetricCard icon={<FileText />} title="Archivos Subidos" value={`${totalArchivos} PDFs/Docs`} sub="Almacenados en servidor" color="border-scout-muted" />
                 <MetricCard icon={<LinkIcon />} title="Links Externos" value={`${totalLinks} Recursos`} sub="Referencias web" color="border-scout-muted" />
                 <Link
-                    to="/bibliografia/crear"
+                    to="/library/crear"
                     className="bg-scout-primary text-white hover:bg-scout-primary-hover transition-all duration-300 p-6 rounded-2xl flex flex-col justify-between text-left group cursor-pointer border border-scout-primary h-30 shadow-sm hover:shadow-md"
                 >
                     <div className="flex justify-between items-start w-full">
@@ -110,7 +104,7 @@ const Bibliografia = () => {
                     </div>
                     <div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-white/60 block">Acción Rápida</span>
-                        <h3 className="text-lg font-black uppercase tracking-tight text-white leading-none">Nueva Publicación</h3>
+                        <h3 className="text-lg font-black uppercase tracking-tight text-white leading-none">Agregar Bibliografía</h3>
                     </div>
                 </Link>
             </div>
@@ -181,75 +175,93 @@ const Bibliografia = () => {
                                             </td>
                                             <td className="py-4 text-right">
                                                 <div className="flex items-center justify-end gap-1">
-
-                                                    href={item.url_publica}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer"
-                                                    title={item.tipo === 'archivo' ? 'Descargar' : 'Abrir link'}
+                                                    {item.tipo === 'archivo' ? (
+                                                        <a
+                                                            href={item.url_descarga}
+                                                            className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer"
+                                                            title="Descargar"
+                                                        >
+                                                            <DownloadIcon size={13} />
+                                                        </a>
+                                                    ) : (
+                                                        <a
+                                                            href={item.url_publica}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer"
+                                                            title="Abrir link"
+                                                        >
+                                                            <ExternalLink size={13} />
+                                                        </a>
+                                                    )}
+                                                    <button onClick={() => setExpandedId(item.id)} className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer" title="Ver detalle">
+                                                        <Eye size={13} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { if (window.confirm('¿Estás seguro de eliminar este documento?')) handleEliminar(item.id); }}
+                                                        className="p-1.5 rounded-lg border border-scout-border hover:bg-red-50 text-scout-muted hover:text-scout-accent transition-colors cursor-pointer"
+                                                        title="Eliminar"
                                                     >
-                                                    {item.tipo === 'archivo' ? <DownloadIcon size={13} /> : <ExternalLink size={13} />}
-                                                </a>
-                                                <button onClick={() => setExpandedId(item.id)} className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer" title="Ver detalle">
-                                                    <Eye size={13} />
-                                                </button>
-                                                <button
-                                                    onClick={() => { if (window.confirm('¿Estás seguro de eliminar este documento?')) handleEliminar(item.id); }}
-                                                    className="p-1.5 rounded-lg border border-scout-border hover:bg-red-50 text-scout-muted hover:text-scout-accent transition-colors cursor-pointer"
-                                                    title="Eliminar"
-                                                >
-                                                    <Trash2 size={13} />
-                                                </button>
-                                            </div>
-                                        </td>
+                                                        <Trash2 size={13} />
+                                                    </button>
+                                                </div>
+                                            </td>
                                         </tr>
                                     ))}
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
                         </div>
                     )}
 
-                {itemsFiltrados.length > ITEMS_PER_PAGE && (
-                    <div className="flex items-center justify-end gap-3 pt-5 mt-auto shrink-0 border-t border-scout-border">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-scout-muted">Pág. {currentPage} / {totalPages}</span>
-                        <div className="flex gap-1">
-                            <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="p-1.5 border border-scout-border rounded-lg hover:bg-scout-bg-panel text-scout-primary disabled:opacity-30 cursor-pointer transition-colors"><ChevronLeft size={14} /></button>
-                            <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="p-1.5 border border-scout-border rounded-lg hover:bg-scout-bg-panel text-scout-primary disabled:opacity-30 cursor-pointer transition-colors"><ChevronRight size={14} /></button>
+                    {itemsFiltrados.length > ITEMS_PER_PAGE && (
+                        <div className="flex items-center justify-end gap-3 pt-5 mt-auto shrink-0 border-t border-scout-border">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-scout-muted">Pág. {currentPage} / {totalPages}</span>
+                            <div className="flex gap-1">
+                                <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="p-1.5 border border-scout-border rounded-lg hover:bg-scout-bg-panel text-scout-primary disabled:opacity-30 cursor-pointer transition-colors"><ChevronLeft size={14} /></button>
+                                <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="p-1.5 border border-scout-border rounded-lg hover:bg-scout-bg-panel text-scout-primary disabled:opacity-30 cursor-pointer transition-colors"><ChevronRight size={14} /></button>
+                            </div>
                         </div>
+                    )}
+                </div>
+            </div>
+
+            {/* MODAL DE DETALLE */}
+            {itemExpandido && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-scout-primary/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
+                    <div className="relative bg-scout-bg-card w-full max-w-xl rounded-[3rem] overflow-hidden shadow-2xl p-8 md:p-12 animate-in zoom-in-95 duration-300 text-left">
+                        <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-scout-bg-card rounded-full hover:scale-110 transition-transform cursor-pointer">
+                            <X size={20} />
+                        </button>
+                        <TipoBadge tipo={itemExpandido.tipo} />
+                        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-tight mt-4 mb-4 text-scout-primary">
+                            {itemExpandido.nombre}
+                        </h2>
+                        <p className="text-scout-muted leading-relaxed text-sm md:text-base whitespace-pre-line mb-8">
+                            {itemExpandido.descripcion || 'Sin descripción.'}
+                        </p>
+
+                        {itemExpandido.tipo === 'archivo' ? (
+                            <a
+                                href={itemExpandido.url_descarga}
+                                className="inline-flex items-center gap-2 bg-scout-primary text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-scout-primary-hover transition-colors"
+                            >
+                                <DownloadIcon size={14} /> Descargar Archivo
+                            </a>
+                        ) : (
+                            <a
+                                href={itemExpandido.url_publica}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 bg-scout-primary text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-scout-primary-hover transition-colors"
+                            >
+                                <ExternalLink size={14} /> Abrir Link
+                            </a>
+                        )}
                     </div>
-                )}
-            </div>
-        </div>
-
-            {/* MODAL DE DETALLE */ }
-    {
-        itemExpandido && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
-                <div className="absolute inset-0 bg-scout-primary/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
-                <div className="relative bg-scout-bg-card w-full max-w-xl rounded-[3rem] overflow-hidden shadow-2xl p-8 md:p-12 animate-in zoom-in-95 duration-300">
-                    <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-scout-bg-card rounded-full hover:scale-110 transition-transform">
-                        <X size={20} />
-                    </button>
-                    <TipoBadge tipo={itemExpandido.tipo} />
-                    <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-tight mt-4 mb-4 text-scout-primary text-left">
-                        {itemExpandido.nombre}
-                    </h2>
-                    <p className="text-scout-muted leading-relaxed text-sm md:text-base text-left whitespace-pre-line mb-8">
-                        {itemExpandido.descripcion || 'Sin descripción.'}
-                    </p>
-
-                    href={itemExpandido.url_publica}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-scout-primary text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-scout-primary-hover transition-colors"
-                        >
-                    {itemExpandido.tipo === 'archivo' ? <DownloadIcon size={14} /> : <ExternalLink size={14} />}
-                    {itemExpandido.tipo === 'archivo' ? 'Descargar Archivo' : 'Abrir Link'}
-                </a>
-            </div>
-                </div >
+                </div>
             )}
-        </div >
+        </div>
     );
 };
 

@@ -5,13 +5,6 @@ import bgHero from '../../assets/f-bienvenida.jpg';
 import bgSeparador from '../../assets/f-bienvenida-mobile.jpg';
 import imgDefault from '../../assets/noticia-default.jpg';
 
-const CURSOS_MOCK = [
-    { id: 1, titulo: "Módulo 1: Introducción al Movimiento", nivel: "Inicial", modalidad: "Presencial" },
-    { id: 2, titulo: "Técnicas de Vida en la Naturaleza", nivel: "Intermedio", modalidad: "Híbrido" },
-    { id: 3, titulo: "Psicología del Niño y el Joven", nivel: "Avanzado", modalidad: "Virtual" },
-    { id: 4, titulo: "Gestión y Administración de Grupo", nivel: "Dirigencia", modalidad: "Presencial" }
-];
-
 const Home = () => {
     const [noticias, setNoticias] = useState([]);
     const [cursos, setCursos] = useState([]);
@@ -28,7 +21,7 @@ const Home = () => {
         fetch('/api/courses')
             .then(res => res.json())
             .then(data => {
-                const abiertos = data.filter(c => c.estado === 'Abierto').slice(0, 4);
+                const abiertos = data.filter(c => c.estado === 'Abierto' || c.estado === 'Cerrado').slice(0, 4);
                 setCursos(abiertos);
             })
             .catch(err => console.error('Error al cargar cursos:', err));
@@ -156,7 +149,12 @@ const Home = () => {
                     </div>
 
                     <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                        {cursos.map((curso) => ( // 3. Usamos el estado 'cursos' en lugar de CURSOS_MOCK
+                        {cursos.map((curso) => (
+                            <Link
+                                key={curso.id}
+                                to="/cursos"
+                                
+                            >
                             <div key={curso.id} className="p-6 md:p-8 bg-scout-bg-card border border-scout-border rounded-[1.5rem] md:rounded-[2.5rem] flex flex-col justify-between hover:border-scout-primary transition-all group cursor-pointer h-44 md:h-52 shadow-sm hover:shadow-2xl">
                                 <div className="flex justify-between items-start">
                                     <div className="p-3 md:p-4 bg-scout-bg-panel rounded-xl md:rounded-2xl group-hover:bg-scout-primary group-hover:text-white transition-colors text-scout-primary">
@@ -175,6 +173,7 @@ const Home = () => {
                                     </h3>
                                 </div>
                             </div>
+                            </Link>
                         ))}
                     </div>
                 </div>

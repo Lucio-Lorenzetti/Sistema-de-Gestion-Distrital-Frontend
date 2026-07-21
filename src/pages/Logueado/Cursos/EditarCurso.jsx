@@ -7,12 +7,6 @@ import { useAuthStore } from '../../../store/useAuthStore';
 const CURSOS_ENDPOINT = '/api/courses';
 const RAMAS_OPTIONS = ['Pre-menores', 'Manada', 'Unidad', 'Caminantes', 'Rovers'];
 
-const getCurrentDate = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().split('T')[0];
-};
-
 const EditarCurso = () => {
     const { id } = useParams();
     const token = useAuthStore((state) => state.token);
@@ -46,6 +40,7 @@ const EditarCurso = () => {
                 });
                 const curso = res.data;
 
+                // — CORRECCIÓN 1: Cargamos todos los campos que vienen del backend —
                 setFormData({
                     titulo: curso.titulo || '',
                     descripcion: curso.descripcion || '',
@@ -54,6 +49,10 @@ const EditarCurso = () => {
                     ramas: curso.ramas || [],
                     fecha_cierre: curso.fecha_cierre || '',
                     fecha_fin: curso.fecha_fin || '',
+                    lugar: curso.lugar || '',
+                    costo: curso.costo !== null && curso.costo !== undefined ? curso.costo : '',
+                    modalidad: curso.modalidad || 'Presencial',
+                    formador: curso.formador || '',
                 });
             } catch (err) {
                 console.error('Error al cargar curso:', err);
@@ -73,7 +72,7 @@ const EditarCurso = () => {
 
     const handleCategoriaChange = (categoria) => {
         setFormData(prev => ({
-            ...prev,
+            prev,
             categoria,
             ramas: categoria === 'Programa' ? prev.ramas : [],
         }));
@@ -106,6 +105,7 @@ const EditarCurso = () => {
         setIsLoading(true);
         setError(null);
 
+        // — CORRECCIÓN 2: Incluimos todos los campos en el payload de actualización —
         const payload = {
             titulo: formData.titulo,
             descripcion: formData.descripcion,
@@ -114,6 +114,10 @@ const EditarCurso = () => {
             ramas: formData.categoria === 'Programa' ? formData.ramas : [],
             fecha_cierre: formData.fecha_cierre,
             fecha_fin: formData.fecha_fin,
+            lugar: formData.lugar,
+            costo: formData.costo ? Number(formData.costo) : null,
+            modalidad: formData.modalidad,
+            formador: formData.formador,
         };
 
         try {
@@ -147,7 +151,6 @@ const EditarCurso = () => {
                 className="bg-scout-bg-panel text-left relative"
                 style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '1rem' }}
             >
-
                 {/* HEADER */}
                 <div className="border-b border-scout-border pb-4 shrink-0">
                     <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
@@ -205,10 +208,16 @@ const EditarCurso = () => {
                                     </select>
                                 </div>
                             </div>
-
-                            <div>
-                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">Formador</label>
-                                <input type="text" name="formador" value={formData.formador} onChange={handleChange} className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50" />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">Formador</label>
+                                    <input type="text" name="formador" value={formData.formador} onChange={handleChange} className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50" />
+                                </div>
+                            
+                                <div>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">Costo ($)</label>
+                                    <input type="number" name="costo" value={formData.costo} onChange={handleChange} className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50" />
+                                </div>
                             </div>
                         </div>
 
@@ -229,10 +238,6 @@ const EditarCurso = () => {
                                             </button>
                                         ))}
                                     </div>
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">Costo ($)</label>
-                                    <input type="number" name="costo" value={formData.costo} onChange={handleChange} className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50" />
                                 </div>
                             </div>
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronUp, ArrowLeft, ArrowRight, GraduationCap, Calendar, MapPin, DollarSign, User, ExternalLink, X, Layers } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import imgPrograma from '../../assets/Programa.webp';
+import imgGestion from '../../assets/gestion.webp';
 import axios from 'axios';
 
 const Cursos = () => {
@@ -25,6 +27,22 @@ const Cursos = () => {
 
     // Layout fijo solo cuando estamos en 4 y no hay modal abierto
     const isFixedLayout = itemsPerPage === 4 && !expandedId;
+    const formatearFecha = (fechaStr) => {
+        if (!fechaStr) return '—';
+        const partes = fechaStr.split(/[-/]/); 
+        if (partes.length !== 3) return fechaStr;    
+        const [anio, mes, dia] = partes;
+        return `${dia}/${mes}/${anio}`;
+    };
+
+    const obtenerImagenCurso = (curso) => {
+        if (curso.categoria === 'Programa') {
+            return imgPrograma;
+        } else if (curso.categoria === 'Gestion') {
+            return imgGestion;
+        }
+        return imgDefault;
+    };
 
     return (
         <div className={`bg-[var(--color-scout-bg-panel)] font-sans selection:bg-[var(--color-scout-primary)] selection:text-white min-h-screen`}>
@@ -66,18 +84,22 @@ const Cursos = () => {
                             onClick={() => setExpandedId(curso.id)}
                             className="group relative bg-[var(--color-scout-bg-card)] rounded-[2rem] overflow-hidden border border-[var(--color-scout-border)] transition-all duration-300 flex flex-col md:flex-row cursor-pointer hover:shadow-xl h-44 md:h-40 w-full"
                         >
-                            <div className="relative overflow-hidden flex-shrink-0 w-full h-32 md:h-full md:w-[25%] bg-[var(--color-scout-primary)] flex items-center justify-center text-white">
-                                <GraduationCap size={32} className="opacity-20 group-hover:scale-110 transition-transform" />
+                            <div className="relative overflow-hidden flex-shrink-0 w-full h-32 md:h-full md:w-[35%] bg-[var(--color-scout-bg-panel)]">
+                                <img
+                                    src={obtenerImagenCurso(curso)}
+                                    alt={curso.titulo}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
                                 <div className="absolute top-3 left-3">
-                                    <span className="bg-white/10 backdrop-blur-md text-white text-[7px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest">
-                                        NIVEL {curso.nivel}
+                                    <span className="bg-black/40 backdrop-blur-md text-white text-[7px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest">
+                                        {curso.categoria}
                                     </span>
                                 </div>
                             </div>
 
                             <div className="p-4 flex flex-col justify-center flex-grow overflow-hidden text-left">
                                 <span className="text-[7px] font-bold text-[var(--color-scout-muted)] uppercase mb-1">
-                                    {curso.modalidad} • {curso.ramas}
+                                    {curso.modalidad}  {curso.ramas}
                                 </span>
                                 <h2 className="font-bold tracking-tight uppercase leading-tight text-xs md:text-sm mb-1 line-clamp-2 text-[var(--color-scout-primary)]">
                                     {curso.titulo}
@@ -120,21 +142,35 @@ const Cursos = () => {
                             <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:scale-110 transition-transform">
                                 <X size={20} />
                             </button>
-                            <div className="md:w-2/5 bg-[var(--color-scout-primary)] flex flex-col items-center justify-center text-white p-12 text-center space-y-6 flex-shrink-0">
-                                <GraduationCap size={80} className="opacity-20" />
-                                <div>
-                                    {/*<span className="text-[10px] font-black uppercase tracking-widest opacity-40 block mb-2 text-white">Nivel del Curso</span>
-                                    <p className="text-2xl font-black uppercase">{c.nivel}</p>*/}
+                            
+                            {/* Columna Izquierda del Modal con Imagen de Fondo */}
+                            <div 
+                                className="md:w-2/5 relative flex flex-col items-center justify-between p-12 text-center flex-shrink-0 bg-cover bg-center min-h-[250px] md:min-h-full"
+                                style={{ backgroundImage: `url(${obtenerImagenCurso(c)})` }}
+                            >
+                                <div className="absolute inset-0 backdrop-blur-[2px]" />
+
+                                <div className="relative z-10 w-full">
+                                    <span className="bg-white/20 backdrop-blur-md text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
+                                        {c.categoria}
+                                    </span>
                                 </div>
-                                <a href={c.link_formulario} target="_blank" rel="noopener noreferrer" className="w-full bg-[var(--color-scout-bg-card)] text-[var(--color-scout-primary)] py-4 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 hover:bg-[var(--color-scout-border)] transition-all">
-                                    Inscribirse <ExternalLink size={14} />
-                                </a>
+                                <div className="relative z-10 w-full mt-auto">
+                                    <a 
+                                        href={c.link_formulario} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className="w-full bg-[var(--color-scout-bg-card)] text-[var(--color-scout-primary)] py-4 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 hover:bg-white transition-all shadow-xl"
+                                    >
+                                        Inscribirse <ExternalLink size={14} />
+                                    </a>
+                                </div>
                             </div>
                             <div className="md:w-3/5 p-8 md:p-16 overflow-y-auto">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-scout-muted)] block mb-4">{c.ramas}</span>
                                 <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-primary)]">{c.titulo}</h2>
                                 <div className="grid grid-cols-2 gap-y-8 gap-x-4 mb-10 border-y border-[var(--color-scout-border)] py-10">
-                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Fecha</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><Calendar size={16} /> {c.fecha_fin}</div></div>
+                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Fecha</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><Calendar size={16} /> {formatearFecha(c.fecha_fin)}</div></div>
                                     <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Lugar</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><MapPin size={16} /> {c.lugar}</div></div>
                                     <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Costo</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><DollarSign size={16} /> {c.costo}</div></div>
                                     <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Modalidad</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><Layers size={16} /> {c.modalidad}</div></div>

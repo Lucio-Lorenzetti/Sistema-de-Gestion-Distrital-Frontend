@@ -1,6 +1,7 @@
 // src/App.jsx
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { CreditCardIcon } from 'lucide-react';
 
 // Layouts
 import PublicLayout from './components/layouts/PublicLayout';
@@ -23,18 +24,23 @@ import ActivateAccount from './pages/Auth/ActivateAccount';
 import SelectFunction from './pages/Auth/SelectFunction';
 
 // Vistas de Dashboard (Privadas / Gestión)
-import Dashboard from './pages/Dashboard/Dashboard';
-import Programs from './pages/Dashboard/Programs';
 import Courses from './pages/Dashboard/Courses';
+import Dashboard from './pages/Dashboard/Dashboard';
+import Download from './pages/Dashboard/Download';
 import News from './pages/Dashboard/News';
+import Programs from './pages/Dashboard/Programs';
+
+
+// Vistas de Cursos - CRUD (Privadas / Gestión, Auxiliar de Comunicación)
+import CrearCurso from './pages/Logueado/Cursos/CrearCurso';
+import EditarCurso from './pages/Logueado/Cursos/EditarCurso';
 
 // Vistas de Noticias (Privadas / Gestión)
 import CrearNoticia from './pages/Logueado/Noticias/CrearNoticia';
 import EditarNoticia from './pages/Logueado/Noticias/EditarNoticia';
 
-// Vistas de Cursos - CRUD (Privadas / Gestión, Auxiliar de Comunicación)
-import CrearCurso from './pages/Logueado/Cursos/CrearCurso';
-import EditarCurso from './pages/Logueado/Cursos/EditarCurso';
+// Vistas de Download (Privadas / Gestión)
+import CrearDownload from './pages/Logueado/Download/CrearDownload';
 
 // Componente para arreglar el bug del scroll al cambiar de página
 const ScrollToTop = () => {
@@ -74,7 +80,7 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
 
-          <Route path="/gestion-documentos" element={<Programs />} />
+          <Route path="/gestion-programas" element={<Programs />} />
 
           <Route path="/gestion-cursos" element={<Courses />} />
           <Route path="/gestion-cursos/administrar" element={<Courses />} />
@@ -84,6 +90,9 @@ function App() {
           <Route path="/noticias-internas" element={<News />} />
           <Route path="/noticias-internas/crear" element={<CrearNoticia />} />
           <Route path="/noticias-internas/editar/:id" element={<EditarNoticia />} />
+
+          <Route path="/library" element={<Download />} />          
+          <Route path="/library/crear" element={<CrearDownload />} />
 
           <Route path="/usuarios" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Gestión de Usuarios</div>} />
           <Route path="/configuracion" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Configuración del Sistema</div>} />
