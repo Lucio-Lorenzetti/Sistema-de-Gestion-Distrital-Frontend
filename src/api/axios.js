@@ -1,8 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api',
-    // Sin withCredentials — no usamos cookies
+
+    baseURL: import.meta.env.VITE_API_URL,
+    
+    /*PARA TRABAJAR CON EL BACKEND EN LOCAL*/
+    //baseURL: 'http://localhost:8000/api',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
