@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import imgDefault from '../../assets/noticia-default.jpg';
+import api from '../../api/axios';
 
 const Noticias = () => {
     const [noticias, setNoticias] = useState([]);
@@ -9,9 +10,8 @@ const Noticias = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        fetch('/api/news?solo_publicadas=true')
-            .then(res => res.json())
-            .then(data => setNoticias(data))
+        api.get('/news?solo_publicadas=true')
+            .then(res => setNoticias(res.data))
             .catch(err => console.error('Error al cargar noticias:', err));
     }, []);
 

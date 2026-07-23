@@ -8,7 +8,7 @@ export function useNoticias() {
     const { authorizedFetch } = useAuthorizedFetch();
 
     useEffect(() => {
-        authorizedFetch('/api/news')
+        authorizedFetch('/news')
             .then(setNoticias)
             .catch((err) => console.error('Error al cargar noticias:', err))
             .finally(() => setLoading(false));
@@ -16,7 +16,7 @@ export function useNoticias() {
 
     const eliminar = async (id) => {
         try {
-            await authorizedFetch(`/api/news/${id}`, { method: 'DELETE' });
+            await authorizedFetch(`/news/${id}`, { method: 'DELETE' });
             setNoticias((prev) => prev.filter((n) => n.id !== id));
         } catch (err) {
             console.error('Error al eliminar noticia:', err);
@@ -25,7 +25,7 @@ export function useNoticias() {
 
     const publicarRapido = async (id) => {
         try {
-            await authorizedFetch(`/api/news/${id}`, {
+            await authorizedFetch(`/news/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ estado: 'Publicada', publicado_at: new Date().toISOString() }),
             });

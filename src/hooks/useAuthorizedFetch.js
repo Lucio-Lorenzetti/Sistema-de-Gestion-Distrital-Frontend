@@ -1,36 +1,33 @@
 // src/hooks/useAuthorizedFetch.js
-import { useAuthStore } from '../store/useAuthStore';
+import api from '../api/axios';
 
 export function useAuthorizedFetch() {
     const authorizedFetch = async (url, options = {}) => {
-        const token = useAuthStore.getState().token;
-        
+        const { method = 'GET', body, headers = {} } = options;
+
         // Verificamos si el cuerpo enviado es un FormData
-        const isFormData = options.body instanceof FormData;
+        const isFormData = body instanceof FormData;
 
-        const res = await fetch(url, {
-            ...options,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/json',
-                // Si es FormData, NO agregamos 'Content-Type' para que el navegador configure el multipart/form-data automáticamente
-                ...(!isFormData && options.body ? { 'Content-Type': 'application/json' } : {}),
-                ...options.headers,
-            },
-        });
+        try {
+            const res = await api.request({
+                url,
+                method,
+                data: body,
+                headers: {
+                    ...headers,
+                    // Si es FormData, quitamos 'Content-Type' para que el navegador configure el multipart/form-data automáticamente
+                    ...(isFormData ? { 'Content-Type': undefined } : {}),
+                },
+            });
 
-        if (!res.ok) {
-            let detail = '';
-            try {
-                const errorBody = await res.json();
-                detail = errorBody.message || JSON.stringify(errorBody.errors || errorBody);
-            } catch {
-                detail = res.statusText;
+            return res.data;
+        } catch (err) {
+            if (err.response) {
+                const detail = err.response.data?.message || JSON.stringify(err.response.data?.errors || err.response.data) || err.response.statusText;
+                throw new Error(`Request failed: ${err.response.status} - ${detail}`);
             }
-            throw new Error(`Request failed: ${res.status} - ${detail}`);
+            throw err;
         }
-
-        return res.json();
     };
 
     return { authorizedFetch };

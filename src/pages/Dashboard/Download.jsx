@@ -7,7 +7,7 @@ import {
 import { useAuthorizedFetch } from '../../hooks/useAuthorizedFetch';
 import MetricCard from '../../components/ui/MetricCard';
 
-const BIBLIOGRAFIA_ENDPOINT = '/api/bibliografia';
+const BIBLIOGRAFIA_ENDPOINT = '/bibliografia';
 const ITEMS_PER_PAGE = 5;
 
 const FILTROS_TIPO = [

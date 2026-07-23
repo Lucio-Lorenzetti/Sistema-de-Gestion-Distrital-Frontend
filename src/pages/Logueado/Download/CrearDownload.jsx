@@ -4,7 +4,7 @@ import { FileText, LinkIcon, Upload, ArrowLeft, Send } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useAuthorizedFetch } from '../../../hooks/useAuthorizedFetch';
 
-const BIBLIOGRAFIA_ENDPOINT = '/api/bibliografia';
+const BIBLIOGRAFIA_ENDPOINT = '/bibliografia';
 
 const CrearBibliografia = () => {
     const navigate = useNavigate();

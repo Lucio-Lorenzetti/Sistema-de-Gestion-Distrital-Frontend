@@ -10,7 +10,7 @@ import MetricCard from '../../components/ui/MetricCard';
 import EstadoBadge from '../../components/ui/EstadoBadge';
 import imgDefault from '../../assets/noticia-default.jpg';
 
-const NOTICIAS_ENDPOINT = '/api/news';
+const NOTICIAS_ENDPOINT = '/news';
 const ITEMS_PER_PAGE = 3;
 
 const FILTROS_ESTADO = [

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import bgHero from '../../assets/f-bienvenida.jpg';
 import bgSeparador from '../../assets/f-bienvenida-mobile.jpg';
 import imgDefault from '../../assets/noticia-default.jpg';
+import api from '../../api/axios';
 
 const Home = () => {
     const [noticias, setNoticias] = useState([]);
@@ -12,16 +13,14 @@ const Home = () => {
 
     useEffect(() => {
         //Fetch Noticias
-        fetch('/api/news?solo_publicadas=true')
-            .then(res => res.json())
-            .then(data => setNoticias(data.slice(0, 4)))
+        api.get('/news?solo_publicadas=true')
+            .then(res => setNoticias(res.data.slice(0, 4)))
             .catch(err => console.error('Error al cargar noticias:', err));
 
         //Fetch Cursos
-        fetch('/api/courses')
-            .then(res => res.json())
-            .then(data => {
-                const abiertos = data.filter(c => c.estado === 'Abierto' || c.estado === 'Cerrado').slice(0, 4);
+        api.get('/courses')
+            .then(res => {
+                const abiertos = res.data.filter(c => c.estado === 'Abierto' || c.estado === 'Cerrado').slice(0, 4);
                 setCursos(abiertos);
             })
             .catch(err => console.error('Error al cargar cursos:', err));

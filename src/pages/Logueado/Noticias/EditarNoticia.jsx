@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { UploadCloud, Send, X, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 
 const EditarNoticia = () => {
     const { id } = useParams(); // Extraemos el ID de la URL
-    const token = useAuthStore((state) => state.token);
     const user = useAuthStore((state) => state.user);
     const formRef = useRef(null);
     const navigate = useNavigate();
@@ -33,7 +32,7 @@ const EditarNoticia = () => {
     useEffect(() => {
         const fetchNoticia = async () => {
             try {
-                const res = await axios.get(`/api/news/${id}`);
+                const res = await api.get(`/news/${id}`);
                 const noticia = res.data;
 
                 setFormData({
@@ -97,12 +96,8 @@ const EditarNoticia = () => {
         if (formData.fecha) payload.append('publicado_at', formData.fecha);
 
         try {
-            await axios.post(`/api/news/${id}`, payload, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json',
-                    'Content-Type': 'multipart/form-data'
-                }
+            await api.post(`/news/${id}`, payload, {
+                headers: { 'Content-Type': undefined }
             });
             navigate('/noticias-internas');
         } catch (err) {

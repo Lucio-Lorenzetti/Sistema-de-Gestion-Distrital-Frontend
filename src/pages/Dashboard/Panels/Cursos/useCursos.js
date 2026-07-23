@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../../api/axios';
 
 export const useCursos = () => {
     const [cursos, setCursos] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('/api/courses')
+        api.get('/courses')
             .then(res => {
                 setCursos(res.data);
                 setLoading(false);

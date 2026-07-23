@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { Send } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 
-const CURSOS_ENDPOINT = '/api/courses';
+const CURSOS_ENDPOINT = '/courses';
 const RAMAS_OPTIONS = ['Pre-menores', 'Manada', 'Unidad', 'Caminantes', 'Rovers'];
 
 const getCurrentDate = () => {
@@ -14,7 +14,6 @@ const getCurrentDate = () => {
 };
 
 const CrearCurso = () => {
-    const token = useAuthStore((state) => state.token);
     const user = useAuthStore((state) => state.user);
     const formRef = useRef(null);
     const navigate = useNavigate();
@@ -90,12 +89,7 @@ const CrearCurso = () => {
         };
 
         try {
-            await axios.post(CURSOS_ENDPOINT, payload, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json',
-                }
-            });
+            await api.post(CURSOS_ENDPOINT, payload);
             navigate('/gestion-cursos/administrar');
         } catch (err) {
             console.error('Error completo:', err.response);

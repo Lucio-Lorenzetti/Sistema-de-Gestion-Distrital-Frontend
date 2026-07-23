@@ -3,7 +3,7 @@ import { ChevronUp, ArrowLeft, ArrowRight, GraduationCap, Calendar, MapPin, Doll
 import { Link } from 'react-router-dom';
 import imgPrograma from '../../assets/Programa.webp';
 import imgGestion from '../../assets/gestion.webp';
-import axios from 'axios';
+import api from '../../api/axios';
 
 const Cursos = () => {
     const [cursos, setCursos] = useState([]);
@@ -12,7 +12,7 @@ const Cursos = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        axios.get('/api/courses')
+        api.get('/courses')
             .then(res => setCursos(res.data))
             .catch(err => console.error('Error al cargar cursos:', err));
     }, []);

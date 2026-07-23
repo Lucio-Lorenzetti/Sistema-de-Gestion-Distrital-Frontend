@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api/axios';
 import {
   GraduationCap, CalendarCheck, CalendarClock, CalendarOff,
   ChevronRight, ChevronDown, ChevronLeft, Plus, Edit3, Eye, Trash2,
   ExternalLink, Zap, Unlock, X, Clock
 } from 'lucide-react';
-import { useAuthStore } from '../../store/useAuthStore';
 import MetricCard from '../../components/ui/MetricCard';
 
-const CURSOS_ENDPOINT = '/api/courses';
+const CURSOS_ENDPOINT = '/courses';
 
 const ITEMS_PER_PAGE = 3;
 
@@ -67,10 +66,7 @@ const GestionCursos = () => {
   const filtroRef = useRef(null);
 
   useEffect(() => {
-    const token = useAuthStore.getState().token;
-    axios.get(CURSOS_ENDPOINT, {
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }
-    })
+    api.get(CURSOS_ENDPOINT)
       .then(res => setCursos(res.data))
       .catch(err => console.error('Error al cargar cursos:', err))
       .finally(() => setIsLoading(false));
@@ -85,21 +81,15 @@ const GestionCursos = () => {
   }, []);
 
   const handleEliminar = (id) => {
-    const token = useAuthStore.getState().token;
-    axios.delete(`${CURSOS_ENDPOINT}/${id}`, {
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }
-    })
+    api.delete(`${CURSOS_ENDPOINT}/${id}`)
       .then(() => setCursos(prev => prev.filter(c => c.id !== id)))
       .catch(err => console.error('Error al eliminar curso:', err));
   };
 
   // — Forzar cierre / finalización pisando la fecha con la de hoy —
   const handleForzarFecha = (id, campo) => {
-    const token = useAuthStore.getState().token;
     const hoy = new Date().toISOString().split('T')[0];
-    axios.patch(`${CURSOS_ENDPOINT}/${id}`, { [campo]: hoy }, {
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }
-    })
+    api.patch(`${CURSOS_ENDPOINT}/${id}`, { [campo]: hoy })
       .then(() => setCursos(prev => prev.map(c => c.id === id ? { ...c, [campo]: hoy } : c)))
       .catch(err => console.error('Error al actualizar fecha:', err));
   };
@@ -115,10 +105,7 @@ const GestionCursos = () => {
       nuevaFechaCierre = curso.fecha_fin;
     }
 
-    const token = useAuthStore.getState().token;
-    axios.patch(`${CURSOS_ENDPOINT}/${id}`, { fecha_cierre: nuevaFechaCierre }, {
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }
-    })
+    api.patch(`${CURSOS_ENDPOINT}/${id}`, { fecha_cierre: nuevaFechaCierre })
       .then(() => setCursos(prev => prev.map(c => c.id === id ? { ...c, fecha_cierre: nuevaFechaCierre } : c)))
       .catch(err => console.error('Error al reabrir curso:', err));
   };

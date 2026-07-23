@@ -1,11 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { UploadCloud, Send, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 
 const CrearNoticia = () => {
-    const token = useAuthStore((state) => state.token);
     const user = useAuthStore((state) => state.user);
     const formRef = useRef(null);
     const navigate = useNavigate();
@@ -78,11 +77,8 @@ const CrearNoticia = () => {
         if (formData.fecha) payload.append('publicado_at', formData.fecha);
 
         try {
-            await axios.post('/api/news', payload, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json',
-                }
+            await api.post('/news', payload, {
+                headers: { 'Content-Type': undefined }
             });
             navigate('/noticias-internas');
         } catch (err) {

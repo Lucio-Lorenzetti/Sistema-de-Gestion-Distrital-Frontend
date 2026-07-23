@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 
-const DOCUMENTACION_ENDPOINT = '/api/bibliografia'; // O '/api/documents' según la ruta que maneje tu backend
+const DOCUMENTACION_ENDPOINT = '/bibliografia'; // O '/documents' según la ruta que maneje tu backend
 
 export function useDocumentacion() {
     const { authorizedFetch } = useAuthorizedFetch();

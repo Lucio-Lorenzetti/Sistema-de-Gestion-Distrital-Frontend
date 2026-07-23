@@ -1,15 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 
-const CURSOS_ENDPOINT = '/api/courses';
+const CURSOS_ENDPOINT = '/courses';
 const RAMAS_OPTIONS = ['Pre-menores', 'Manada', 'Unidad', 'Caminantes', 'Rovers'];
 
 const EditarCurso = () => {
     const { id } = useParams();
-    const token = useAuthStore((state) => state.token);
     const user = useAuthStore((state) => state.user);
     const formRef = useRef(null);
     const navigate = useNavigate();
@@ -35,9 +34,7 @@ const EditarCurso = () => {
     useEffect(() => {
         const fetchCurso = async () => {
             try {
-                const res = await axios.get(`${CURSOS_ENDPOINT}/${id}`, {
-                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-                });
+                const res = await api.get(`${CURSOS_ENDPOINT}/${id}`);
                 const curso = res.data;
 
                 // — CORRECCIÓN 1: Cargamos todos los campos que vienen del backend —
@@ -63,7 +60,7 @@ const EditarCurso = () => {
         };
 
         fetchCurso();
-    }, [id, token]);
+    }, [id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -121,12 +118,7 @@ const EditarCurso = () => {
         };
 
         try {
-            await axios.put(`${CURSOS_ENDPOINT}/${id}`, payload, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json',
-                }
-            });
+            await api.put(`${CURSOS_ENDPOINT}/${id}`, payload);
             navigate('/gestion-cursos/administrar');
         } catch (err) {
             console.error('Error completo:', err.response);

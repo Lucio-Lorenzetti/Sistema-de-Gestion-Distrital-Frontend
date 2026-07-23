@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, X, Info, ShieldCheck } from 'lucide-react';
-import axios from 'axios';
+import api from '../../api/axios';
 
-const BIBLIOGRAFIA_ENDPOINT = '/api/bibliografia';
+const BIBLIOGRAFIA_ENDPOINT = '/bibliografia';
 
 const Descargas = () => {
     const [descargas, setDescargas] = useState([]);
@@ -15,9 +15,7 @@ const Descargas = () => {
     // Conectamos con el endpoint real del backend que trae los registros y el archivo/link
     useEffect(() => {
         setIsLoading(true);
-        axios.get(BIBLIOGRAFIA_ENDPOINT, {
-            headers: { 'Accept': 'application/json' }
-        })
+        api.get(BIBLIOGRAFIA_ENDPOINT)
             .then((res) => {
                 setDescargas(res.data);
                 setError(null);
