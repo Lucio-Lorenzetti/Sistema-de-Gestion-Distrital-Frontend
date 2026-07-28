@@ -1,4 +1,3 @@
-// src/components/layouts/DashboardLayout.jsx
 const FULL_HEIGHT_ROLES = ['auxiliar_comunicacion', 'auxiliar_programa', 'director'];
 
 const DashboardLayout = ({ user, role, roleLabel, children }) => {
@@ -10,7 +9,7 @@ const DashboardLayout = ({ user, role, roleLabel, children }) => {
             className="bg-scout-bg-panel text-left relative"
             style={
                 isFullHeight
-                    ? { height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '2.5rem' }
+                    ? { height: '100%', overflowY: 'auto', display: 'flex', flexDirection: 'column', padding: '2.5rem' }
                     : { minHeight: '100%', padding: '2.5rem' }
             }
         >

@@ -28,7 +28,7 @@ const Dashboard = () => {
 
             {/* Resumen de 3 columnas: noticias, cursos, documentación */}
             {visibleResumenes.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:col-span-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:col-span-3 mb-10">
                     {visibleResumenes.map((key) => {
                         const ResumenCard = RESUMEN_COMPONENTS[key];
                         return <ResumenCard key={key} />;

@@ -1,14 +1,57 @@
 // src/pages/Dashboard/panels/general/GeneralMetrics.jsx
-import { Users, Milestone, FileText, Newspaper } from 'lucide-react';
+import { Users, ShieldCheck, FileText, Newspaper } from 'lucide-react';
 import MetricCard from '../../../../components/ui/MetricCard';
+import { useNoticias } from '../../Panels/Noticias/useNoticias';
 
-const GeneralMetrics = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:col-span-3">
-        <MetricCard icon={<Users />} title="Educadores Registrados" value="124 Activos" sub="Total en Distrito 3" color="border-scout-primary" />
-        <MetricCard icon={<Milestone />} title="Programas Observados" value="42 Archivos" sub="Feedback enviado" color="border-scout-muted" />
-        <MetricCard icon={<FileText />} title="Programas en Revisión" value="18 Pendientes" sub="Requieren atención" color="border-scout-muted" />
-        <MetricCard icon={<Newspaper />} title="Circulares Emitidas" value="18 Oficiales" sub="Año lectivo 2026" color="border-scout-border" />
-    </div>
-);
+const GeneralMetrics = () => {
+    // — Única métrica con backend real hoy: cantidad de noticias publicadas —
+    const { noticias } = useNoticias();
+    const totalPublicadas = noticias.filter((n) => n.estado === 'Publicada').length;
+
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:col-span-3">
+            {/*
+              ⚠️ PLACEHOLDER: falta el endpoint de Usuarios (GET /api/users o similar).
+              Cuando exista, reemplazar value/sub por el conteo real de educadores.
+            */}
+            <MetricCard
+                icon={<Users />}
+                title="Educadores Registrados"
+                value="—"
+                sub="Falta conectar backend de Usuarios"
+                color="border-scout-primary"
+            />
+
+            {/*
+              ⚠️ PLACEHOLDER: depende del módulo de Programas, que se rehace desde cero.
+              Cuando exista el campo de estado definitivo, contar Aprobados acá.
+            */}
+            <MetricCard
+                icon={<ShieldCheck />}
+                title="Programas Aprobados"
+                value="—"
+                sub="Pendiente: módulo de Programas"
+                color="border-scout-muted"
+            />
+
+            {/* ⚠️ PLACEHOLDER: mismo caso, cuenta de estado "En Revisión" */}
+            <MetricCard
+                icon={<FileText />}
+                title="Programas en Revisión"
+                value="—"
+                sub="Pendiente: módulo de Programas"
+                color="border-scout-muted"
+            />
+
+            <MetricCard
+                icon={<Newspaper />}
+                title="Noticias Publicadas"
+                value={`${totalPublicadas} Publicadas`}
+                sub="Visibles en el portal público"
+                color="border-scout-border"
+            />
+        </div>
+    );
+};
 
 export default GeneralMetrics;
