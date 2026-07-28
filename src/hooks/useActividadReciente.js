@@ -1,6 +1,6 @@
 // src/hooks/useActividadReciente.js
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { useAuthStore } from '../store/useAuthStore';
 
 export function useActividadReciente() {
@@ -8,10 +8,7 @@ export function useActividadReciente() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const token = useAuthStore.getState().token;
-        axios.get('/api/activity-logs', {
-            headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }
-        })
+        api.get('/activity-logs') // sin /api, ya está en baseURL
             .then(res => setActividades(res.data))
             .catch(err => console.error('Error al cargar actividad reciente:', err))
             .finally(() => setIsLoading(false));
