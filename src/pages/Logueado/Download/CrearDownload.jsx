@@ -68,7 +68,7 @@ const CrearBibliografia = () => {
                         Panel de Control Privado • Gestión de Bibliografia
                     </span>
                     <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase">
-                        Crear Curso
+                        Subir Bibliografia
                     </h1>
                     {user && (
                         <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest mt-1">

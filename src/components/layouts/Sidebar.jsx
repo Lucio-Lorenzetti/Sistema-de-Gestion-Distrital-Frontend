@@ -19,7 +19,7 @@ const Sidebar = () => {
   const menuItems = [
     { name: 'Home', path: '/', icon: <Home size={20} /> },
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
-    { name: 'Programas', path: '/gestion-documentos', icon: <FileText size={20} /> },
+    { name: 'Programas', path: '/gestion-programas', icon: <FileText size={20} /> },
     { name: 'Noticias', path: '/noticias-internas', icon: <Megaphone size={20} /> },
     { name: 'Cursos', path: '/gestion-cursos/administrar', icon: <GraduationCap size={20} /> },    
     { name: 'Biblioteca', path: '/library', icon: <FolderArchive size={20} /> },
