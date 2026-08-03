@@ -1,14 +1,16 @@
 // src/pages/Dashboard/panels/general/GeneralPanel.jsx
-import { FileText } from 'lucide-react';
 import ActivityItem from '../../../../components/ui/ActivityItem';
 import Pagination from '../../../../components/ui/Pagination';
 import GeneralMetrics from './GeneralMetrics';
 import QuickAccessLinks from './QuickAccessLinks';
+import ProgramasTable from '../../Panels/Programas/ProgramasTable';
+import { useProgramas } from '../../Panels/Programas/useProgramas';
 import { usePaginatedFilter } from '../../../../hooks/usePaginatedFilter';
 import { useActividadReciente } from '../../../../hooks/useActividadReciente';
 
 const GeneralPanel = () => {
     const { actividades, isLoading } = useActividadReciente();
+    const { programas, isLoading: isLoadingProgramas } = useProgramas();
 
     const { current, page, setPage, totalPages } = usePaginatedFilter(actividades, {
         defaultFilter: 'Todos', // no filtra por estado, solo pagina
@@ -44,24 +46,10 @@ const GeneralPanel = () => {
 
             <QuickAccessLinks />
 
-            {/*
-              ⚠️ PLACEHOLDER — Tabla de Programas Recientes.
-              Reservado para cuando se rehaga el módulo de Programas desde cero.
-              Va a tener el mismo patrón visual que la tabla de Aux. Programa
-              (filtro por estado con dropdown + paginación), pero mostrando
-              TODOS los programas del distrito en vez de filtrar por rama/usuario.
-
-              Reemplazar este bloque completo por algo como:
-              <TablaProgramasGeneral programas={programas} ... />
-              cuando el back de Programas esté listo.
-            */}
-            <div className="lg:col-span-3 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col items-center justify-center gap-3 min-h-[220px]">
-                <div className="w-12 h-12 bg-scout-bg-panel border border-scout-border rounded-2xl flex items-center justify-center text-scout-muted">
-                    <FileText size={20} />
-                </div>
-                <p className="text-xs font-bold text-scout-muted uppercase tracking-tight text-center">
-                    Tabla de Programas Recientes — pendiente de conectar
-                </p>
+            {/* Misma tabla completa (filtros de Grupo/Rama/Estado + paginación) que usa
+                Aux Programa/Educador en /gestion-programas — pedido explícito para Director. */}
+            <div className="lg:col-span-3">
+                <ProgramasTable programas={programas} isLoading={isLoadingProgramas} />
             </div>
         </>
     );

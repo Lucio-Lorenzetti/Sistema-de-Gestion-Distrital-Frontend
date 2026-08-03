@@ -8,12 +8,14 @@ import NoticiasResumenCard from './Resumen/NoticiasResumenCard';
 import CursosResumenCard from './Resumen/CursosResumenCard';
 import DocumentacionResumenCard from './Resumen/DocumentacionResumenCard';
 import EducadorResumenCard from './Resumen/EducadorResumenCard';
+import ProgramasAprobacionResumen from './Resumen/ProgramasAprobacionResumen';
 
 const RESUMEN_COMPONENTS = {
     noticias: NoticiasResumenCard,
     cursos: CursosResumenCard,
     documentacion: DocumentacionResumenCard,
     miPerfilPrograma: EducadorResumenCard,
+    programasAprobacion: ProgramasAprobacionResumen,
 };
 
 const Dashboard = () => {
@@ -25,12 +27,11 @@ const Dashboard = () => {
 
     return (
         <DashboardLayout user={user} role={role} roleLabel={roleLabel}>
-            {/* El director ve además su resumen general (actividad + accesos rápidos) */}
             {role === ROLES.DIRECTOR && <GeneralPanel />}
 
-            {/* Resumen de 3 columnas: noticias, cursos, documentación (y ahora Educador) */}
+            {/* Resumen de 3 columnas: noticias, cursos, documentación, Educador, Aux Programa */}
             {visibleResumenes.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:col-span-3 mb-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:col-span-3 mb-16 pb-6">
                     {visibleResumenes.map((key) => {
                         const ResumenCard = RESUMEN_COMPONENTS[key];
                         return <ResumenCard key={key} />;

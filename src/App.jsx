@@ -30,17 +30,23 @@ import Download from './pages/Dashboard/Download';
 import News from './pages/Dashboard/News';
 import Programs from './pages/Dashboard/Programs';
 
+// Vistas de Programas (Privadas / Gestión Programas)
+import CrearPrograma from './pages/Logueado/Programas/CrearPrograma';
+//import CrearProgramaCuatrimestre from './pages/Logueado/Programas/CrearProgramaCuatrimestre';
+//import CrearProgramaCamapmento from './pages/Logueado/Programas/CrearProgramaCampamento';
+//import CrearProgramaCFA from './pages/Logueado/Programas/CrearProgramaCFA';
 
-// Vistas de Cursos - CRUD (Privadas / Gestión, Auxiliar de Comunicación)
+// Vistas de Cursos - CRUD (Privadas / Gestión Cursos)
 import CrearCurso from './pages/Logueado/Cursos/CrearCurso';
 import EditarCurso from './pages/Logueado/Cursos/EditarCurso';
 
-// Vistas de Noticias (Privadas / Gestión)
+// Vistas de Noticias (Privadas / Gestión Noticias)
 import CrearNoticia from './pages/Logueado/Noticias/CrearNoticia';
 import EditarNoticia from './pages/Logueado/Noticias/EditarNoticia';
 
-// Vistas de Download (Privadas / Gestión)
+// Vistas de Download (Privadas / Gestión Download)
 import CrearDownload from './pages/Logueado/Download/CrearDownload';
+import CrearProgramaCuatrimestre from './pages/Logueado/Programas/CrearProgramaCuatrimestre';
 
 // Componente para arreglar el bug del scroll al cambiar de página
 const ScrollToTop = () => {
@@ -81,6 +87,10 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
 
           <Route path="/gestion-programas" element={<Programs />} />
+          <Route path="/gestion-programas/crear" element={<CrearPrograma />} />
+          <Route path="/gestion-programas/crear/cuatrimestre" element={<CrearProgramaCuatrimestre />} />
+          <Route path="/gestion-programas/crear/campamento" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Crear Programa Campamento</div>} />
+          <Route path="/gestion-programas/crear/cfa" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Crear Programa CFA</div>} />
 
           <Route path="/gestion-cursos" element={<Courses />} />
           <Route path="/gestion-cursos/administrar" element={<Courses />} />

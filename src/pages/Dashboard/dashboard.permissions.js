@@ -7,13 +7,16 @@ export const ROLES = {
     EDUCADOR: 'educador',
 };
 
+// Qué RESUMEN (card compacta) ve cada rol en el Dashboard
 export const RESUMEN_ACCESS = {
     noticias: [ROLES.AUX_COMUNICACION, ROLES.DIRECTOR],
     cursos: [ROLES.AUX_COMUNICACION, ROLES.DIRECTOR],
     documentacion: [ROLES.AUX_COMUNICACION, ROLES.DIRECTOR],
     miPerfilPrograma: [ROLES.EDUCADOR],
+    programasAprobacion: [ROLES.AUX_PROGRAMA],
 };
 
+// Qué GESTIÓN completa (ruta /gestion-x) puede abrir cada rol
 export const GESTION_ACCESS = {
     noticias: [ROLES.AUX_COMUNICACION, ROLES.DIRECTOR],
     cursos: [ROLES.AUX_COMUNICACION, ROLES.DIRECTOR],
