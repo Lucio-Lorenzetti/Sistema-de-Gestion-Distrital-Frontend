@@ -32,8 +32,8 @@ import Programs from './pages/Dashboard/Programs';
 
 // Vistas de Programas (Privadas / Gestión Programas)
 import CrearPrograma from './pages/Logueado/Programas/CrearPrograma';
-//import CrearProgramaCuatrimestre from './pages/Logueado/Programas/CrearProgramaCuatrimestre';
-//import CrearProgramaCamapmento from './pages/Logueado/Programas/CrearProgramaCampamento';
+import CrearProgramaCuatrimestre from './pages/Logueado/Programas/CrearProgramaCuatrimestre';
+import CrearProgramaCampamento from './pages/Logueado/Programas/CrearProgramaCampamento';
 //import CrearProgramaCFA from './pages/Logueado/Programas/CrearProgramaCFA';
 
 // Vistas de Cursos - CRUD (Privadas / Gestión Cursos)
@@ -46,7 +46,6 @@ import EditarNoticia from './pages/Logueado/Noticias/EditarNoticia';
 
 // Vistas de Download (Privadas / Gestión Download)
 import CrearDownload from './pages/Logueado/Download/CrearDownload';
-import CrearProgramaCuatrimestre from './pages/Logueado/Programas/CrearProgramaCuatrimestre';
 
 // Componente para arreglar el bug del scroll al cambiar de página
 const ScrollToTop = () => {
@@ -89,7 +88,7 @@ function App() {
           <Route path="/gestion-programas" element={<Programs />} />
           <Route path="/gestion-programas/crear" element={<CrearPrograma />} />
           <Route path="/gestion-programas/crear/cuatrimestre" element={<CrearProgramaCuatrimestre />} />
-          <Route path="/gestion-programas/crear/campamento" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Crear Programa Campamento</div>} />
+          <Route path="/gestion-programas/crear/campamento" element={<CrearProgramaCampamento />} />
           <Route path="/gestion-programas/crear/cfa" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Crear Programa CFA</div>} />
 
           <Route path="/gestion-cursos" element={<Courses />} />

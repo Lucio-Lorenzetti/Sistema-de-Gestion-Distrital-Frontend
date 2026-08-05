@@ -85,9 +85,9 @@ const CrearPrograma = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 flex-1">
 
                         {/* COLUMNA IZQUIERDA: Título, Educadores a cargo, Tipo */}
-                        <div className="flex flex-col space-y-6">
+                        <div className="flex flex-col space-y-4">
                             <div>
-                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-1.5 block">
                                     Título
                                 </label>
                                 <input
@@ -95,36 +95,41 @@ const CrearPrograma = () => {
                                     value={titulo}
                                     onChange={(e) => setTitulo(e.target.value)}
                                     required
-                                    placeholder={"Ej: Programa de " + (user.rama?.nombre || 'Rama') + " " + (user.grupo?.nombre || 'Grupo') + " Primer Cuatrimestre 202x"}
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    placeholder={"Ej: Programa Primer Cuatrimestre de " + (user.rama?.nombre || 'Rama') + " (" + (user.grupo?.nombre || 'Grupo') + ")" + " 202x"}
+                                    className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
 
                             <div>
-                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-1.5 block">
                                     Educadores a Cargo
                                 </label>
-                                <input
-                                    type="text"
+                                <textarea
                                     value={educadoresACargo}
-                                    onChange={(e) => setEducadoresACargo(e.target.value)}
+                                    onChange={(e) => {
+                                        setEducadoresACargo(e.target.value);
+                                        e.target.style.height = 'auto';
+                                        e.target.style.height = `${e.target.scrollHeight}px`;
+                                    }}
                                     required
-                                    placeholder={`Ej: ${user.name} - I.M.`}
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    rows={2}
+                                    placeholder={`Ej: Luis Rojas (Pointer Servicial) - I.M.
+Fernando perez millan (San Bernardo Leal) - I.M.`}
+                                    className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[65px]"
                                 />
                             </div>
 
                             <div>
-                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-1.5 block">
                                     Tipo de Programa
                                 </label>
-                                <div className="flex flex-col gap-3">
+                                <div className="flex flex-col gap-2">
                                     {TIPO_OPTIONS.map((opt) => (
                                         <button
                                             key={opt.key}
                                             type="button"
                                             onClick={() => setTipo(opt.key)}
-                                            className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer text-left ${tipo === opt.key
+                                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer text-left ${tipo === opt.key
                                                     ? 'border-scout-primary bg-scout-primary text-white'
                                                     : 'border-scout-border bg-scout-bg-panel/50 text-scout-muted hover:border-scout-primary/50'
                                                 }`}
@@ -138,32 +143,32 @@ const CrearPrograma = () => {
                         </div>
 
                         {/* COLUMNA DERECHA: Diagnóstico y Objetivo */}
-                        <div className="flex flex-col space-y-6">
+                        <div className="flex flex-col space-y-4">
                             <div className="flex flex-col flex-1">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-1.5 block">
                                     Diagnóstico
                                 </label>
                                 <textarea
                                     value={diagnostico}
                                     onChange={(e) => setDiagnostico(e.target.value)}
                                     required
-                                    rows={5}
-                                    placeholder="Ej: La rama actualmente se encuentra en..."
-                                    className="w-full flex-1 border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[120px]"
+                                    rows={3}
+                                    placeholder="Diagnóstico actual de la rama..."
+                                    className="w-full flex-1 border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[80px]"
                                 />
                             </div>
 
                             <div className="flex flex-col flex-1">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-1.5 block">
                                     Objetivo
                                 </label>
                                 <textarea
                                     value={objetivos}
                                     onChange={(e) => setObjetivos(e.target.value)}
                                     required
-                                    rows={5}
+                                    rows={3}
                                     placeholder="¿Qué se busca lograr con este programa?"
-                                    className="w-full flex-1 border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[120px]"
+                                    className="w-full flex-1 border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[80px]"
                                 />
                             </div>
                         </div>
@@ -171,7 +176,7 @@ const CrearPrograma = () => {
                     </div>
 
                     {/* BOTONES DE ACCIÓN */}
-                    <div className="mt-8 pt-6 border-t border-scout-border flex flex-wrap items-center justify-end gap-4 shrink-0">
+                    <div className="mt-6 pt-4 border-t border-scout-border flex flex-wrap items-center justify-end gap-4 shrink-0">
                         <Link
                             to="/gestion-programas"
                             className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-scout-muted hover:text-scout-primary transition-colors"

@@ -1,9 +1,9 @@
 // src/pages/Logueado/Programas/CrearProgramaCuatrimestre.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { CalendarDays, RefreshCw, Send, ArrowLeft } from 'lucide-react';
 
-// --- Helpers de fecha (parseo local, evita el corrimiento de un día por UTC) ---
+// --- Helpers de fecha ---
 const parseFechaLocal = (isoDate) => {
     if (!isoDate) return null;
     const [y, m, d] = isoDate.split('-').map(Number);
@@ -27,28 +27,120 @@ const obtenerSabados = (inicio, fin) => {
     return sabados;
 };
 
-const generarTemplate = (inicio, fin) => {
-    const sabados = obtenerSabados(inicio, fin);
+const escapeHtml = (str = '') =>
+    String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
 
-    const intro = 'Este Template es para unificar criterios mínimos de un programa de cuatrimestre para el distrito, se pide que de base se respete la información solicitada, y en el caso de querer agregar cosas es bienvenido, dicho programa se generará a partir de los datos ingresados en el paso anterior más la descripción ingresada acá';
+const linea = (parts) => (Array.isArray(parts) ? parts : [{ text: parts, bold: false }]);
 
-    const listaSabados = sabados.length > 0
-        ? sabados.map((f) => `${f} - Actividad 1/Título X`).join('\n')
-        : '(Seleccioná fecha de inicio y fecha de fin para generar los sábados automáticamente)';
-
-    const anexo = 'Anexo 1/Título X:\nObjetivo de la Actividad: . . .\nDesarrollo de la actividad: . . .\nResponsables: . . .';
-
-    return `${intro}\n\nSÁBADOS/FECHAS\n${listaSabados}\n\nANEXOS\n${anexo}`;
+// ✅ HELPER: Procesa textos multilínea (\n) respetando los Enters
+const agregarTextoMultilinea = (lineasTarget, texto) => {
+    if (!texto) {
+        lineasTarget.push(linea(''));
+        return;
+    }
+    const renglones = String(texto).split('\n');
+    renglones.forEach((renglon) => {
+        lineasTarget.push(linea(renglon));
+    });
 };
+
+const buildTemplateLineas = (datos, inicio, fin) => {
+    const sabados = obtenerSabados(inicio, fin);
+    const lineas = [];
+
+    // ✅ Ahora sí toma el color #9ca3af
+    lineas.push(
+        linea([
+            {
+                text: 'Este Template es para unificar criterios mínimos de un programa de cuatrimestre para el distrito, se pide que de base se respete la información solicitada, y en el caso de querer agregar cosas es bienvenido, dicho programa se generará a partir de los datos ingresados en el paso anterior más la descripción ingresada acá.',
+                bold: false,
+                color: '#9ca3af',
+            },
+        ])
+    );
+    lineas.push(linea(''));
+
+    lineas.push(linea([{ text: 'Título', bold: true }]));
+    agregarTextoMultilinea(lineas, datos.titulo);
+    lineas.push(linea(''));
+
+    lineas.push(linea([{ text: 'Educadores a Cargo', bold: true }]));
+    agregarTextoMultilinea(lineas, datos.educadoresACargo);
+    lineas.push(linea(''));
+
+    lineas.push(linea([{ text: 'Diagnóstico', bold: true }]));
+    agregarTextoMultilinea(lineas, datos.diagnostico);
+    lineas.push(linea(''));
+
+    lineas.push(linea([{ text: 'Objetivo', bold: true }]));
+    agregarTextoMultilinea(lineas, datos.objetivos);
+    lineas.push(linea(''));
+
+    lineas.push(linea([{ text: 'SÁBADOS/FECHAS', bold: true }]));
+    if (sabados.length > 0) {
+        sabados.forEach((f, i) => {
+            lineas.push([
+                { text: f, bold: true },
+                { text: ` - Actividad ${i + 1}/Título X`, bold: false },
+            ]);
+        });
+    } else {
+        lineas.push(linea('(Seleccioná fecha de inicio y fecha de fin para generar los sábados automáticamente)'));
+    }
+    lineas.push(linea(''));
+
+    lineas.push(linea([{ text: 'ANEXOS', bold: true }]));
+    if (sabados.length > 0) {
+        sabados.forEach((f, i) => {
+            lineas.push(linea([{ text: `Anexo ${i + 1}/Título X:`, bold: true }]));
+            lineas.push(linea('Objetivo de la Actividad: . . .'));
+            lineas.push(linea('Desarrollo de la actividad: . . .'));
+            lineas.push(linea('Responsables: . . .'));
+            lineas.push(linea(''));
+        });
+    } else {
+        lineas.push(linea([{ text: 'Anexo 1/Título X:', bold: true }]));
+        lineas.push(linea('Objetivo de la Actividad: . . .'));
+        lineas.push(linea('Desarrollo de la actividad: . . .'));
+        lineas.push(linea('Responsables: . . .'));
+    }
+
+    return lineas;
+};
+
+// ✅ FUNCIÓN CLAVE CORREGIDA: Soporta propiedades de color
+const lineasToHtml = (lineas) =>
+    lineas
+        .map((parts) => {
+            const inner = parts
+                .map((p) => {
+                    const textoEscapado = escapeHtml(p.text);
+                    const tagApertura = p.bold ? '<strong>' : '';
+                    const tagCierre = p.bold ? '</strong>' : '';
+                    const style = p.color ? ` style="color: ${p.color};"` : '';
+
+                    if (p.color) {
+                        return `<span${style}>${tagApertura}${textoEscapado}${tagCierre}</span>`;
+                    }
+                    return `${tagApertura}${textoEscapado}${tagCierre}`;
+                })
+                .join('');
+            return `<div>${inner || '<br>'}</div>`;
+        })
+        .join('');
 
 const CrearProgramaCuatrimestre = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const datosPasoUno = location.state;
+    const contenidoRef = useRef(null);
 
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
-    const [contenido, setContenido] = useState('');
+    const [contenidoVacio, setContenidoVacio] = useState(true);
     const [error, setError] = useState(null);
 
     const sabadosCount = useMemo(() => {
@@ -57,7 +149,6 @@ const CrearProgramaCuatrimestre = () => {
         return obtenerSabados(inicio, fin).length;
     }, [fechaInicio, fechaFin]);
 
-    // Si entraron directo a esta URL sin pasar por el paso 1, no hay título/diagnóstico/etc.
     if (!datosPasoUno?.titulo) {
         return (
             <div className="h-full w-full flex flex-col items-center justify-center gap-4 bg-scout-bg-panel p-10 text-center">
@@ -88,7 +179,16 @@ const CrearProgramaCuatrimestre = () => {
         }
 
         setError(null);
-        setContenido(generarTemplate(inicio, fin));
+        const lineas = buildTemplateLineas(datosPasoUno, inicio, fin);
+        if (contenidoRef.current) {
+            contenidoRef.current.innerHTML = lineasToHtml(lineas);
+        }
+        setContenidoVacio(false);
+    };
+
+    const handleContenidoInput = () => {
+        const texto = contenidoRef.current?.innerText ?? '';
+        setContenidoVacio(texto.trim().length === 0);
     };
 
     const handleSubmit = (e) => {
@@ -98,7 +198,9 @@ const CrearProgramaCuatrimestre = () => {
             setError('Completá fecha de inicio y fecha de fin.');
             return;
         }
-        if (!contenido.trim()) {
+
+        const contenidoTexto = contenidoRef.current?.innerText?.trim() ?? '';
+        if (!contenidoTexto) {
             setError('Generá o escribí el contenido del programa antes de crear.');
             return;
         }
@@ -107,13 +209,12 @@ const CrearProgramaCuatrimestre = () => {
 
         const payload = {
             ...datosPasoUno,
+            tipo: 'cuatrimestre',
             fechaInicio,
             fechaFin,
-            contenido,
+            contenido: contenidoTexto,
         };
 
-        // TODO (Fase 7 backend): conectar a POST /programas una vez que se agreguen
-        // las columnas `tipo` y `educadores_a_cargo` a la tabla `programs`.
         console.log('Payload listo para el backend:', payload);
         navigate('/gestion-programas');
     };
@@ -124,7 +225,6 @@ const CrearProgramaCuatrimestre = () => {
                 className="bg-scout-bg-panel text-left relative"
                 style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '1rem' }}
             >
-                {/* HEADER */}
                 <div className="border-b border-scout-border pb-4 shrink-0">
                     <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
                         Panel de Control Privado • Gestión de Programas
@@ -137,14 +237,12 @@ const CrearProgramaCuatrimestre = () => {
                     </p>
                 </div>
 
-                {/* ERROR */}
                 {error && (
                     <div className="mb-4 mt-4 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
                         {error}
                     </div>
                 )}
 
-                {/* FORMULARIO PRINCIPAL */}
                 <form
                     onSubmit={handleSubmit}
                     className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto mt-6"
@@ -152,7 +250,7 @@ const CrearProgramaCuatrimestre = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 shrink-0">
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
-                                Fecha de Inicio de Cuatrimestre
+                                Fecha de Inicio
                             </label>
                             <div className="relative">
                                 <CalendarDays size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-scout-muted pointer-events-none" />
@@ -167,7 +265,7 @@ const CrearProgramaCuatrimestre = () => {
                         </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
-                                Fecha de Fin de Cuatrimestre
+                                Fecha de Fin
                             </label>
                             <div className="relative">
                                 <CalendarDays size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-scout-muted pointer-events-none" />
@@ -195,15 +293,21 @@ const CrearProgramaCuatrimestre = () => {
                         </button>
                     </div>
 
-                    <textarea
-                        value={contenido}
-                        onChange={(e) => setContenido(e.target.value)}
-                        required
-                        placeholder="Elegí las fechas y tocá 'Generar plantilla', o escribí libremente acá."
-                        className="w-full flex-1 border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[280px] whitespace-pre-wrap"
+                    {contenidoVacio && (
+                        <p className="text-xs text-scout-muted italic mb-2">
+                            Vacío — tocá "Generar plantilla" o escribí libremente acá abajo.
+                        </p>
+                    )}
+
+                    <div
+                        ref={contenidoRef}
+                        contentEditable
+                        suppressContentEditableWarning
+                        onInput={handleContenidoInput}
+                        className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-primary font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0"
+                        style={{ minHeight: 280 }}
                     />
 
-                    {/* BOTONES DE ACCIÓN */}
                     <div className="mt-8 pt-6 border-t border-scout-border flex flex-wrap items-center justify-end gap-4 shrink-0">
                         <Link
                             to="/gestion-programas/crear"
