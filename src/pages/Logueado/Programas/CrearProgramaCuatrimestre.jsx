@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { CalendarDays, RefreshCw, Send, ArrowLeft } from 'lucide-react';
+import axios from 'axios';
 
 // --- Helpers de fecha ---
 const parseFechaLocal = (isoDate) => {
@@ -99,6 +100,7 @@ const buildTemplateLineas = (datos, inicio, fin) => {
             lineas.push(linea('Objetivo de la Actividad: . . .'));
             lineas.push(linea('Desarrollo de la actividad: . . .'));
             lineas.push(linea('Responsables: . . .'));
+            lineas.push(linea('Área de crecimiento: . . .'));
             lineas.push(linea(''));
         });
     } else {
@@ -106,12 +108,12 @@ const buildTemplateLineas = (datos, inicio, fin) => {
         lineas.push(linea('Objetivo de la Actividad: . . .'));
         lineas.push(linea('Desarrollo de la actividad: . . .'));
         lineas.push(linea('Responsables: . . .'));
+        lineas.push(linea('Área de crecimiento: . . .'));
     }
 
     return lineas;
 };
 
-// ✅ FUNCIÓN CLAVE CORREGIDA: Soporta propiedades de color
 const lineasToHtml = (lineas) =>
     lineas
         .map((parts) => {
@@ -191,7 +193,7 @@ const CrearProgramaCuatrimestre = () => {
         setContenidoVacio(texto.trim().length === 0);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!fechaInicio || !fechaFin) {
@@ -215,8 +217,17 @@ const CrearProgramaCuatrimestre = () => {
             contenido: contenidoTexto,
         };
 
-        console.log('Payload listo para el backend:', payload);
-        navigate('/gestion-programas');
+        try {
+            const response = await axios.post('/api/programas', payload);
+
+            if (response.status === 201 || response.status === 200) {
+                navigate('/gestion-programas');
+            }
+        } catch (err) {
+            console.error('Error al guardar el programa:', err);
+            const errorMsg = err.response?.data?.message || 'Ocurrió un error al guardar el programa.';
+            setError(errorMsg);
+        }
     };
 
     return (

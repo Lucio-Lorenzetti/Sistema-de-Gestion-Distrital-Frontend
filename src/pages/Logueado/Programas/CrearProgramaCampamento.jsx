@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { CalendarDays, RefreshCw, Send, ArrowLeft } from 'lucide-react';
+import axios from 'axios';
 
 const parseFechaLocal = (isoDate) => {
     if (!isoDate) return null;
@@ -58,20 +59,26 @@ const agregarTextoMultilinea = (lineasTarget, texto) => {
     });
 };
 
-const generarCronogramaDia = (esPrimerDia, contadorActividadRef) => {
+// ✅ Ahora recibe también esUltimoDia: si es el último día, corta después del
+// almuerzo y cierra con Desconcentración a las 16:00hs (no hay merienda/cena/silencio,
+// la gente se va ese día).
+const generarCronogramaDia = (esPrimerDia, esUltimoDia, contadorActividadRef) => {
     const horarios = [];
 
     if (esPrimerDia) {
         horarios.push({ hora: '08:00hs', desc: 'Concentración' });
-        horarios.push({ hora: '09:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-        horarios.push({ hora: '11:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
     } else {
         horarios.push({ hora: '08:00hs', desc: 'Diana / Desayuno' });
-        horarios.push({ hora: '09:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-        horarios.push({ hora: '11:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
+    }
+    horarios.push({ hora: '09:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
+    horarios.push({ hora: '11:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
+    horarios.push({ hora: '13:00hs', desc: 'Almuerzo' });
+
+    if (esUltimoDia) {
+        horarios.push({ hora: '16:00hs', desc: 'Desconcentración' });
+        return horarios;
     }
 
-    horarios.push({ hora: '13:00hs', desc: 'Almuerzo' });
     horarios.push({ hora: '15:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
     horarios.push({ hora: '17:00hs', desc: 'Merienda' });
     horarios.push({ hora: '18:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
@@ -134,7 +141,12 @@ const buildTemplateLineas = (datos, inicio, fin) => {
                 ])
             );
 
-            const horarios = generarCronogramaDia(index === 0, contadorActividadRef);
+            // ✅ le paso si es el último día del rango
+            const horarios = generarCronogramaDia(
+                index === 0,
+                index === dias.length - 1,
+                contadorActividadRef
+            );
             horarios.forEach((h) => {
                 const esActividadGenerica = h.desc.startsWith('Actividad');
                 lineas.push(
@@ -162,16 +174,18 @@ const buildTemplateLineas = (datos, inicio, fin) => {
     if (totalActividadesGeneradas > 0) {
         for (let i = 1; i <= totalActividadesGeneradas; i++) {
             lineas.push(linea([{ text: `Anexo Actividad ${i}:`, bold: true }]));
-            lineas.push(linea('Objetivo de la Actividad: '));
-            lineas.push(linea('Desarrollo de la actividad: '));
-            lineas.push(linea('Responsables: '));
+            lineas.push(linea('Objetivo de la Actividad: . . .'));
+            lineas.push(linea('Desarrollo de la actividad: . . .'));
+            lineas.push(linea('Responsables: . . .'));
+            lineas.push(linea('Área de crecimiento: . . .'));
             lineas.push(linea(''));
         }
     } else {
         lineas.push(linea([{ text: 'Anexo 1 / Actividad X:', bold: true }]));
-        lineas.push(linea('Objetivo de la Actividad: '));
-        lineas.push(linea('Desarrollo de la actividad: '));
-        lineas.push(linea('Responsables: '));
+        lineas.push(linea('Objetivo de la Actividad: . . .'));
+        lineas.push(linea('Desarrollo de la actividad: . . .'));
+        lineas.push(linea('Responsables: . . .'));
+        lineas.push(linea('Área de crecimiento: . . .'));
     }
 
     return lineas;
@@ -256,7 +270,7 @@ const CrearProgramaCampamento = () => {
         setContenidoVacio(texto.trim().length === 0);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!fechaInicio || !fechaFin) {
@@ -280,8 +294,17 @@ const CrearProgramaCampamento = () => {
             contenido: contenidoTexto,
         };
 
-        console.log('Payload listo para el backend:', payload);
-        navigate('/gestion-programas');
+        try {
+            const response = await axios.post('/api/programas', payload);
+
+            if (response.status === 201 || response.status === 200) {
+                navigate('/gestion-programas');
+            }
+        } catch (err) {
+            console.error('Error al guardar el programa:', err);
+            const errorMsg = err.response?.data?.message || 'Ocurrió un error al guardar el programa.';
+            setError(errorMsg);
+        }
     };
 
     return (
