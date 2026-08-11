@@ -1,8 +1,9 @@
-// src/pages/Logueado/Programas/CrearProgramaCFA.jsx
+// src/pages/Logueado/Programas/EditarProgramaCFA.jsx
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { CalendarDays, RefreshCw, Send, ArrowLeft } from 'lucide-react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { CalendarDays, RefreshCw, Send } from 'lucide-react';
 import api from '../../../api/axios';
+import { useAuthStore } from '../../../store/useAuthStore';
 import RichTextToolbar from '../../../components/ui/RichTextToolbar';
 
 const parseFechaLocal = (isoDate) => {
@@ -114,7 +115,6 @@ const buildTemplateDiaLineas = (datos, diaInfo, numeroDia, esPrimerDia, esUltimo
     );
     lineas.push(linea(''));
 
-    // Solo el Día 1 incluye el bloque de Título, Educadores, Diagnóstico, Objetivos e Info Adicional
     if (esPrimerDia) {
         lineas.push(linea([{ text: 'Título', bold: true }]));
         agregarTextoMultilinea(lineas, datos.titulo);
@@ -199,17 +199,26 @@ const lineasToHtml = (lineas) =>
         })
         .join('');
 
-const CrearProgramaCFA = () => {
+const EditarProgramaCFA = () => {
+    const { id } = useParams();
     const navigate = useNavigate();
-    const location = useLocation();
-    const datosPasoUno = location.state;
+    const user = useAuthStore((state) => state.user);
     const contenidoRef = useRef(null);
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingData, setIsLoadingData] = useState(true);
+    const [error, setError] = useState(null);
+
+    const [formData, setFormData] = useState({
+        titulo: '',
+        educadoresACargo: '',
+        diagnostico: '',
+        objetivos: '',
+    });
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
     const [diaActivoId, setDiaActivoId] = useState(null);
     const [contenidosPorDia, setContenidosPorDia] = useState({});
-    const [error, setError] = useState(null);
 
     const dias = useMemo(() => {
         const inicio = parseFechaLocal(fechaInicio);
@@ -218,6 +227,37 @@ const CrearProgramaCFA = () => {
     }, [fechaInicio, fechaFin]);
 
     const filasDeDias = useMemo(() => distribuirEnFilas(dias), [dias]);
+
+    useEffect(() => {
+        const fetchPrograma = async () => {
+            try {
+                const res = await api.get(`/programas/${id}`);
+                const programa = res.data;
+
+                setFormData({
+                    titulo: programa.titulo || '',
+                    educadoresACargo: programa.educadoresACargo || '',
+                    diagnostico: programa.diagnostico || '',
+                    objetivos: programa.objetivos || '',
+                });
+                setFechaInicio(programa.fechaInicio || '');
+                setFechaFin(programa.fechaFin || '');
+
+                const nuevosContenidos = {};
+                (programa.dias || []).forEach((d) => {
+                    if (d.fecha) nuevosContenidos[d.fecha] = d.contenidoHtml || '';
+                });
+                setContenidosPorDia(nuevosContenidos);
+            } catch (err) {
+                console.error('Error al cargar el programa:', err);
+                setError('No se pudo cargar la información del programa.');
+            } finally {
+                setIsLoadingData(false);
+            }
+        };
+
+        fetchPrograma();
+    }, [id]);
 
     useEffect(() => {
         if (dias.length > 0) {
@@ -229,28 +269,24 @@ const CrearProgramaCFA = () => {
         }
     }, [dias, diaActivoId]);
 
-    // Inyecta HTML únicamente al cambiar la solapa de día activo
     useEffect(() => {
         if (contenidoRef.current && diaActivoId) {
             contenidoRef.current.innerHTML = contenidosPorDia[diaActivoId] || '';
         }
-    }, [diaActivoId]);
+    }, [diaActivoId, isLoadingData]);
 
-    if (!datosPasoUno?.titulo) {
+    if (isLoadingData) {
         return (
-            <div className="h-full w-full flex flex-col items-center justify-center gap-4 bg-scout-bg-panel p-10 text-center">
-                <p className="text-sm font-bold text-scout-muted uppercase tracking-tight">
-                    Te faltó completar el primer paso.
-                </p>
-                <Link
-                    to="/gestion-programas/crear"
-                    className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-scout-primary hover:text-scout-primary-hover transition-colors"
-                >
-                    <ArrowLeft size={14} /> Volver a Crear Programa
-                </Link>
+            <div className="h-full w-full flex items-center justify-center bg-scout-bg-panel">
+                <p className="text-scout-primary font-bold uppercase tracking-widest text-xs animate-pulse">Cargando programa...</p>
             </div>
         );
     }
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
 
     const guardarContenidoActual = () => {
         if (contenidoRef.current && diaActivoId) {
@@ -288,7 +324,7 @@ const CrearProgramaCFA = () => {
             const esPrimerDia = index === 0;
             const esUltimoDia = index === dias.length - 1;
             const lineas = buildTemplateDiaLineas(
-                datosPasoUno,
+                formData,
                 diaInfo,
                 index + 1,
                 esPrimerDia,
@@ -304,7 +340,6 @@ const CrearProgramaCFA = () => {
         }
     };
 
-    // Actualiza silenciosamente el estado sin forzar innerHTML para no desplazar el cursor
     const handleContenidoInput = () => {
         if (contenidoRef.current && diaActivoId) {
             const html = contenidoRef.current.innerHTML;
@@ -339,9 +374,10 @@ const CrearProgramaCFA = () => {
         }));
 
         setError(null);
+        setIsLoading(true);
 
         const payload = {
-            ...datosPasoUno,
+            ...formData,
             tipo: 'cfa',
             fechaInicio,
             fechaFin,
@@ -349,15 +385,14 @@ const CrearProgramaCFA = () => {
         };
 
         try {
-            const response = await api.post('/programas', payload);
-
-            if (response.status === 201 || response.status === 200) {
-                navigate('/gestion-programas');
-            }
+            await api.put(`/programas/${id}`, payload);
+            navigate('/gestion-programas');
         } catch (err) {
-            console.error('Error al guardar el programa:', err);
-            const errorMsg = err.response?.data?.message || 'Ocurrió un error al guardar el programa.';
+            console.error('Error al actualizar el programa:', err);
+            const errorMsg = err.response?.data?.message || 'Ocurrió un error al actualizar el programa.';
             setError(errorMsg);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -371,14 +406,16 @@ const CrearProgramaCFA = () => {
             >
                 <div className="border-b border-scout-border pb-4 shrink-0">
                     <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
-                        Panel de Control Privado • Gestión de Programas
+                        Panel de Control Privado • Edición
                     </span>
                     <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase">
-                        Programa Campamento Final (CFA)
+                        Editar Programa Campamento Final (CFA)
                     </h1>
-                    <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest mt-1">
-                        {datosPasoUno.titulo}
-                    </p>
+                    {user && (
+                        <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest mt-1">
+                            Editando como: {user.name}
+                        </p>
+                    )}
                 </div>
 
                 {error && (
@@ -391,7 +428,67 @@ const CrearProgramaCFA = () => {
                     onSubmit={handleSubmit}
                     className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto mt-6"
                 >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 shrink-0">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 shrink-0">
+                        <div className="flex flex-col space-y-4">
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                    Título
+                                </label>
+                                <input
+                                    type="text"
+                                    name="titulo"
+                                    value={formData.titulo}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                    Educadores a Cargo
+                                </label>
+                                <textarea
+                                    name="educadoresACargo"
+                                    value={formData.educadoresACargo}
+                                    onChange={handleChange}
+                                    required
+                                    rows={2}
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col space-y-4">
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                    Diagnóstico
+                                </label>
+                                <textarea
+                                    name="diagnostico"
+                                    value={formData.diagnostico}
+                                    onChange={handleChange}
+                                    required
+                                    rows={2}
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                    Objetivo
+                                </label>
+                                <textarea
+                                    name="objetivos"
+                                    value={formData.objetivos}
+                                    onChange={handleChange}
+                                    required
+                                    rows={2}
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 shrink-0 mt-6">
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
                                 Fecha de Inicio
@@ -433,7 +530,7 @@ const CrearProgramaCFA = () => {
                             onClick={handleGenerarPlantillaTodas}
                             className="flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border border-scout-primary text-scout-primary hover:bg-scout-primary hover:text-white transition-colors cursor-pointer"
                         >
-                            <RefreshCw size={12} /> Generar plantilla con estas fechas
+                            <RefreshCw size={12} /> Regenerar plantilla con estas fechas
                         </button>
                     </div>
 
@@ -490,17 +587,18 @@ const CrearProgramaCFA = () => {
 
                     <div className="mt-8 pt-6 border-t border-scout-border flex flex-wrap items-center justify-end gap-4 shrink-0">
                         <Link
-                            to="/gestion-programas/crear"
+                            to="/gestion-programas"
                             className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-scout-muted hover:text-scout-primary transition-colors"
                         >
-                            Volver
+                            Cancelar
                         </Link>
 
                         <button
                             type="submit"
-                            className="px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-md hover:shadow-lg cursor-pointer bg-scout-primary hover:bg-scout-primary-hover text-white"
+                            disabled={isLoading}
+                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-md hover:shadow-lg cursor-pointer ${isLoading ? 'bg-scout-muted cursor-not-allowed text-white' : 'bg-scout-primary hover:bg-scout-primary-hover text-white'}`}
                         >
-                            Crear Programa <Send size={14} />
+                            {isLoading ? 'Actualizando...' : 'Actualizar Programa'} <Send size={14} />
                         </button>
                     </div>
                 </form>
@@ -509,4 +607,4 @@ const CrearProgramaCFA = () => {
     );
 };
 
-export default CrearProgramaCFA;
+export default EditarProgramaCFA;

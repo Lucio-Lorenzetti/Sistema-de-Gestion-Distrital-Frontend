@@ -1,10 +1,14 @@
 // src/pages/Dashboard/Panels/Programas/ProgramasTable.jsx
 import React, { useState, useMemo } from 'react';
-import { ClipboardList, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ClipboardList, ChevronLeft, ChevronRight, Eye, Pencil, Send, Download, MessageSquare, Undo2 } from 'lucide-react';
 import FiltroDropdown from './FiltroDropdown';
-import ProgramEstadoBadge from './ProgramEstadoBadge';
+import EstadoBadge from '../../../../components/ui/EstadoBadge';
 import ProgramaDetalleModal from './ProgramaDetalleModal';
 import { useGruposCatalogo } from './useGruposCatalogo';
+import { useAuthStore } from '../../../../store/useAuthStore';
+import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
+import api from '../../../../api/axios';
 
 const ITEMS_PER_PAGE = 3;
 const ORDEN_RAMAS = ['Castores', 'Lobatos', 'Unidad Scout', 'Caminantes', 'Rovers'];
@@ -12,27 +16,35 @@ const ORDEN_RAMAS = ['Castores', 'Lobatos', 'Unidad Scout', 'Caminantes', 'Rover
 const FILTROS_ESTADO = [
     { key: 'Todos', label: 'Todos' },
     { key: 'borrador', label: 'Borradores' },
-    { key: 'revision', label: 'En Revisión' },
-    { key: 'publicado', label: 'Publicados' },
+    { key: 'enviado', label: 'En Revisión' },
+    { key: 'aprobado', label: 'Aprobados' },
     { key: 'rechazado', label: 'Rechazados' },
 ];
 
-/**
- * Tabla completa de Programas: filtros de Grupo/Rama/Estado + paginación + modal de detalle.
- * Reutilizada en Programs.jsx (página completa de gestión) y en el Dashboard del
- * Director (GeneralPanel.jsx) — recibe los programas ya cargados por el padre vía
- * useProgramas(), así ambos lugares comparten una sola fuente de datos/fetch.
- */
-const ProgramasTable = ({ programas, isLoading }) => {
+// El backend guarda el estado en minúscula; EstadoBadge (compartido con Noticias/Cursos)
+// espera la etiqueta capitalizada. Este mapa es solo de presentación.
+const ESTADO_LABELS = {
+    borrador: 'Borrador',
+    enviado: 'Enviado',
+    aprobado: 'Aprobado',
+    rechazado: 'Rechazado',
+};
+
+const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
     const { catalogoGrupos } = useGruposCatalogo();
+    const { authorizedFetch } = useAuthorizedFetch();
+    const user = useAuthStore((state) => state.user);
+
     const [currentPage, setCurrentPage] = useState(1);
     const [filtroEstado, setFiltroEstado] = useState('Todos');
     const [filtroGrupo, setFiltroGrupo] = useState('Todos');
     const [filtroRama, setFiltroRama] = useState('Todas');
     const [expandedId, setExpandedId] = useState(null);
+    const [enviandoId, setEnviandoId] = useState(null);
+    const [volviendoId, setVolviendoId] = useState(null);
+    const [descargandoId, setDescargandoId] = useState(null);
+    const [error, setError] = useState(null);
 
-    // Grupo/Rama solo se muestran como filtro si hay más de 1 valor distinto en los
-    // datos que llegaron — así cada rol ve automáticamente lo que le corresponde.
     const gruposDisponibles = useMemo(
         () => [...new Set(programas.map((p) => p.grupo?.nombre).filter(Boolean))],
         [programas]
@@ -64,8 +76,74 @@ const ProgramasTable = ({ programas, isLoading }) => {
 
     const programaExpandido = programas.find((p) => p.id === expandedId);
 
+    // Solo el dueño del programa puede editarlo o mandarlo a revisión, y solo mientras está en borrador.
+    const puedeGestionar = (programa) =>
+        Number(programa.owner?.id) === Number(user?.id) && programa.estado === 'borrador';
+
+    // El dueño también puede retroceder su programa de "enviado" a "borrador" para seguir editándolo.
+    const puedeVolverABorrador = (programa) =>
+        Number(programa.owner?.id) === Number(user?.id) && programa.estado === 'enviado';
+
+    const handleEnviar = async (programa) => {
+        setEnviandoId(programa.id);
+        setError(null);
+        try {
+            await authorizedFetch(`/programas/${programa.id}/estado`, {
+                method: 'PATCH',
+                body: { estado: 'enviado' },
+            });
+            await onEstadoActualizado?.();
+        } catch (err) {
+            console.error('Error al enviar el programa a revisión:', err);
+            setError('No se pudo enviar el programa a revisión: ' + err.message);
+        } finally {
+            setEnviandoId(null);
+        }
+    };
+
+    const handleVolverABorrador = async (programa) => {
+        setVolviendoId(programa.id);
+        setError(null);
+        try {
+            await authorizedFetch(`/programas/${programa.id}/estado`, {
+                method: 'PATCH',
+                body: { estado: 'borrador' },
+            });
+            await onEstadoActualizado?.();
+        } catch (err) {
+            console.error('Error al volver el programa a borrador:', err);
+            setError('No se pudo volver el programa a borrador: ' + err.message);
+        } finally {
+            setVolviendoId(null);
+        }
+    };
+
+    const handleDescargar = async (programa) => {
+        setDescargandoId(programa.id);
+        try {
+            const res = await api.get(`/programas/${programa.id}/pdf`, { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${programa.titulo || 'programa'}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('Error al descargar el PDF:', err);
+        } finally {
+            setDescargandoId(null);
+        }
+    };
+
     return (
         <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col" style={{ minHeight: 0 }}>
+            {error && (
+                <div className="mb-5 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                    {error}
+                </div>
+            )}
             <div className="flex items-center justify-between shrink-0 flex-wrap gap-3">
                 <h2 className="text-xl font-black uppercase tracking-tight text-scout-primary shrink-0">Programas</h2>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -103,30 +181,84 @@ const ProgramasTable = ({ programas, isLoading }) => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-scout-border">
-                            {programasPagina.map((programa) => (
-                                <tr key={programa.id} className="group hover:bg-scout-bg-panel transition-colors">
-                                    <td className="py-4 pr-4">
-                                        <p className="text-xs font-bold text-scout-primary group-hover:text-scout-primary-hover transition-colors">{programa.titulo}</p>
-                                    </td>
-                                    <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.rama?.nombre || '—'}</td>
-                                    <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.grupo?.nombre || '—'}</td>
-                                    <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.owner?.name || 'Sin asignar'}</td>
-                                    <td className="py-4 pr-4"><ProgramEstadoBadge estado={programa.estado} /></td>
-                                    <td className="py-4 text-right">
-                                        <div className="flex items-center justify-end gap-1">
-                                            <button
-                                                onClick={() => setExpandedId(programa.id)}
-                                                className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer"
-                                                title="Ver"
-                                            >
-                                                <Eye size={13} />
-                                            </button>
-                                            {/* Editar / Eliminar quedan para cuando definamos cómo
-                                                acceder al usuario logueado (autor/grupo/rama) en el frontend */}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                            {programasPagina.map((programa) => {
+                                const gestionable = puedeGestionar(programa);
+                                const puedeRetroceder = puedeVolverABorrador(programa);
+                                const enRevision = programa.estado === 'enviado';
+                                return (
+                                    <tr key={programa.id} className="group hover:bg-scout-bg-panel transition-colors">
+                                        <td className="py-4 pr-4">
+                                            <p className="text-xs font-bold text-scout-primary group-hover:text-scout-primary-hover transition-colors">{programa.titulo}</p>
+                                        </td>
+                                        <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.rama?.nombre || '—'}</td>
+                                        <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.grupo?.nombre || '—'}</td>
+                                        <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.owner?.name || 'Sin asignar'}</td>
+                                        <td className="py-4 pr-4"><EstadoBadge estado={ESTADO_LABELS[programa.estado] || programa.estado} /></td>
+                                        <td className="py-4 text-right">
+                                            <div className="flex items-center justify-end gap-1">
+                                                <button
+                                                    onClick={() => setExpandedId(programa.id)}
+                                                    className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer"
+                                                    title="Ver"
+                                                >
+                                                    <Eye size={13} />
+                                                </button>
+
+                                                <button
+                                                    onClick={() => handleDescargar(programa)}
+                                                    disabled={descargandoId === programa.id}
+                                                    className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer disabled:opacity-40"
+                                                    title="Descargar PDF"
+                                                >
+                                                    <Download size={13} />
+                                                </button>
+
+                                                {gestionable && (
+                                                    <>
+                                                        <Link
+                                                            to={`/gestion-programas/editar/${programa.tipo}/${programa.id}`}
+                                                            className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer"
+                                                            title="Editar"
+                                                        >
+                                                            <Pencil size={13} />
+                                                        </Link>
+
+                                                        <button
+                                                            onClick={() => handleEnviar(programa)}
+                                                            disabled={enviandoId === programa.id}
+                                                            className="p-1.5 rounded-lg border border-scout-primary bg-scout-primary/5 hover:bg-scout-primary hover:text-white text-scout-primary transition-colors cursor-pointer disabled:opacity-40"
+                                                            title="Enviar a revisión"
+                                                        >
+                                                            <Send size={13} />
+                                                        </button>
+                                                    </>
+                                                )}
+
+                                                {enRevision && (
+                                                    <button
+                                                        disabled
+                                                        className="p-1.5 rounded-lg border border-scout-border text-scout-muted/50 cursor-not-allowed"
+                                                        title="Comentarios (próximamente)"
+                                                    >
+                                                        <MessageSquare size={13} />
+                                                    </button>
+                                                )}
+
+                                                {puedeRetroceder && (
+                                                    <button
+                                                        onClick={() => handleVolverABorrador(programa)}
+                                                        disabled={volviendoId === programa.id}
+                                                        className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer disabled:opacity-40"
+                                                        title="Volver a borrador"
+                                                    >
+                                                        <Undo2 size={13} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

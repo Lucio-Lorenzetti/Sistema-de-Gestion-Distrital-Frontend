@@ -1,8 +1,9 @@
-// src/pages/Logueado/Programas/CrearProgramaCampamento.jsx
-import React, { useState, useMemo, useRef } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { CalendarDays, RefreshCw, Send, ArrowLeft } from 'lucide-react';
+// src/pages/Logueado/Programas/EditarProgramaCampamento.jsx
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { CalendarDays, RefreshCw, Send } from 'lucide-react';
 import api from '../../../api/axios';
+import { useAuthStore } from '../../../store/useAuthStore';
 import RichTextToolbar from '../../../components/ui/RichTextToolbar';
 
 const parseFechaLocal = (isoDate) => {
@@ -94,7 +95,7 @@ const buildTemplateLineas = (datos, inicio, fin) => {
     lineas.push(
         linea([
             {
-                text: 'Este Template es para unificar criterios mínimos de un programa de campamento para el distrito, se pide que de base se respete la información solicitada, y en el caso de querer agregar cosas es bienvenido, dicho programa se generará a partir de los datos ingresados en el paso anterior más la descripción ingresada acá.',
+                text: 'Este Template es para unificar criterios mínimos de un programa de campamento para el distrito, se pide que de base se respete la información solicitada, y en el caso de querer agregar cosas es bienvenido, dicho programa se generará a partir de los datos ingresados más la descripción ingresada acá.',
                 bold: false,
                 color: '#9ca3af',
             },
@@ -208,16 +209,34 @@ const lineasToHtml = (lineas) =>
         })
         .join('');
 
-const CrearProgramaCampamento = () => {
+const textoPlanoAHtml = (texto) => {
+    if (!texto) return '';
+    return String(texto)
+        .split('\n')
+        .map((renglon) => `<div>${escapeHtml(renglon) || '<br>'}</div>`)
+        .join('');
+};
+
+const EditarProgramaCampamento = () => {
+    const { id } = useParams();
     const navigate = useNavigate();
-    const location = useLocation();
-    const datosPasoUno = location.state;
+    const user = useAuthStore((state) => state.user);
     const contenidoRef = useRef(null);
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingData, setIsLoadingData] = useState(true);
+    const [error, setError] = useState(null);
+
+    const [formData, setFormData] = useState({
+        titulo: '',
+        educadoresACargo: '',
+        diagnostico: '',
+        objetivos: '',
+    });
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
+    const [contenidoInicialHtml, setContenidoInicialHtml] = useState('');
     const [contenidoVacio, setContenidoVacio] = useState(true);
-    const [error, setError] = useState(null);
 
     const diasCount = useMemo(() => {
         const inicio = parseFechaLocal(fechaInicio);
@@ -225,21 +244,44 @@ const CrearProgramaCampamento = () => {
         return obtenerDiasRango(inicio, fin).length;
     }, [fechaInicio, fechaFin]);
 
-    if (!datosPasoUno?.titulo) {
-        return (
-            <div className="h-full w-full flex flex-col items-center justify-center gap-4 bg-scout-bg-panel p-10 text-center">
-                <p className="text-sm font-bold text-scout-muted uppercase tracking-tight">
-                    Te faltó completar el primer paso.
-                </p>
-                <Link
-                    to="/gestion-programas/crear"
-                    className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-scout-primary hover:text-scout-primary-hover transition-colors"
-                >
-                    <ArrowLeft size={14} /> Volver a Crear Programa
-                </Link>
-            </div>
-        );
-    }
+    useEffect(() => {
+        const fetchPrograma = async () => {
+            try {
+                const res = await api.get(`/programas/${id}`);
+                const programa = res.data;
+
+                setFormData({
+                    titulo: programa.titulo || '',
+                    educadoresACargo: programa.educadoresACargo || '',
+                    diagnostico: programa.diagnostico || '',
+                    objetivos: programa.objetivos || '',
+                });
+                setFechaInicio(programa.fechaInicio || '');
+                setFechaFin(programa.fechaFin || '');
+                // Los programas viejos guardaban texto plano en "contenido"; los nuevos ya traen "contenidoHtml".
+                setContenidoInicialHtml(programa.contenidoHtml || textoPlanoAHtml(programa.contenido));
+            } catch (err) {
+                console.error('Error al cargar el programa:', err);
+                setError('No se pudo cargar la información del programa.');
+            } finally {
+                setIsLoadingData(false);
+            }
+        };
+
+        fetchPrograma();
+    }, [id]);
+
+    useEffect(() => {
+        if (!isLoadingData && contenidoRef.current) {
+            contenidoRef.current.innerHTML = contenidoInicialHtml;
+            setContenidoVacio(contenidoRef.current.innerText.trim().length === 0);
+        }
+    }, [isLoadingData]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
 
     const handleGenerarPlantilla = () => {
         const inicio = parseFechaLocal(fechaInicio);
@@ -255,7 +297,7 @@ const CrearProgramaCampamento = () => {
         }
 
         setError(null);
-        const lineas = buildTemplateLineas(datosPasoUno, inicio, fin);
+        const lineas = buildTemplateLineas(formData, inicio, fin);
         if (contenidoRef.current) {
             contenidoRef.current.innerHTML = lineasToHtml(lineas);
         }
@@ -277,14 +319,15 @@ const CrearProgramaCampamento = () => {
 
         const contenidoTexto = contenidoRef.current?.innerText?.trim() ?? '';
         if (!contenidoTexto) {
-            setError('Generá o escribí el contenido del programa antes de crear.');
+            setError('Generá o escribí el contenido del programa antes de actualizar.');
             return;
         }
 
         setError(null);
+        setIsLoading(true);
 
         const payload = {
-            ...datosPasoUno,
+            ...formData,
             tipo: 'campamento',
             fechaInicio,
             fechaFin,
@@ -292,17 +335,24 @@ const CrearProgramaCampamento = () => {
         };
 
         try {
-            const response = await api.post('/programas', payload);
-
-            if (response.status === 201 || response.status === 200) {
-                navigate('/gestion-programas');
-            }
+            await api.put(`/programas/${id}`, payload);
+            navigate('/gestion-programas');
         } catch (err) {
-            console.error('Error al guardar el programa:', err);
-            const errorMsg = err.response?.data?.message || 'Ocurrió un error al guardar el programa.';
+            console.error('Error al actualizar el programa:', err);
+            const errorMsg = err.response?.data?.message || 'Ocurrió un error al actualizar el programa.';
             setError(errorMsg);
+        } finally {
+            setIsLoading(false);
         }
     };
+
+    if (isLoadingData) {
+        return (
+            <div className="h-full w-full flex items-center justify-center bg-scout-bg-panel">
+                <p className="text-scout-primary font-bold uppercase tracking-widest text-xs animate-pulse">Cargando programa...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full w-full flex flex-col bg-scout-bg-panel font-sans selection:bg-scout-primary selection:text-white p-6 md:p-10 overflow-hidden text-left">
@@ -312,14 +362,16 @@ const CrearProgramaCampamento = () => {
             >
                 <div className="border-b border-scout-border pb-4 shrink-0">
                     <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
-                        Panel de Control Privado • Gestión de Programas
+                        Panel de Control Privado • Edición
                     </span>
                     <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase">
-                        Programa de Campamento
+                        Editar Programa de Campamento
                     </h1>
-                    <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest mt-1">
-                        {datosPasoUno.titulo}
-                    </p>
+                    {user && (
+                        <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest mt-1">
+                            Editando como: {user.name}
+                        </p>
+                    )}
                 </div>
 
                 {error && (
@@ -332,7 +384,67 @@ const CrearProgramaCampamento = () => {
                     onSubmit={handleSubmit}
                     className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto mt-6"
                 >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 shrink-0">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 shrink-0">
+                        <div className="flex flex-col space-y-4">
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                    Título
+                                </label>
+                                <input
+                                    type="text"
+                                    name="titulo"
+                                    value={formData.titulo}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                    Educadores a Cargo
+                                </label>
+                                <textarea
+                                    name="educadoresACargo"
+                                    value={formData.educadoresACargo}
+                                    onChange={handleChange}
+                                    required
+                                    rows={2}
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col space-y-4">
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                    Diagnóstico
+                                </label>
+                                <textarea
+                                    name="diagnostico"
+                                    value={formData.diagnostico}
+                                    onChange={handleChange}
+                                    required
+                                    rows={2}
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                    Objetivo
+                                </label>
+                                <textarea
+                                    name="objetivos"
+                                    value={formData.objetivos}
+                                    onChange={handleChange}
+                                    required
+                                    rows={2}
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 shrink-0 mt-6">
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
                                 Fecha de Inicio
@@ -374,13 +486,13 @@ const CrearProgramaCampamento = () => {
                             onClick={handleGenerarPlantilla}
                             className="flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border border-scout-primary text-scout-primary hover:bg-scout-primary hover:text-white transition-colors cursor-pointer"
                         >
-                            <RefreshCw size={12} /> Generar plantilla con estas fechas
+                            <RefreshCw size={12} /> Regenerar plantilla con estas fechas
                         </button>
                     </div>
 
                     {contenidoVacio && (
                         <p className="text-xs text-scout-muted italic mb-2">
-                            Vacío — tocá "Generar plantilla" o escribí libremente acá abajo.
+                            Vacío — tocá "Regenerar plantilla" o escribí libremente acá abajo.
                         </p>
                     )}
 
@@ -397,17 +509,18 @@ const CrearProgramaCampamento = () => {
 
                     <div className="mt-8 pt-6 border-t border-scout-border flex flex-wrap items-center justify-end gap-4 shrink-0">
                         <Link
-                            to="/gestion-programas/crear"
+                            to="/gestion-programas"
                             className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-scout-muted hover:text-scout-primary transition-colors"
                         >
-                            Volver
+                            Cancelar
                         </Link>
 
                         <button
                             type="submit"
-                            className="px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-md hover:shadow-lg cursor-pointer bg-scout-primary hover:bg-scout-primary-hover text-white"
+                            disabled={isLoading}
+                            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-md hover:shadow-lg cursor-pointer ${isLoading ? 'bg-scout-muted cursor-not-allowed text-white' : 'bg-scout-primary hover:bg-scout-primary-hover text-white'}`}
                         >
-                            Crear Programa <Send size={14} />
+                            {isLoading ? 'Actualizando...' : 'Actualizar Programa'} <Send size={14} />
                         </button>
                     </div>
                 </form>
@@ -416,4 +529,4 @@ const CrearProgramaCampamento = () => {
     );
 };
 
-export default CrearProgramaCampamento;
+export default EditarProgramaCampamento;

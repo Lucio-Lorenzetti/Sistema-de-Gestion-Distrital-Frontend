@@ -13,13 +13,13 @@ const ProgramasAprobacionResumen = () => {
     const { programas, isLoading } = useProgramas();
 
     const aprobadosRecientes = [...programas]
-        .filter((p) => p.estado === 'publicado')
-        .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)) // más reciente primero
+        .filter((p) => p.estado === 'aprobado')
+        .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
         .slice(0, 5);
 
     const proximosAAprobar = [...programas]
-        .filter((p) => p.estado === 'revision')
-        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // más antiguo primero
+        .filter((p) => p.estado === 'enviado')
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
         .slice(0, 5);
 
     if (isLoading) {

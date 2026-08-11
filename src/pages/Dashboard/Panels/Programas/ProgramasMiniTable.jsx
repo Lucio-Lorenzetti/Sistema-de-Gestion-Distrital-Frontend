@@ -1,9 +1,14 @@
 // src/pages/Dashboard/Panels/Programas/ProgramasMiniTable.jsx
 import React from 'react';
-import ProgramEstadoBadge from './ProgramEstadoBadge';
+import EstadoBadge from '../../../../components/ui/EstadoBadge';
 
-// Tabla compacta sin filtros ni paginación — recibe la lista ya ordenada/recortada
-// por quien la use (ver ProgramasAprobacionResumen).
+const ESTADO_LABELS = {
+    borrador: 'Borrador',
+    enviado: 'Enviado',
+    aprobado: 'Aprobado',
+    rechazado: 'Rechazado',
+};
+
 const ProgramasMiniTable = ({ titulo, icon, programas, emptyText }) => (
     <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-6 shadow-sm flex flex-col h-full">
         <h3 className="text-sm font-black uppercase tracking-tight text-scout-primary flex items-center gap-2 shrink-0">
@@ -30,7 +35,7 @@ const ProgramasMiniTable = ({ titulo, icon, programas, emptyText }) => (
                                 <td className="py-2.5 pr-3 text-xs font-bold text-scout-primary">{p.titulo}</td>
                                 <td className="py-2.5 pr-3 text-xs text-scout-muted font-medium whitespace-nowrap">{p.rama?.nombre || '—'}</td>
                                 <td className="py-2.5 pr-3 text-xs text-scout-muted font-medium whitespace-nowrap">{p.grupo?.nombre || '—'}</td>
-                                <td className="py-2.5"><ProgramEstadoBadge estado={p.estado} /></td>
+                                <td className="py-2.5"><EstadoBadge estado={ESTADO_LABELS[p.estado] || p.estado} /></td>
                             </tr>
                         ))}
                     </tbody>

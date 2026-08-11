@@ -1,7 +1,14 @@
 // src/pages/Dashboard/Panels/Programas/ProgramaDetalleModal.jsx
 import React from 'react';
 import { X, Layers, Users } from 'lucide-react';
-import ProgramEstadoBadge from './ProgramEstadoBadge';
+import EstadoBadge from '../../../../components/ui/EstadoBadge';
+
+const ESTADO_LABELS = {
+    borrador: 'Borrador',
+    enviado: 'Enviado',
+    aprobado: 'Aprobado',
+    rechazado: 'Rechazado',
+};
 
 const ProgramaDetalleModal = ({ programa, onClose }) => (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
@@ -12,7 +19,7 @@ const ProgramaDetalleModal = ({ programa, onClose }) => (
             </button>
             <div className="p-8 md:p-16 overflow-y-auto">
                 <div className="flex items-center gap-3 mb-4">
-                    <ProgramEstadoBadge estado={programa.estado} />
+                    <EstadoBadge estado={ESTADO_LABELS[programa.estado] || programa.estado} />
                     <span className="text-[10px] font-black uppercase tracking-[0.25em] text-scout-muted flex items-center gap-1">
                         <Layers size={11} /> {programa.rama?.nombre || '—'}
                     </span>

@@ -10,10 +10,10 @@ const EducadorResumenCard = () => {
     const { user } = useUserRole();
     const { programas, isLoading } = useProgramas();
 
-    const misProgramas = programas.filter((p) => p.owner?.id === user?.id);
+    const misProgramas = programas.filter((p) => Number(p.owner?.id) === Number(user?.id));
     const misBorradores = misProgramas.filter((p) => p.estado === 'borrador').length;
-    const misEnRevision = misProgramas.filter((p) => p.estado === 'revision').length;
-    const misPublicados = misProgramas.filter((p) => p.estado === 'publicado').length;
+    const misEnRevision = misProgramas.filter((p) => p.estado === 'enviado').length;
+    const misPublicados = misProgramas.filter((p) => p.estado === 'aprobado').length;
 
     return (
         <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm lg:col-span-3">

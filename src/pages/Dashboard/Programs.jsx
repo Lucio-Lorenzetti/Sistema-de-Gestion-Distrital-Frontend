@@ -10,11 +10,11 @@ import ProgramasTable from './Panels/Programas/ProgramasTable';
 
 const Programs = () => {
     const { role } = useUserRole();
-    const { programas, isLoading } = useProgramas();
+    const { programas, isLoading, refetch } = useProgramas();
 
-    const totalPublicados = programas.filter((p) => p.estado === 'publicado').length;
+    const totalPublicados = programas.filter((p) => p.estado === 'aprobado').length;
     const totalBorradores = programas.filter((p) => p.estado === 'borrador').length;
-    const totalRevision = programas.filter((p) => p.estado === 'revision').length;
+    const totalRevision = programas.filter((p) => p.estado === 'enviado').length;
 
     return (
         <div
@@ -59,7 +59,7 @@ const Programs = () => {
 
             {/* TABLA */}
             <div className="grid grid-cols-1 gap-8 mt-10" style={{ flex: 1, minHeight: 0 }}>
-                <ProgramasTable programas={programas} isLoading={isLoading} />
+                <ProgramasTable programas={programas} isLoading={isLoading} onEstadoActualizado={refetch} />
             </div>
         </div>
     );
