@@ -76,9 +76,20 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
 
     const programaExpandido = programas.find((p) => p.id === expandedId);
 
-    // Solo el dueño del programa puede editarlo o mandarlo a revisión, y solo mientras está en borrador.
-    const puedeGestionar = (programa) =>
-        Number(programa.owner?.id) === Number(user?.id) && programa.estado === 'borrador';
+    // El autor siempre puede gestionar su programa. Mientras esté en borrador, también puede
+    // hacerlo cualquier educador de la misma rama+grupo (armado colaborativo antes de publicar).
+    // Auxiliares, Jefe de Grupo y Director nunca comparten rama_id Y grupo_id con un programa
+    // a la vez, así que esta condición ya los deja afuera sin necesidad de chequear el rol.
+    const puedeGestionar = (programa) => {
+        if (programa.estado !== 'borrador') return false;
+
+        const esAutor = Number(programa.owner?.id) === Number(user?.id);
+        const compartenRamaYGrupo =
+            Number(programa.rama?.id) === Number(user?.rama?.id) &&
+            Number(programa.grupo?.id) === Number(user?.grupo?.id);
+
+        return esAutor || compartenRamaYGrupo;
+    };
 
     // El dueño también puede retroceder su programa de "enviado" a "borrador" para seguir editándolo.
     const puedeVolverABorrador = (programa) =>
@@ -235,13 +246,13 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
                                                 )}
 
                                                 {enRevision && (
-                                                    <button
-                                                        disabled
-                                                        className="p-1.5 rounded-lg border border-scout-border text-scout-muted/50 cursor-not-allowed"
-                                                        title="Comentarios (próximamente)"
+                                                    <Link
+                                                        to={`/gestion-programas/revisar/${programa.id}`}
+                                                        className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer"
+                                                        title="Revisar y comentar"
                                                     >
                                                         <MessageSquare size={13} />
-                                                    </button>
+                                                    </Link>
                                                 )}
 
                                                 {puedeRetroceder && (

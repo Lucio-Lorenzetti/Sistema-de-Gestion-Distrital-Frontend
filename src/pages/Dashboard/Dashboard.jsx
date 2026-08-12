@@ -9,6 +9,7 @@ import CursosResumenCard from './Resumen/CursosResumenCard';
 import DocumentacionResumenCard from './Resumen/DocumentacionResumenCard';
 import EducadorResumenCard from './Resumen/EducadorResumenCard';
 import ProgramasAprobacionResumen from './Resumen/ProgramasAprobacionResumen';
+import ComentariosPendientesResumenCard from './Resumen/ComentariosPendientesResumenCard';
 
 const RESUMEN_COMPONENTS = {
     noticias: NoticiasResumenCard,
@@ -16,6 +17,7 @@ const RESUMEN_COMPONENTS = {
     documentacion: DocumentacionResumenCard,
     miPerfilPrograma: EducadorResumenCard,
     programasAprobacion: ProgramasAprobacionResumen,
+    comentariosPendientes: ComentariosPendientesResumenCard,
 };
 
 const Dashboard = () => {

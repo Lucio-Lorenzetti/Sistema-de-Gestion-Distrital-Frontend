@@ -75,8 +75,9 @@ const agregarTextoMultilinea = (lineasTarget, texto) => {
 
 const generarCronogramaDia = (esPrimerDia, esUltimoDia, contadorActividadRef) => {
     const horarios = [];
-
+    
     if (esPrimerDia) {
+        
         horarios.push({ hora: '08:00hs', desc: 'Concentración' });
     } else {
         horarios.push({ hora: '08:00hs', desc: 'Diana / Desayuno' });
@@ -116,6 +117,17 @@ const buildTemplateDiaLineas = (datos, diaInfo, numeroDia, esPrimerDia, esUltimo
 
     // Solo el Día 1 incluye el bloque de Título, Educadores, Diagnóstico, Objetivos e Info Adicional
     if (esPrimerDia) {
+        lineas.push(
+            linea([
+                {
+                    text: 'Este programa fue generado mediante el Sistema de Gestión del Distrito 3 - Zona 13 - Scouts de Argentina. Esta plantilla tiene como objetivo unificar los criterios mínimos de un programa de campamento/acantonamiento a nivel distrital. Se solicita respetar como base la información aquí requerida; toda información adicional que se considere pertinente es bienvenida. El programa se generará a partir de los datos ingresados en el paso anterior, junto con la descripción incorporada en esta sección.',
+                    bold: false,
+                    color: '#9ca3af',
+                },
+            ])
+        );
+        lineas.push(linea(''));
+
         lineas.push(linea([{ text: 'Título', bold: true }]));
         agregarTextoMultilinea(lineas, datos.titulo);
         lineas.push(linea(''));

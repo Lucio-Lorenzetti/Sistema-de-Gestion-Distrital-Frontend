@@ -56,7 +56,7 @@ const buildTemplateLineas = (datos, inicio, fin) => {
     lineas.push(
         linea([
             {
-                text: 'Este Template es para unificar criterios mínimos de un programa de cuatrimestre para el distrito, se pide que de base se respete la información solicitada, y en el caso de querer agregar cosas es bienvenido, dicho programa se generará a partir de los datos ingresados en el paso anterior más la descripción ingresada acá.',
+                text: 'Este programa fue generado mediante el Sistema de Gestión del Distrito 3 - Zona 13 - Scouts de Argentina. Esta plantilla tiene como objetivo unificar los criterios mínimos de un programa de campamento/acantonamiento a nivel distrital. Se solicita respetar como base la información aquí requerida; toda información adicional que se considere pertinente es bienvenida. El programa se generará a partir de los datos ingresados en el paso anterior, junto con la descripción incorporada en esta sección.',
                 bold: false,
                 color: '#9ca3af',
             },

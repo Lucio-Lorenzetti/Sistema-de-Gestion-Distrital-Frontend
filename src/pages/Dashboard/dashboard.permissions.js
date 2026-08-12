@@ -14,6 +14,7 @@ export const RESUMEN_ACCESS = {
     documentacion: [ROLES.AUX_COMUNICACION, ROLES.DIRECTOR],
     miPerfilPrograma: [ROLES.EDUCADOR],
     programasAprobacion: [ROLES.AUX_PROGRAMA],
+    comentariosPendientes: [ROLES.EDUCADOR],
 };
 
 // Qué GESTIÓN completa (ruta /gestion-x) puede abrir cada rol

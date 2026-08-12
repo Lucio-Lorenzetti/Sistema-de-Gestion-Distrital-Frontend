@@ -98,13 +98,13 @@ const PublicLayout = () => {
                 Sistema centralizado para la gestión administrativa, institucional y de programas educativos.
               </p>
               <div className="flex items-center gap-4 pt-1">
-                <a href="#" aria-label="Facebook" className="opacity-70 hover:opacity-100 hover:text-scout-primary transition-colors">
+                <a href="https://www.facebook.com/Distrito3Zona13?locale=es_LA" aria-label="Facebook" className="opacity-70 hover:opacity-100 hover:text-scout-primary transition-colors">
                   <FacebookIcon size={17} />
                 </a>
-                <a href="#" aria-label="Instagram" className="opacity-70 hover:opacity-100 hover:text-scout-primary transition-colors">
+                <a href="https://www.instagram.com/distrito3z13.saac/" aria-label="Instagram" className="opacity-70 hover:opacity-100 hover:text-scout-primary transition-colors">
                   <InstagramIcon size={17} />
                 </a>
-                <a href="mailto:distrito3@scouts.org.ar" aria-label="Email" className="opacity-70 hover:opacity-100 hover:text-scout-primary transition-colors">
+                <a href="mailto:distrito3z13sa@gmail.com" aria-label="Email" className="opacity-70 hover:opacity-100 hover:text-scout-primary transition-colors">
                   <Mail size={17} />
                 </a>
               </div>
@@ -137,7 +137,7 @@ const PublicLayout = () => {
                 <a href="mailto:lorenzettilucioadriel@gmail.com" aria-label="Email" className="opacity-70 hover:opacity-100 hover:text-scout-primary transition-colors">
                   <Mail size={17} />
                 </a>
-                <a href="#" aria-label="LinkedIn" className="opacity-70 hover:opacity-100 hover:text-scout-primary transition-colors">
+                <a href="www.linkedin.com/in/lucio-lorenzetti" aria-label="LinkedIn" className="opacity-70 hover:opacity-100 hover:text-scout-primary transition-colors">
                   <LinkedinIcon size={17} />
                 </a>
               </div>

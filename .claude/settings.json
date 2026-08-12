@@ -5,7 +5,14 @@
       "Bash(xargs sed -i 's/bg-red-50 text-scout-muted hover:text-scout-accent/bg-scout-accent-light text-scout-muted hover:text-scout-accent/g')",
       "Bash(npx vite *)",
       "Bash(lsof -ti:5173 -sTCP:LISTEN)",
-      "Bash(xargs -r kill)"
+      "Bash(xargs -r kill)",
+      "Read(//c/Users/Lucho/Desktop/Proyectos/Proyecto Final/sistema-gestion-distrital-back/app/Http/Controllers/Api/Programas/**)",
+      "Read(//c/Users/Lucho/Desktop/Proyectos/Proyecto Final/sistema-gestion-distrital-back/routes/**)",
+      "Bash(node -e \"const m = require\\('lucide-react'\\); ['Check','Undo2','Plus','MessageSquare','ArrowLeft','Lock'].forEach\\(n => console.log\\(n, typeof m[n]\\)\\)\")",
+      "Bash(node -e \"const m = require\\('lucide-react'\\); ['Type','Stethoscope','Target','CalendarDays','ListChecks','FileText'].forEach\\(n => console.log\\(n, typeof m[n]\\)\\)\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Lucho\\Desktop\\Proyectos\\Proyecto Final\\sistema-gestion-distrital-back\\app\\Http\\Controllers\\Api\\Programas"
     ]
   }
 }

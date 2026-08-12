@@ -39,6 +39,7 @@ import CrearProgramaCFA from './pages/Logueado/Programas/CrearProgramaCFA';
 import EditarProgramaCuatrimestre from './pages/Logueado/Programas/EditarProgramaCuatrimestre';
 import EditarProgramaCampamento from './pages/Logueado/Programas/EditarProgramaCampamento';
 import EditarProgramaCFA from './pages/Logueado/Programas/EditarProgramaCFA';
+import RevisarPrograma from './pages/Logueado/Programas/RevisarPrograma';
 
 // Vistas de Cursos - CRUD (Privadas / Gestión Cursos)
 import CrearCurso from './pages/Logueado/Cursos/CrearCurso';
@@ -114,6 +115,7 @@ function App() {
           <Route path="/gestion-programas/editar/cuatrimestre/:id" element={<EditarProgramaCuatrimestre />} />
           <Route path="/gestion-programas/editar/campamento/:id" element={<EditarProgramaCampamento />} />
           <Route path="/gestion-programas/editar/cfa/:id" element={<EditarProgramaCFA />} />
+          <Route path="/gestion-programas/revisar/:id" element={<RevisarPrograma />} />
 
           <Route path="/gestion-cursos" element={<Courses />} />
           <Route path="/gestion-cursos/administrar" element={<Courses />} />
