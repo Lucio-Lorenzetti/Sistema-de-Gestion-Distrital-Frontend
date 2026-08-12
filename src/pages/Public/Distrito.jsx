@@ -38,8 +38,8 @@ const Distrito = () => {
             <div className="md:h-[calc(100vh-4.5rem)] flex flex-col">
                 <header className="md:h-[15vh] py-8 bg-[var(--color-scout-bg-card)]/80 backdrop-blur-md border-b border-[var(--color-scout-border)] flex flex-col justify-center px-6 md:px-20">
                     <div className="max-w-5xl mx-auto w-full text-left">
-                        <h1 className="text-2xl md:text-4xl font-black text-[var(--color-scout-primary)] tracking-tighter uppercase leading-none">
-                            El <span className="text-[var(--color-scout-primary)]/20 italic">Distrito 3</span>
+                        <h1 className="text-2xl md:text-4xl font-black text-[var(--color-scout-ink)] tracking-tighter uppercase leading-none">
+                            El <span className="text-[var(--color-scout-primary)] italic">Distrito 3</span>
                         </h1>
                     </div>
                 </header>
@@ -47,14 +47,14 @@ const Distrito = () => {
                 <main className="flex-grow flex items-center justify-center p-6 md:p-20">
                     <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24">
                         <div className="space-y-6 text-left">
-                            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-[var(--color-scout-primary)]">Nuestra Misión</h2>
+                            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-[var(--color-scout-ink)]">Nuestra Misión</h2>
                             <div className="h-1 w-12 bg-[var(--color-scout-primary)] mb-6" />
                             <p className="text-[var(--color-scout-muted)] leading-relaxed text-sm md:text-lg">
                                 Contribuir a la educación de los jóvenes, a través de un sistema de valores basado en la Ley y la Promesa Scout, para ayudar a construir un mundo mejor donde las personas se desarrollen plenamente y jueguen un papel constructivo en la sociedad.
                             </p>
                         </div>
                         <div className="space-y-6 text-left border-l border-[var(--color-scout-border)] md:pl-20">
-                            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-[var(--color-scout-primary)]">Nuestra Historia</h2>
+                            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-[var(--color-scout-ink)]">Nuestra Historia</h2>
                             <div className="h-1 w-12 bg-[var(--color-scout-primary)] mb-6" />
                             <p className="text-[var(--color-scout-muted)] leading-relaxed text-sm md:text-lg">
                                 El Distrito 3 - Zona 13, con sede en Bahía Blanca, nace de la unión de grupos scouts históricos. Somos herederos de una tradición de servicio que se renueva año tras año, potenciando el impacto educativo en cada barrio.
@@ -66,14 +66,14 @@ const Distrito = () => {
 
             <section className="bg-[var(--color-scout-bg-card)] py-24 px-6 md:px-20 border-y border-[var(--color-scout-border)]">
                 <div className="max-w-7xl mx-auto">
-                    <h2 className="text-3xl font-black uppercase tracking-tighter mb-16 flex items-center gap-4 text-[var(--color-scout-primary)]">
+                    <h2 className="text-3xl font-black uppercase tracking-tighter mb-16 flex items-center gap-4 text-[var(--color-scout-ink)]">
                         Consejo Distrital <div className="h-1 w-12 bg-[var(--color-scout-primary)]" />
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                         {CONSEJO_MOCK.map((pers) => (
                             <div key={pers.id} className="p-8 rounded-[2rem] border border-[var(--color-scout-border)] bg-[var(--color-scout-bg-panel)]/50 hover:shadow-xl transition-all text-left">
                                 <span className="text-[9px] font-black uppercase text-[var(--color-scout-muted)] block mb-2">{pers.rol}</span>
-                                <h3 className="text-sm font-bold uppercase mb-4 leading-tight text-[var(--color-scout-primary)]">{pers.nombre}</h3>
+                                <h3 className="text-sm font-bold uppercase mb-4 leading-tight text-[var(--color-scout-ink)]">{pers.nombre}</h3>
                                 <a href={`mailto:${pers.mail}`} className="text-[10px] font-black uppercase text-[var(--color-scout-primary)] border-b border-[var(--color-scout-primary)]/10 hover:border-[var(--color-scout-primary)] transition-colors">Contactar</a>
                             </div>
                         ))}
@@ -82,8 +82,8 @@ const Distrito = () => {
             </section>
 
             <section className="py-24 px-6 md:px-20 max-w-7xl mx-auto">
-                <h2 className="text-3xl font-black uppercase tracking-tighter mb-16 flex items-center gap-4 text-[var(--color-scout-primary)]">
-                    Grupos del Distrito <div className="h-1 w-12 bg-[var(--color-scout-primary)]" />
+                <h2 className="text-3xl font-black uppercase tracking-tighter mb-16 flex items-center gap-4 text-[var(--color-scout-ink)]">
+                    Grupos del Distrito <div className="h-1 w-12 bg-[var(--color-scout-accent)]" />
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {GRUPOS_MOCK.map((grupo) => (
@@ -93,11 +93,11 @@ const Distrito = () => {
                             className="group relative bg-[var(--color-scout-bg-card)] rounded-[2rem] border border-[var(--color-scout-border)] p-6 flex flex-row items-center justify-between cursor-pointer hover:shadow-xl transition-all md:h-[15vh]"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-[var(--color-scout-primary)] text-white rounded-xl flex items-center justify-center font-black text-lg group-hover:scale-110 transition-transform">
+                                <div className="w-12 h-12 bg-[var(--color-scout-accent)] text-white rounded-xl flex items-center justify-center font-black text-lg group-hover:scale-110 transition-transform">
                                     #{grupo.nro}
                                 </div>
                                 <div className="text-left">
-                                    <h3 className="text-sm font-bold uppercase tracking-tight leading-none mb-1 text-[var(--color-scout-primary)]">{grupo.nombre}</h3>
+                                    <h3 className="text-sm font-bold uppercase tracking-tight leading-none mb-1 text-[var(--color-scout-ink)]">{grupo.nombre}</h3>
                                     <p className="text-[9px] text-[var(--color-scout-muted)] font-bold uppercase tracking-widest flex items-center gap-1">
                                         <MapPin size={10} /> {grupo.barrio}
                                     </p>
@@ -113,27 +113,27 @@ const Distrito = () => {
                 const g = GRUPOS_MOCK.find(item => item.id === expandedGrupoId);
                 return (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
-                        <div className="absolute inset-0 bg-[var(--color-scout-primary)]/60 backdrop-blur-md" onClick={() => setExpandedGrupoId(null)} />
+                        <div className="absolute inset-0 bg-[var(--color-scout-ink)]/60 backdrop-blur-md" onClick={() => setExpandedGrupoId(null)} />
                         <div className="relative bg-[var(--color-scout-bg-card)] w-full max-w-4xl max-h-[85vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-300 text-left">
                             <button onClick={() => setExpandedGrupoId(null)} className="absolute top-6 right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:rotate-90 transition-all">
                                 <X size={20} />
                             </button>
 
-                            <div className="md:w-1/3 bg-[var(--color-scout-primary)] flex flex-col items-center justify-center text-white p-12 text-center space-y-6">
+                            <div className="md:w-1/3 bg-[var(--color-scout-accent)] flex flex-col items-center justify-center text-white p-12 text-center space-y-6">
                                 <div className="text-7xl font-black opacity-20">#{g.nro}</div>
                                 <p className="text-xl font-black uppercase">Grupo Scout<br />{g.nombre}</p>
                             </div>
 
                             <div className="md:w-2/3 p-8 md:p-16 overflow-y-auto">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-scout-muted)] block mb-4">Ficha Institucional</span>
-                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-primary)]">G.S. {g.nombre}</h2>
+                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-ink)]">G.S. {g.nombre}</h2>
 
                                 <div className="space-y-8 border-y border-[var(--color-scout-border)] py-10 mb-8">
                                     <div className="flex gap-4">
                                         <MapPin className="text-[var(--color-scout-muted)]" />
                                         <div>
                                             <p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Sede y Dirección</p>
-                                            <p className="text-sm font-bold uppercase text-[var(--color-scout-primary)]">{g.sede} • {g.barrio}</p>
+                                            <p className="text-sm font-bold uppercase text-[var(--color-scout-ink)]">{g.sede} • {g.barrio}</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-4">

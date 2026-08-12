@@ -79,7 +79,7 @@ const CrearBibliografia = () => {
 
                 {/* ERROR */}
                 {error && (
-                    <div className="mb-4 mt-4 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                    <div className="mb-4 mt-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                         {error}
                     </div>
                 )}
@@ -136,7 +136,7 @@ const CrearBibliografia = () => {
                                     onChange={(e) => setNombre(e.target.value)}
                                     required
                                     placeholder="Ej: Manual de Nudos Scout"
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
 
@@ -171,7 +171,7 @@ const CrearBibliografia = () => {
                                             onChange={(e) => setLink(e.target.value)}
                                             required={tipo === 'link'}
                                             placeholder="https://ejemplo.com/documento"
-                                            className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                            className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                         />
                                     </div>
                                 )}
@@ -188,7 +188,7 @@ const CrearBibliografia = () => {
                                 onChange={(e) => setDescripcion(e.target.value)}
                                 rows={6}
                                 placeholder="¿De qué trata este documento o recurso educativo?"
-                                className="w-full flex-1 border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[180px]"
+                                className="w-full flex-1 border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[180px]"
                             />
                         </div>
 

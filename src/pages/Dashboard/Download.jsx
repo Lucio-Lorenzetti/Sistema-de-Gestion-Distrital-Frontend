@@ -164,7 +164,7 @@ const Bibliografia = () => {
                                     {itemsPagina.map((item) => (
                                         <tr key={item.id} className="group hover:bg-scout-bg-panel transition-colors">
                                             <td className="py-4 pr-4">
-                                                <p className="text-xs font-bold text-scout-primary group-hover:text-scout-primary-hover transition-colors">{item.nombre}</p>
+                                                <p className="text-xs font-bold text-scout-ink transition-colors">{item.nombre}</p>
                                             </td>
                                             <td className="py-4 pr-4"><TipoBadge tipo={item.tipo} /></td>
                                             <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{item.user?.name || 'Sin asignar'}</td>
@@ -199,7 +199,7 @@ const Bibliografia = () => {
                                                     </button>
                                                     <button
                                                         onClick={() => { if (window.confirm('¿Estás seguro de eliminar este documento?')) handleEliminar(item.id); }}
-                                                        className="p-1.5 rounded-lg border border-scout-border hover:bg-red-50 text-scout-muted hover:text-scout-accent transition-colors cursor-pointer"
+                                                        className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-accent-light text-scout-muted hover:text-scout-accent transition-colors cursor-pointer"
                                                         title="Eliminar"
                                                     >
                                                         <Trash2 size={13} />
@@ -234,7 +234,7 @@ const Bibliografia = () => {
                             <X size={20} />
                         </button>
                         <TipoBadge tipo={itemExpandido.tipo} />
-                        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-tight mt-4 mb-4 text-scout-primary">
+                        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-tight mt-4 mb-4 text-scout-ink">
                             {itemExpandido.nombre}
                         </h2>
                         <p className="text-scout-muted leading-relaxed text-sm md:text-base whitespace-pre-line mb-8">

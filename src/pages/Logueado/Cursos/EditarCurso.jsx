@@ -160,7 +160,7 @@ const EditarCurso = () => {
 
                 {/* ERROR */}
                 {error && (
-                    <div className="mb-4 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                    <div className="mb-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                         {error}
                     </div>
                 )}
@@ -193,7 +193,7 @@ const EditarCurso = () => {
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">Modalidad</label>
-                                    <select name="modalidad" value={formData.modalidad} onChange={handleChange} className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary">
+                                    <select name="modalidad" value={formData.modalidad} onChange={handleChange} className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink">
                                         <option value="Presencial">Presencial</option>
                                         <option value="Virtual">Virtual</option>
                                         <option value="Híbrido">Híbrido</option>

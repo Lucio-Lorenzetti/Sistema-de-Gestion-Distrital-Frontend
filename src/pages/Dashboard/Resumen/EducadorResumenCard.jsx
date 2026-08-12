@@ -22,7 +22,7 @@ const EducadorResumenCard = () => {
                     <UserCircle2 size={22} />
                 </div>
                 <div>
-                    <p className="text-sm font-black text-scout-primary uppercase tracking-tight">{user?.name}</p>
+                    <p className="text-sm font-black text-scout-ink uppercase tracking-tight">{user?.name}</p>
                     <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest flex items-center gap-3">
                         <span className="flex items-center gap-1"><Layers size={11} /> {user?.rama?.nombre || '—'}</span>
                         <span className="flex items-center gap-1"><UsersIcon size={11} /> {user?.grupo?.nombre || '—'}</span>
@@ -40,15 +40,15 @@ const EducadorResumenCard = () => {
             ) : (
                 <div className="grid grid-cols-3 gap-3">
                     <div className="text-center">
-                        <p className="text-2xl font-black text-scout-primary">{misBorradores}</p>
+                        <p className="text-2xl font-black text-scout-ink">{misBorradores}</p>
                         <p className="text-[9px] font-bold text-scout-muted uppercase tracking-widest">Borrador</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-2xl font-black text-scout-primary">{misEnRevision}</p>
+                        <p className="text-2xl font-black text-scout-ink">{misEnRevision}</p>
                         <p className="text-[9px] font-bold text-scout-muted uppercase tracking-widest">Revisión</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-2xl font-black text-scout-primary">{misPublicados}</p>
+                        <p className="text-2xl font-black text-scout-ink">{misPublicados}</p>
                         <p className="text-[9px] font-bold text-scout-muted uppercase tracking-widest">Publicados</p>
                     </div>
                 </div>

@@ -3,9 +3,9 @@ const ESTADO_STYLES = {
     Aprobado: 'bg-scout-success text-white',
     Publicada: 'bg-scout-success text-white',
     Observado: 'bg-yellow-100 text-yellow-700 border border-yellow-200',
-    Programada: 'bg-blue-100 text-blue-700 border border-blue-200',
-    Enviado: 'bg-blue-600 text-white',
-    Rechazado: 'bg-red-100 text-red-700 border border-red-200',
+    Programada: 'bg-scout-primary/10 text-scout-primary border border-scout-primary/20',
+    Enviado: 'bg-scout-success text-white',
+    Rechazado: 'bg-scout-accent-light text-scout-accent border border-scout-accent/20',
 };
 const DEFAULT_STYLE = 'bg-scout-bg-panel text-scout-primary border border-scout-border';
 

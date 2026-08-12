@@ -32,7 +32,7 @@ const ProgramasMiniTable = ({ titulo, icon, programas, emptyText }) => (
                     <tbody className="divide-y divide-scout-border">
                         {programas.map((p) => (
                             <tr key={p.id} className="hover:bg-scout-bg-panel transition-colors">
-                                <td className="py-2.5 pr-3 text-xs font-bold text-scout-primary">{p.titulo}</td>
+                                <td className="py-2.5 pr-3 text-xs font-bold text-scout-ink">{p.titulo}</td>
                                 <td className="py-2.5 pr-3 text-xs text-scout-muted font-medium whitespace-nowrap">{p.rama?.nombre || '—'}</td>
                                 <td className="py-2.5 pr-3 text-xs text-scout-muted font-medium whitespace-nowrap">{p.grupo?.nombre || '—'}</td>
                                 <td className="py-2.5"><EstadoBadge estado={ESTADO_LABELS[p.estado] || p.estado} /></td>

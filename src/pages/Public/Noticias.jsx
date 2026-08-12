@@ -33,8 +33,8 @@ const Noticias = () => {
 
             <header className="py-8 bg-scout-bg-card/80 backdrop-blur-md border-b border-scout-border flex flex-col justify-center px-6 md:px-20">
                 <div className="max-w-5xl mx-auto w-full text-left">
-                    <h1 className="text-2xl md:text-4xl font-black text-scout-primary tracking-tighter uppercase leading-none">
-                        Noticias <span className="text-scout-primary/20 italic">Distritales</span>
+                    <h1 className="text-2xl md:text-4xl font-black text-scout-ink tracking-tighter uppercase leading-none">
+                        Noticias <span className="text-scout-primary italic">Distritales</span>
                     </h1>
                 </div>
             </header>
@@ -72,7 +72,7 @@ const Noticias = () => {
                                 <img src={n.imagen || imgDefault} alt={n.titulo} className="w-full h-full object-cover" />
                             </div>
                             <div className="p-4 flex flex-col justify-center flex-grow overflow-hidden text-left">
-                                <h2 className="font-bold text-xs md:text-sm mb-1 text-scout-primary line-clamp-2">{n.titulo}</h2>
+                                <h2 className="font-bold text-xs md:text-sm mb-1 text-scout-ink line-clamp-2">{n.titulo}</h2>
                                 <p className="text-[10px] text-scout-muted line-clamp-2">{n.copete}</p>
                             </div>
                         </article>
@@ -117,12 +117,12 @@ const Noticias = () => {
                         </div>
 
                         <div className="md:w-1/2 p-6 md:pl-12 overflow-y-auto text-left">
-                            <h2 className="text-3xl font-black uppercase text-scout-primary mb-6">
+                            <h2 className="text-3xl font-black uppercase text-scout-ink mb-6">
                                 {noticiaExpandida.titulo}
                             </h2>
 
                             {noticiaExpandida.copete && (
-                                <p className="text-lg font-bold text-scout-primary mb-6 border-l-4 border-scout-primary pl-4">
+                                <p className="text-lg font-bold text-scout-accent mb-6 border-l-4 border-scout-accent pl-4">
                                     {noticiaExpandida.copete}
                                 </p>
                             )}

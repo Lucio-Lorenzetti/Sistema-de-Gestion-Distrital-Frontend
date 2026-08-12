@@ -114,7 +114,7 @@ const CrearNoticia = () => {
 
                 {/* ERROR */}
                 {error && (
-                    <div className="mb-4 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                    <div className="mb-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                         {error}
                     </div>
                 )}
@@ -136,7 +136,7 @@ const CrearNoticia = () => {
                                     value={formData.titulo}
                                     onChange={handleChange}
                                     placeholder="Ej: Campamento de Verano 2026..."
-                                    className="w-full border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-primary focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50 placeholder:text-scout-muted/50"
+                                    className="w-full border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-ink focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50 placeholder:text-scout-muted/50"
                                     required
                                 />
                             </div>
@@ -152,7 +152,7 @@ const CrearNoticia = () => {
                                     value={formData.fecha}
                                     min={getCurrentDate()} // <-- Bloquea el pasado
                                     onChange={handleChange}
-                                    className="w-full border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-primary focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50"
+                                    className="w-full border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-ink focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50"
                                     required
                                 />
                             </div>
@@ -215,7 +215,7 @@ const CrearNoticia = () => {
                                     onChange={handleChange}
                                     placeholder="Breve descripción que aparecerá en las tarjetas de inicio..."
                                     rows={3}
-                                    className="w-full border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-primary focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50 resize-none placeholder:text-scout-muted/50"
+                                    className="w-full border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-ink focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50 resize-none placeholder:text-scout-muted/50"
                                 />
                             </div>
 
@@ -229,7 +229,7 @@ const CrearNoticia = () => {
                                     value={formData.cuerpo}
                                     onChange={handleChange}
                                     placeholder="Desarrollá aquí todo el contenido de la noticia..."
-                                    className="w-full flex-1 min-h-[150px] border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-primary focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50 resize-none placeholder:text-scout-muted/50"
+                                    className="w-full flex-1 min-h-[150px] border border-scout-border rounded-xl p-4 text-sm font-medium text-scout-ink focus:outline-none focus:border-scout-primary transition-colors bg-scout-bg-panel/50 resize-none placeholder:text-scout-muted/50"
                                     required
                                 />
                             </div>
@@ -248,7 +248,7 @@ const CrearNoticia = () => {
                             type="button"
                             onClick={() => guardarNoticia('Borrador')}
                             disabled={isLoading}
-                            className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-gray-200 hover:bg-gray-300 text-gray-700 shadow-sm"
+                            className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-scout-ink/10 hover:bg-scout-ink/20 text-scout-ink shadow-sm"
                         >
                             Guardar en Borrador
                         </button>
@@ -258,8 +258,8 @@ const CrearNoticia = () => {
                             onClick={() => guardarNoticia('Programada')}
                             disabled={isLoading || !esFechaFutura}
                             className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${!esFechaFutura
-                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
+                                ? 'bg-scout-border text-scout-muted cursor-not-allowed'
+                                : 'bg-scout-primary/10 hover:bg-scout-primary/20 text-scout-primary'
                                 }`}
                             title={!esFechaFutura ? "Modificá el calendario a una fecha futura para programar" : "Programar publicación"}
                         >

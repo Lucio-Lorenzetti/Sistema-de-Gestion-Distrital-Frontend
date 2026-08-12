@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui;
+  --font-sans: "Ubuntu", ui-sans-serif, system-ui;
 
   /*PALETA DE COLORES */
 
@@ -11,17 +11,20 @@
   --color-scout-bg-card: #ffffff;
   /* Blanco puro para las tarjetas y el fondo del Layout */
 
-  /* Colores de Marca Primarios y Secundarios */
-  --color-scout-primary: #121212;
-  /* Tu negro puro de botones e identidad (#121212) */
-  --color-scout-primary-hover: #262626;
-  /* Gris oscuro para las transiciones e interactividad (neutral-800) */
+  /* Colores de Marca Primarios y Secundarios (Rebrand Figma) */
+  --color-scout-primary: #00AAF2;
+  /* Azul de marca: botones, links y estados activos */
+  --color-scout-primary-hover: #0B69CA;
+  /* Azul oscuro para hover/interactividad sobre el primario */
   --color-scout-muted: #6b7280;
   /* Gris medio para roles, subtítulos y textos secundarios (gray-500) */
 
+  /* Chrome oscuro (footer, superficies que deben seguir siendo negras) */
+  --color-scout-ink: #121212;
+
   /* Sistema de Alertas y Contextos (Módulo PDF y Descargas) */
-  --color-scout-accent: #dc2626;
-  /* Tu rojo PDF oficial (#dc2626) de Descargas */
+  --color-scout-accent: #DA251C;
+  /* Rojo de marca (Figma) */
   --color-scout-accent-light: #fef2f2;
   /* Rojo super suave para el contenedor lateral del modal (red-50) */
 

@@ -15,7 +15,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
-  const setToken = useAuthStore((state) => state.setToken); // ← nuevo
+  const setToken = useAuthStore((state) => state.setToken);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -25,9 +25,7 @@ const Login = () => {
       const response = await api.post('/login', { email, password });
       const res = response.data;
 
-      // Guardamos en localStorage Y en el store
-      localStorage.setItem('auth_token', res.token);
-      setToken(res.token); // ← nuevo
+      setToken(res.token);
       setUser(res.user);
 
       if (res.must_change_password) {

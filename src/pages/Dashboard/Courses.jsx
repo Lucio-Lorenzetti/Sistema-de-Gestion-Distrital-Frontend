@@ -220,7 +220,7 @@ const GestionCursos = () => {
                   {cursosPagina.map((curso) => (
                     <tr key={curso.id} className="group hover:bg-scout-bg-panel transition-colors">
                       <td className="py-4 pr-3">
-                        <p className="text-xs font-bold text-scout-primary group-hover:text-scout-primary-hover transition-colors">{curso.titulo}</p>
+                        <p className="text-xs font-bold text-scout-ink transition-colors">{curso.titulo}</p>
                       </td>
                       <td className="py-4 text-center"><CategoriaBadge categoria={curso.categoria} /></td>
                       <td className="py-4 text-xs text-scout-muted font-medium text-center">
@@ -268,7 +268,7 @@ const GestionCursos = () => {
                           </Link>
                           <button
                             onClick={() => { if (window.confirm('¿Estás seguro de eliminar este curso?')) handleEliminar(curso.id); }}
-                            className="p-1.5 rounded-lg border border-scout-border hover:bg-red-50 text-scout-muted hover:text-scout-accent transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-accent-light text-scout-muted hover:text-scout-accent transition-colors cursor-pointer"
                             title="Eliminar"
                           >
                             <Trash2 size={13} />
@@ -308,7 +308,7 @@ const GestionCursos = () => {
               <EstadoBadge estado={cursoExpandido.estadoCalculado || 'Sin Información'} />
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-6 text-scout-primary text-left">
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-6 text-scout-ink text-left">
               {cursoExpandido.titulo || 'Sin Información'}
             </h2>
 
@@ -317,7 +317,7 @@ const GestionCursos = () => {
               <span className="text-[9px] font-black uppercase tracking-widest text-scout-muted flex items-center gap-1 mb-1">
                 Categoría y Ramas / Gestión
               </span>
-              <p className="text-sm font-bold text-scout-primary">
+              <p className="text-sm font-bold text-scout-ink">
                 {cursoExpandido.categoria === 'Programa' && cursoExpandido.ramas?.length > 0
                   ? `Programa — Ramas: ${cursoExpandido.ramas.join(', ')}`
                   : cursoExpandido.categoria || 'Sin Información'}
@@ -330,13 +330,13 @@ const GestionCursos = () => {
                 <span className="text-[9px] font-black uppercase tracking-widest text-scout-muted flex items-center gap-1 mb-1">
                   <Clock size={11} /> Cierre Inscripción
                 </span>
-                <p className="text-sm font-bold text-scout-primary">{formatearFecha(cursoExpandido.fecha_cierre) || 'Sin Información'}</p>
+                <p className="text-sm font-bold text-scout-ink">{formatearFecha(cursoExpandido.fecha_cierre) || 'Sin Información'}</p>
               </div>
               <div className="bg-scout-bg-panel rounded-xl p-4">
                 <span className="text-[9px] font-black uppercase tracking-widest text-scout-muted flex items-center gap-1 mb-1">
                   <Clock size={11} /> Fin del Curso
                 </span>
-                <p className="text-sm font-bold text-scout-primary">{formatearFecha(cursoExpandido.fecha_fin) || 'Sin Información'}</p>
+                <p className="text-sm font-bold text-scout-ink">{formatearFecha(cursoExpandido.fecha_fin) || 'Sin Información'}</p>
               </div>
             </div>
 
@@ -344,19 +344,19 @@ const GestionCursos = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-scout-bg-panel rounded-xl p-3">
                 <span className="text-[8px] font-black uppercase tracking-widest text-scout-muted block mb-1">Lugar</span>
-                <p className="text-xs font-bold text-scout-primary">{cursoExpandido.lugar || 'Sin Información'}</p>
+                <p className="text-xs font-bold text-scout-ink">{cursoExpandido.lugar || 'Sin Información'}</p>
               </div>
               <div className="bg-scout-bg-panel rounded-xl p-3">
                 <span className="text-[8px] font-black uppercase tracking-widest text-scout-muted block mb-1">Modalidad</span>
-                <p className="text-xs font-bold text-scout-primary">{cursoExpandido.modalidad || 'Sin Información'}</p>
+                <p className="text-xs font-bold text-scout-ink">{cursoExpandido.modalidad || 'Sin Información'}</p>
               </div>
               <div className="bg-scout-bg-panel rounded-xl p-3">
                 <span className="text-[8px] font-black uppercase tracking-widest text-scout-muted block mb-1">Costo</span>
-                <p className="text-xs font-bold text-scout-primary">{cursoExpandido.costo || 'Sin Información'}</p>
+                <p className="text-xs font-bold text-scout-ink">{cursoExpandido.costo || 'Sin Información'}</p>
               </div>
               <div className="bg-scout-bg-panel rounded-xl p-3">
                 <span className="text-[8px] font-black uppercase tracking-widest text-scout-muted block mb-1">Formador</span>
-                <p className="text-xs font-bold text-scout-primary">{cursoExpandido.formador || 'Sin Información'}</p>
+                <p className="text-xs font-bold text-scout-ink">{cursoExpandido.formador || 'Sin Información'}</p>
               </div>
             </div>
 

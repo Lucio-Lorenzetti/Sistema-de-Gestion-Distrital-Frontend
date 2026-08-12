@@ -94,7 +94,7 @@ const buildTemplateLineas = (datos, inicio, fin) => {
     lineas.push(
         linea([
             {
-                text: 'Este Template es para unificar criterios mínimos de un programa de campamento para el distrito, se pide que de base se respete la información solicitada, y en el caso de querer agregar cosas es bienvenido, dicho programa se generará a partir de los datos ingresados en el paso anterior más la descripción ingresada acá.',
+                text: 'Este programa fue generado mediante el Sistema de Gestión del Distrito 3 - Zona 13 - Scouts de Argentina. Esta plantilla tiene como objetivo unificar los criterios mínimos de un programa de cuatrimestre a nivel distrital. Se solicita respetar como base la información aquí requerida; toda información adicional que se considere pertinente es bienvenida. El programa se generará a partir de los datos ingresados en el paso anterior, junto con la descripción incorporada en esta sección.',
                 bold: false,
                 color: '#9ca3af',
             },
@@ -283,12 +283,17 @@ const CrearProgramaCampamento = () => {
 
         setError(null);
 
+        const contenidoHtmlActual = contenidoRef.current.innerHTML;
         const payload = {
             ...datosPasoUno,
             tipo: 'campamento',
             fechaInicio,
+            fecha_inicio: fechaInicio,
             fechaFin,
-            contenidoHtml: contenidoRef.current.innerHTML,
+            fecha_fin: fechaFin,
+            educadores_a_cargo: datosPasoUno.educadoresACargo,
+            contenidoHtml: contenidoHtmlActual,
+            contenido_html: contenidoHtmlActual,
         };
 
         try {
@@ -323,7 +328,7 @@ const CrearProgramaCampamento = () => {
                 </div>
 
                 {error && (
-                    <div className="mb-4 mt-4 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                    <div className="mb-4 mt-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                         {error}
                     </div>
                 )}
@@ -344,7 +349,7 @@ const CrearProgramaCampamento = () => {
                                     value={fechaInicio}
                                     onChange={(e) => setFechaInicio(e.target.value)}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -359,7 +364,7 @@ const CrearProgramaCampamento = () => {
                                     value={fechaFin}
                                     onChange={(e) => setFechaFin(e.target.value)}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -391,7 +396,7 @@ const CrearProgramaCampamento = () => {
                         contentEditable
                         suppressContentEditableWarning
                         onInput={handleContenidoInput}
-                        className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-primary font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+                        className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-ink font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
                         style={{ minHeight: 280 }}
                     />
 

@@ -7,7 +7,7 @@ const MetricCard = ({ icon, title, value, sub, color }) => (
       <div className="text-scout-primary opacity-20">{icon}</div>
     </div>
     <div>
-      <p className="text-2xl font-black tracking-tight uppercase leading-none mb-1 text-scout-primary">{value}</p>
+      <p className="text-2xl font-black tracking-tight uppercase leading-none mb-1 text-scout-ink">{value}</p>
       <p className="text-[10px] text-scout-muted font-medium">{sub}</p>
     </div>
   </div>

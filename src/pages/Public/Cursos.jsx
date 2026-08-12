@@ -49,8 +49,8 @@ const Cursos = () => {
 
             <header className="py-8 bg-[var(--color-scout-bg-card)]/80 backdrop-blur-md border-b border-[var(--color-scout-border)] flex flex-col justify-center px-6 md:px-20">
                 <div className="max-w-5xl mx-auto w-full text-left">
-                    <h1 className="text-2xl md:text-4xl font-black text-[var(--color-scout-primary)] tracking-tighter uppercase leading-none">
-                        Cursos de <span className="text-[var(--color-scout-primary)]/20 italic">Formación</span>
+                    <h1 className="text-2xl md:text-4xl font-black text-[var(--color-scout-ink)] tracking-tighter uppercase leading-none">
+                        Cursos de <span className="text-[var(--color-scout-primary)] italic">Formación</span>
                     </h1>
                 </div>
             </header>
@@ -101,7 +101,7 @@ const Cursos = () => {
                                 <span className="text-[7px] font-bold text-[var(--color-scout-muted)] uppercase mb-1">
                                     {curso.modalidad}  {curso.ramas}
                                 </span>
-                                <h2 className="font-bold tracking-tight uppercase leading-tight text-xs md:text-sm mb-1 line-clamp-2 text-[var(--color-scout-primary)]">
+                                <h2 className="font-bold tracking-tight uppercase leading-tight text-xs md:text-sm mb-1 line-clamp-2 text-[var(--color-scout-ink)]">
                                     {curso.titulo}
                                 </h2>
                                 <p className="text-[10px] text-[var(--color-scout-muted)] leading-tight line-clamp-2">
@@ -137,7 +137,7 @@ const Cursos = () => {
                 if (!c) return null;
                 return (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
-                        <div className="absolute inset-0 bg-[var(--color-scout-primary)]/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
+                        <div className="absolute inset-0 bg-[var(--color-scout-ink)]/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
                         <div className="relative bg-[var(--color-scout-bg-card)] w-full max-w-5xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-300 text-left">
                             <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:scale-110 transition-transform">
                                 <X size={20} />
@@ -168,13 +168,13 @@ const Cursos = () => {
                             </div>
                             <div className="md:w-3/5 p-8 md:p-16 overflow-y-auto">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-scout-muted)] block mb-4">{c.ramas}</span>
-                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-primary)]">{c.titulo}</h2>
+                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-ink)]">{c.titulo}</h2>
                                 <div className="grid grid-cols-2 gap-y-8 gap-x-4 mb-10 border-y border-[var(--color-scout-border)] py-10">
-                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Fecha</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><Calendar size={16} /> {formatearFecha(c.fecha_fin)}</div></div>
-                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Lugar</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><MapPin size={16} /> {c.lugar}</div></div>
-                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Costo</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><DollarSign size={16} /> {c.costo}</div></div>
-                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Modalidad</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><Layers size={16} /> {c.modalidad}</div></div>
-                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Formador</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-primary)]"><User size={16} /> {c.formador}</div></div>
+                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Fecha</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-ink)]"><Calendar size={16} className="text-[var(--color-scout-primary)]" /> {formatearFecha(c.fecha_fin)}</div></div>
+                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Lugar</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-ink)]"><MapPin size={16} className="text-[var(--color-scout-primary)]" /> {c.lugar}</div></div>
+                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Costo</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-ink)]"><DollarSign size={16} className="text-[var(--color-scout-primary)]" /> {c.costo}</div></div>
+                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Modalidad</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-ink)]"><Layers size={16} className="text-[var(--color-scout-primary)]" /> {c.modalidad}</div></div>
+                                    <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Formador</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-ink)]"><User size={16} className="text-[var(--color-scout-primary)]" /> {c.formador}</div></div>
                                 </div>
                                 <div className="space-y-4">
                                     <p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Resumen del Curso</p>

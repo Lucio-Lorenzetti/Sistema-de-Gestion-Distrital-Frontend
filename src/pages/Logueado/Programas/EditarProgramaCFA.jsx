@@ -233,19 +233,27 @@ const EditarProgramaCFA = () => {
             try {
                 const res = await api.get(`/programas/${id}`);
                 const programa = res.data;
+                const cronograma = programa.cronograma || {};
+                // El backend puede mandar los días como array directo en "dias",
+                // anidados en "cronograma.dias", o "cronograma" siendo directamente el array.
+                const diasFuente =
+                    programa.dias ||
+                    cronograma.dias ||
+                    (Array.isArray(cronograma) ? cronograma : []);
 
                 setFormData({
                     titulo: programa.titulo || '',
-                    educadoresACargo: programa.educadoresACargo || '',
+                    educadoresACargo: programa.educadoresACargo || programa.educadores_a_cargo || '',
                     diagnostico: programa.diagnostico || '',
                     objetivos: programa.objetivos || '',
                 });
-                setFechaInicio(programa.fechaInicio || '');
-                setFechaFin(programa.fechaFin || '');
+                setFechaInicio(programa.fechaInicio || programa.fecha_inicio || '');
+                setFechaFin(programa.fechaFin || programa.fecha_fin || '');
 
                 const nuevosContenidos = {};
-                (programa.dias || []).forEach((d) => {
-                    if (d.fecha) nuevosContenidos[d.fecha] = d.contenidoHtml || '';
+                diasFuente.forEach((d) => {
+                    const fecha = d.fecha || d.fecha_dia || d.date;
+                    if (fecha) nuevosContenidos[fecha] = d.contenidoHtml || d.contenido_html || '';
                 });
                 setContenidosPorDia(nuevosContenidos);
             } catch (err) {
@@ -369,8 +377,11 @@ const EditarProgramaCFA = () => {
             dia: index + 1,
             fecha: d.id,
             nombreDia: d.nombreDia,
+            nombre_dia: d.nombreDia,
             fechaFormatted: d.fechaFormatted,
+            fecha_formatted: d.fechaFormatted,
             contenidoHtml: contenidosPorDia[d.id] || '',
+            contenido_html: contenidosPorDia[d.id] || '',
         }));
 
         setError(null);
@@ -380,7 +391,10 @@ const EditarProgramaCFA = () => {
             ...formData,
             tipo: 'cfa',
             fechaInicio,
+            fecha_inicio: fechaInicio,
             fechaFin,
+            fecha_fin: fechaFin,
+            educadores_a_cargo: formData.educadoresACargo,
             dias: contenidosConsolidados,
         };
 
@@ -419,7 +433,7 @@ const EditarProgramaCFA = () => {
                 </div>
 
                 {error && (
-                    <div className="mb-4 mt-4 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                    <div className="mb-4 mt-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                         {error}
                     </div>
                 )}
@@ -440,7 +454,7 @@ const EditarProgramaCFA = () => {
                                     value={formData.titulo}
                                     onChange={handleChange}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                             <div>
@@ -453,7 +467,7 @@ const EditarProgramaCFA = () => {
                                     onChange={handleChange}
                                     required
                                     rows={2}
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
                                 />
                             </div>
                         </div>
@@ -469,7 +483,7 @@ const EditarProgramaCFA = () => {
                                     onChange={handleChange}
                                     required
                                     rows={2}
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
                                 />
                             </div>
                             <div>
@@ -482,7 +496,7 @@ const EditarProgramaCFA = () => {
                                     onChange={handleChange}
                                     required
                                     rows={2}
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
                                 />
                             </div>
                         </div>
@@ -500,7 +514,7 @@ const EditarProgramaCFA = () => {
                                     value={fechaInicio}
                                     onChange={(e) => setFechaInicio(e.target.value)}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -515,7 +529,7 @@ const EditarProgramaCFA = () => {
                                     value={fechaFin}
                                     onChange={(e) => setFechaFin(e.target.value)}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -575,7 +589,7 @@ const EditarProgramaCFA = () => {
                                 contentEditable
                                 suppressContentEditableWarning
                                 onInput={handleContenidoInput}
-                                className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-primary font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+                                className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-ink font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
                                 style={{ minHeight: 280 }}
                             />
                         </>

@@ -26,7 +26,7 @@ const CursosResumenCard = () => {
                 <div className="space-y-4 flex-1">
                     {ultimos.map((c) => (
                         <div key={c.id} className="space-y-1">
-                            <p className="text-xs font-bold text-scout-primary line-clamp-1">{c.titulo}</p>
+                            <p className="text-xs font-bold text-scout-ink line-clamp-1">{c.titulo}</p>
                             <div className="flex items-center justify-between">
                                 <span className="text-[9px] text-scout-muted flex items-center gap-1"><Clock size={10} /> {c.fechaInicio}</span>
                                 <EstadoBadge estado={c.estado} />

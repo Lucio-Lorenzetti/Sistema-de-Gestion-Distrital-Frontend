@@ -12,7 +12,7 @@ const Input = ({ label, id, type = 'text', value, onChange, placeholder, ...prop
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full px-3 py-2 border border-scout-border rounded-md shadow-sm placeholder-scout-muted focus:outline-none focus:ring-scout-primary focus:border-scout-primary transition text-sm text-scout-primary bg-scout-bg-card"
+        className="w-full px-3 py-2 border border-scout-border rounded-md shadow-sm placeholder-scout-muted focus:outline-none focus:ring-scout-primary focus:border-scout-primary transition text-sm text-scout-ink bg-scout-bg-card"
         {...props}
       />
     </div>

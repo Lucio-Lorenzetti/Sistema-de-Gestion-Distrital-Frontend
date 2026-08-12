@@ -46,7 +46,7 @@ const Home = () => {
                 <div className="relative z-10 max-w-4xl w-full text-left pt-20 md:pt-10">
                     <h1 className="text-4xl md:text-[90px] font-black tracking-tighter leading-[1] md:leading-[0.85] text-white uppercase mb-6 md:mb-8">
                         Gestión <br />
-                        <span className="text-white/40 italic">Distrito 3.</span>
+                        <span className="text-scout-accent italic">Distrito 3.</span>
                     </h1>
 
                     <p className="text-xs md:text-lg text-white/80 max-w-xl mb-10 md:mb-12 leading-relaxed font-medium uppercase tracking-wide">
@@ -57,13 +57,13 @@ const Home = () => {
                     <div className="flex flex-col sm:flex-row items-start justify-start gap-4 md:gap-6 mt-8 md:mt-16 w-full sm:w-auto">
                         <Link
                             to="/login"
-                            className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-6 border-2 border-white/30 text-white font-black uppercase text-[10px] md:text-[12px] tracking-widest hover:bg-white hover:text-black transition-all backdrop-blur-md rounded-full text-center"
+                            className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-6 bg-gray-300 text-scout-ink font-black uppercase text-[10px] md:text-[12px] tracking-widest hover:bg-scout-primary hover:text-white transition-all rounded-full text-center"
                         >
                             Comenzar Gestión
                         </Link>
                         <Link
                             to="/noticias"
-                            className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-6 border-2 border-white/30 text-white font-black uppercase text-[10px] md:text-[12px] tracking-widest hover:bg-white hover:text-black transition-all backdrop-blur-md rounded-full text-center"
+                            className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-6 bg-gray-300 text-scout-ink font-black uppercase text-[10px] md:text-[12px] tracking-widest hover:bg-scout-primary hover:text-white transition-all rounded-full text-center"
                         >
                             Últimas Noticias
                         </Link>
@@ -79,8 +79,8 @@ const Home = () => {
                     <div className="lg:col-span-5 space-y-6 md:space-y-10">
                         <div className="space-y-2 md:space-y-4">
                             <p className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-scout-muted">Comunicación</p>
-                            <h2 className="text-3xl md:text-6xl font-black uppercase tracking-tighter leading-[1] md:leading-[0.85] text-scout-primary">
-                                Noticias <br /> <span className="text-scout-primary/20 italic">Recientes.</span>
+                            <h2 className="text-3xl md:text-6xl font-black uppercase tracking-tighter leading-[1] md:leading-[0.85] text-scout-ink">
+                                Noticias <br /> <span className="text-scout-primary italic">Recientes.</span>
                             </h2>
                         </div>
                         <p className="text-sm md:text-md text-scout-muted leading-relaxed uppercase tracking-wider font-medium max-w-sm">
@@ -129,14 +129,21 @@ const Home = () => {
                 </div>
             </section >
 
+            {/* 2.5. BANNER CAMBIABLE (placeholder para contenido dinámico futuro) */}
+            <section className="bg-scout-border py-10 md:py-14 text-center">
+                <p className="text-lg md:text-2xl font-black uppercase tracking-tight text-scout-ink">
+                    Banner Cambiable
+                </p>
+            </section>
+
             {/* 3. SECCIÓN CURSOS */}
             < section className="min-h-screen bg-scout-bg-panel flex flex-col justify-center py-16 md:py-24 px-6 md:px-8 border-y border-scout-border" >
                 <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 items-center text-left">
                     <div className="lg:col-span-5 space-y-6 md:space-y-10">
                         <div className="space-y-2 md:space-y-4">
                             <p className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-scout-muted">Capacitación</p>
-                            <h2 className="text-3xl md:text-6xl font-black uppercase tracking-tighter leading-[1] md:leading-[0.85] text-scout-primary">
-                                Esquema de <br /> <span className="text-scout-primary/20 italic">Formación.</span>
+                            <h2 className="text-3xl md:text-6xl font-black uppercase tracking-tighter leading-[1] md:leading-[0.85] text-scout-ink">
+                                Esquema de <br /> <span className="text-scout-primary italic">Formación.</span>
                             </h2>
                         </div>
                         <p className="text-sm md:text-md text-scout-muted leading-relaxed uppercase tracking-wider font-medium max-w-sm">

@@ -249,17 +249,23 @@ const EditarProgramaCampamento = () => {
             try {
                 const res = await api.get(`/programas/${id}`);
                 const programa = res.data;
+                const cronograma = programa.cronograma || {};
 
                 setFormData({
                     titulo: programa.titulo || '',
-                    educadoresACargo: programa.educadoresACargo || '',
+                    educadoresACargo: programa.educadoresACargo || programa.educadores_a_cargo || '',
                     diagnostico: programa.diagnostico || '',
                     objetivos: programa.objetivos || '',
                 });
-                setFechaInicio(programa.fechaInicio || '');
-                setFechaFin(programa.fechaFin || '');
-                // Los programas viejos guardaban texto plano en "contenido"; los nuevos ya traen "contenidoHtml".
-                setContenidoInicialHtml(programa.contenidoHtml || textoPlanoAHtml(programa.contenido));
+                setFechaInicio(programa.fechaInicio || programa.fecha_inicio || '');
+                setFechaFin(programa.fechaFin || programa.fecha_fin || '');
+                // El contenido viaja anidado en "cronograma" (columna del backend); toleramos
+                // también que venga plano y en snake_case, y el "contenido" viejo en texto plano.
+                setContenidoInicialHtml(
+                    cronograma.contenidoHtml || cronograma.contenido_html ||
+                    programa.contenidoHtml || programa.contenido_html ||
+                    textoPlanoAHtml(cronograma.contenido || programa.contenido)
+                );
             } catch (err) {
                 console.error('Error al cargar el programa:', err);
                 setError('No se pudo cargar la información del programa.');
@@ -326,12 +332,17 @@ const EditarProgramaCampamento = () => {
         setError(null);
         setIsLoading(true);
 
+        const contenidoHtmlActual = contenidoRef.current.innerHTML;
         const payload = {
             ...formData,
             tipo: 'campamento',
             fechaInicio,
+            fecha_inicio: fechaInicio,
             fechaFin,
-            contenidoHtml: contenidoRef.current.innerHTML,
+            fecha_fin: fechaFin,
+            educadores_a_cargo: formData.educadoresACargo,
+            contenidoHtml: contenidoHtmlActual,
+            contenido_html: contenidoHtmlActual,
         };
 
         try {
@@ -375,7 +386,7 @@ const EditarProgramaCampamento = () => {
                 </div>
 
                 {error && (
-                    <div className="mb-4 mt-4 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                    <div className="mb-4 mt-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                         {error}
                     </div>
                 )}
@@ -396,7 +407,7 @@ const EditarProgramaCampamento = () => {
                                     value={formData.titulo}
                                     onChange={handleChange}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                             <div>
@@ -409,7 +420,7 @@ const EditarProgramaCampamento = () => {
                                     onChange={handleChange}
                                     required
                                     rows={2}
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
                                 />
                             </div>
                         </div>
@@ -425,7 +436,7 @@ const EditarProgramaCampamento = () => {
                                     onChange={handleChange}
                                     required
                                     rows={2}
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
                                 />
                             </div>
                             <div>
@@ -438,7 +449,7 @@ const EditarProgramaCampamento = () => {
                                     onChange={handleChange}
                                     required
                                     rows={2}
-                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
+                                    className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none"
                                 />
                             </div>
                         </div>
@@ -456,7 +467,7 @@ const EditarProgramaCampamento = () => {
                                     value={fechaInicio}
                                     onChange={(e) => setFechaInicio(e.target.value)}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -471,7 +482,7 @@ const EditarProgramaCampamento = () => {
                                     value={fechaFin}
                                     onChange={(e) => setFechaFin(e.target.value)}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -503,7 +514,7 @@ const EditarProgramaCampamento = () => {
                         contentEditable
                         suppressContentEditableWarning
                         onInput={handleContenidoInput}
-                        className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-primary font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+                        className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-ink font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
                         style={{ minHeight: 280 }}
                     />
 

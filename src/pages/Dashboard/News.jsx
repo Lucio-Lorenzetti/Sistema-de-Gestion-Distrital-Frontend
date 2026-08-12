@@ -167,7 +167,7 @@ const News = () => {
                                     {noticiasPagina.map((noticia) => (
                                         <tr key={noticia.id} className="group hover:bg-scout-bg-panel transition-colors">
                                             <td className="py-4 pr-4">
-                                                <p className="text-xs font-bold text-scout-primary group-hover:text-scout-primary-hover transition-colors">{noticia.titulo}</p>
+                                                <p className="text-xs font-bold text-scout-ink transition-colors">{noticia.titulo}</p>
                                             </td>
                                             <td className="py-4 pr-4"><EstadoBadge estado={noticia.estado} /></td>
                                             <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{noticia.autor || 'Sin asignar'}</td>
@@ -189,7 +189,7 @@ const News = () => {
                                                     </button>
                                                     <button
                                                         onClick={() => { if (window.confirm('¿Estás seguro de eliminar esta noticia?')) handleEliminar(noticia.id); }}
-                                                        className="p-1.5 rounded-lg border border-scout-border hover:bg-red-50 text-scout-muted hover:text-scout-accent transition-colors cursor-pointer"
+                                                        className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-accent-light text-scout-muted hover:text-scout-accent transition-colors cursor-pointer"
                                                         title="Eliminar"
                                                     >
                                                         <Trash2 size={13} />
@@ -230,11 +230,11 @@ const News = () => {
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-scout-muted block mb-4 text-left">
                                 {noticiaExpandida.categoria || 'General'} • {noticiaExpandida.fecha}
                             </span>
-                            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-6 text-scout-primary text-left">
+                            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-6 text-scout-ink text-left">
                                 {noticiaExpandida.titulo}
                             </h2>
                             {noticiaExpandida.copete && (
-                                <p className="text-lg font-bold text-scout-primary border-l-4 border-scout-primary pl-4 mb-6 leading-snug text-left">
+                                <p className="text-lg font-bold text-scout-ink border-l-4 border-scout-primary pl-4 mb-6 leading-snug text-left">
                                     {noticiaExpandida.copete}
                                 </p>
                             )}

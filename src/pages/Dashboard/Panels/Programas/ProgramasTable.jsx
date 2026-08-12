@@ -140,7 +140,7 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
     return (
         <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col" style={{ minHeight: 0 }}>
             {error && (
-                <div className="mb-5 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                <div className="mb-5 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                     {error}
                 </div>
             )}
@@ -188,7 +188,7 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
                                 return (
                                     <tr key={programa.id} className="group hover:bg-scout-bg-panel transition-colors">
                                         <td className="py-4 pr-4">
-                                            <p className="text-xs font-bold text-scout-primary group-hover:text-scout-primary-hover transition-colors">{programa.titulo}</p>
+                                            <p className="text-xs font-bold text-scout-ink transition-colors">{programa.titulo}</p>
                                         </td>
                                         <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.rama?.nombre || '—'}</td>
                                         <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.grupo?.nombre || '—'}</td>
@@ -226,7 +226,7 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
                                                         <button
                                                             onClick={() => handleEnviar(programa)}
                                                             disabled={enviandoId === programa.id}
-                                                            className="p-1.5 rounded-lg border border-scout-primary bg-scout-primary/5 hover:bg-scout-primary hover:text-white text-scout-primary transition-colors cursor-pointer disabled:opacity-40"
+                                                            className="p-1.5 rounded-lg border border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary transition-colors cursor-pointer disabled:opacity-40"
                                                             title="Enviar a revisión"
                                                         >
                                                             <Send size={13} />

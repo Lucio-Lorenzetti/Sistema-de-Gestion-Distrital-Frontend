@@ -6,7 +6,7 @@ const Select = ({ label, id, options = [], ...props }) => {
       </label>
       <select
         id={id}
-        className="w-full px-3 py-2 border border-scout-border rounded-sm bg-scout-bg-card focus:outline-none focus:border-scout-primary transition-colors text-[14px] text-scout-primary appearance-none"
+        className="w-full px-3 py-2 border border-scout-border rounded-sm bg-scout-bg-card focus:outline-none focus:border-scout-primary transition-colors text-[14px] text-scout-ink appearance-none"
         style={{ backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem center', backgroundSize: '1em' }}
         {...props}
       >

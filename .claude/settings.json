@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs sed -i 's/bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0/bg-scout-accent-light border border-scout-accent\\\\/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0/g')",
+      "Bash(xargs sed -i 's/bg-red-50 text-scout-muted hover:text-scout-accent/bg-scout-accent-light text-scout-muted hover:text-scout-accent/g')",
+      "Bash(npx vite *)",
+      "Bash(lsof -ti:5173 -sTCP:LISTEN)",
+      "Bash(xargs -r kill)"
+    ]
+  }
+}

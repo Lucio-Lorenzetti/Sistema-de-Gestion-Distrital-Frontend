@@ -26,7 +26,7 @@ const DocumentacionResumenCard = () => {
                 <div className="space-y-4 flex-1">
                     {ultimos.map((d) => (
                         <div key={d.id} className="space-y-1">
-                            <p className="text-xs font-bold text-scout-primary line-clamp-1">{d.nombre}</p>
+                            <p className="text-xs font-bold text-scout-ink line-clamp-1">{d.nombre}</p>
                             <span className="text-[9px] text-scout-muted flex items-center gap-1"><Clock size={10} /> {d.fecha}</span>
                         </div>
                     ))}

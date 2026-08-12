@@ -71,7 +71,7 @@ const CrearPrograma = () => {
 
                 {/* ERROR */}
                 {error && (
-                    <div className="mb-4 mt-4 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                    <div className="mb-4 mt-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                         {error}
                     </div>
                 )}
@@ -96,7 +96,7 @@ const CrearPrograma = () => {
                                     onChange={(e) => setTitulo(e.target.value)}
                                     required
                                     placeholder={"Ej: Programa Primer Cuatrimestre de " + (user.rama?.nombre || 'Rama') + " (" + (user.grupo?.nombre || 'Grupo') + ")" + " 202x"}
-                                    className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
 
@@ -115,7 +115,7 @@ const CrearPrograma = () => {
                                     rows={2}
                                     placeholder={`Ej: Luis Rojas (Pointer Servicial) - I.M.
 Fernando perez millan (San Bernardo Leal) - I.M.`}
-                                    className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[65px]"
+                                    className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[65px]"
                                 />
                             </div>
 
@@ -154,7 +154,7 @@ Fernando perez millan (San Bernardo Leal) - I.M.`}
                                     required
                                     rows={3}
                                     placeholder="Diagnóstico actual de la rama..."
-                                    className="w-full flex-1 border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[80px]"
+                                    className="w-full flex-1 border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[80px]"
                                 />
                             </div>
 
@@ -168,7 +168,7 @@ Fernando perez millan (San Bernardo Leal) - I.M.`}
                                     required
                                     rows={3}
                                     placeholder="¿Qué se busca lograr con este programa?"
-                                    className="w-full flex-1 border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[80px]"
+                                    className="w-full flex-1 border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[80px]"
                                 />
                             </div>
                         </div>

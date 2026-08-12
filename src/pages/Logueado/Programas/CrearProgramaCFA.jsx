@@ -334,8 +334,11 @@ const CrearProgramaCFA = () => {
             dia: index + 1,
             fecha: d.id,
             nombreDia: d.nombreDia,
+            nombre_dia: d.nombreDia,
             fechaFormatted: d.fechaFormatted,
+            fecha_formatted: d.fechaFormatted,
             contenidoHtml: contenidosPorDia[d.id] || '',
+            contenido_html: contenidosPorDia[d.id] || '',
         }));
 
         setError(null);
@@ -344,7 +347,10 @@ const CrearProgramaCFA = () => {
             ...datosPasoUno,
             tipo: 'cfa',
             fechaInicio,
+            fecha_inicio: fechaInicio,
             fechaFin,
+            fecha_fin: fechaFin,
+            educadores_a_cargo: datosPasoUno.educadoresACargo,
             dias: contenidosConsolidados,
         };
 
@@ -382,7 +388,7 @@ const CrearProgramaCFA = () => {
                 </div>
 
                 {error && (
-                    <div className="mb-4 mt-4 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                    <div className="mb-4 mt-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                         {error}
                     </div>
                 )}
@@ -403,7 +409,7 @@ const CrearProgramaCFA = () => {
                                     value={fechaInicio}
                                     onChange={(e) => setFechaInicio(e.target.value)}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -418,7 +424,7 @@ const CrearProgramaCFA = () => {
                                     value={fechaFin}
                                     onChange={(e) => setFechaFin(e.target.value)}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -478,7 +484,7 @@ const CrearProgramaCFA = () => {
                                 contentEditable
                                 suppressContentEditableWarning
                                 onInput={handleContenidoInput}
-                                className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-primary font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+                                className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-ink font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
                                 style={{ minHeight: 280 }}
                             />
                         </>

@@ -27,7 +27,7 @@ const ProgramaDetalleModal = ({ programa, onClose }) => (
                         <Users size={11} /> {programa.grupo?.nombre || '—'}
                     </span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none mb-6 text-scout-primary text-left">
+                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none mb-6 text-scout-ink text-left">
                     {programa.titulo}
                 </h2>
                 {programa.diagnostico && (
@@ -43,7 +43,7 @@ const ProgramaDetalleModal = ({ programa, onClose }) => (
                     </div>
                 )}
                 <p className="text-[10px] font-black uppercase tracking-widest text-scout-muted">
-                    Autor: <span className="text-scout-primary">{programa.owner?.name || 'Sin asignar'}</span>
+                    Autor: <span className="text-scout-ink">{programa.owner?.name || 'Sin asignar'}</span>
                 </p>
             </div>
         </div>

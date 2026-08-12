@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { CreditCardIcon } from 'lucide-react';
+import { useAuthStore } from './store/useAuthStore';
 
 // Layouts
 import PublicLayout from './components/layouts/PublicLayout';
@@ -62,6 +63,23 @@ const ScrollToTop = () => {
 };
 
 function App() {
+  const checkSession = useAuthStore((state) => state.checkSession);
+  const isBootstrapping = useAuthStore((state) => state.isBootstrapping);
+
+  useEffect(() => {
+    checkSession();
+  }, [checkSession]);
+
+  if (isBootstrapping) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-scout-bg-panel">
+        <p className="text-scout-primary font-bold uppercase tracking-widest text-xs animate-pulse">
+          Cargando sesión...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
       <ScrollToTop />

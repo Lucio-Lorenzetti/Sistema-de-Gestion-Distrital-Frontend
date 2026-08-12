@@ -37,7 +37,6 @@ const escapeHtml = (str = '') =>
 
 const linea = (parts) => (Array.isArray(parts) ? parts : [{ text: parts, bold: false }]);
 
-// ✅ HELPER: Procesa textos multilínea (\n) respetando los Enters
 const agregarTextoMultilinea = (lineasTarget, texto) => {
     if (!texto) {
         lineasTarget.push(linea(''));
@@ -53,7 +52,7 @@ const buildTemplateLineas = (datos, inicio, fin) => {
     const sabados = obtenerSabados(inicio, fin);
     const lineas = [];
 
-    // ✅ Ahora sí toma el color #9ca3af
+    // Ahora sí toma el color #9ca3af
     lineas.push(
         linea([
             {
@@ -210,12 +209,17 @@ const CrearProgramaCuatrimestre = () => {
 
         setError(null);
 
+        const contenidoHtmlActual = contenidoRef.current.innerHTML;
         const payload = {
             ...datosPasoUno,
             tipo: 'cuatrimestre',
             fechaInicio,
+            fecha_inicio: fechaInicio,
             fechaFin,
-            contenidoHtml: contenidoRef.current.innerHTML,
+            fecha_fin: fechaFin,
+            educadores_a_cargo: datosPasoUno.educadoresACargo,
+            contenidoHtml: contenidoHtmlActual,
+            contenido_html: contenidoHtmlActual,
         };
 
         try {
@@ -250,7 +254,7 @@ const CrearProgramaCuatrimestre = () => {
                 </div>
 
                 {error && (
-                    <div className="mb-4 mt-4 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-600 uppercase tracking-wide shrink-0">
+                    <div className="mb-4 mt-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                         {error}
                     </div>
                 )}
@@ -271,7 +275,7 @@ const CrearProgramaCuatrimestre = () => {
                                     value={fechaInicio}
                                     onChange={(e) => setFechaInicio(e.target.value)}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -286,7 +290,7 @@ const CrearProgramaCuatrimestre = () => {
                                     value={fechaFin}
                                     onChange={(e) => setFechaFin(e.target.value)}
                                     required
-                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-primary font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -318,7 +322,7 @@ const CrearProgramaCuatrimestre = () => {
                         contentEditable
                         suppressContentEditableWarning
                         onInput={handleContenidoInput}
-                        className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-primary font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+                        className="w-full border border-scout-border rounded-xl p-4 text-sm bg-scout-bg-panel/50 text-scout-ink font-normal focus:outline-none focus:border-scout-primary transition-colors mb-4 shrink-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
                         style={{ minHeight: 280 }}
                     />
 

@@ -44,8 +44,8 @@ const Descargas = () => {
 
             <header className={`${isFixedLayout ? 'md:h-[15vh]' : 'py-8'} bg-[var(--color-scout-bg-card)]/80 backdrop-blur-md border-b border-[var(--color-scout-border)] flex flex-col justify-center px-6 md:px-20`}>
                 <div className="max-w-5xl mx-auto w-full text-left">
-                    <h1 className="text-2xl md:text-4xl font-black text-[var(--color-scout-primary)] tracking-tighter uppercase leading-none">
-                        Repositorio <span className="text-[var(--color-scout-primary)]/20 italic">Digital PDF</span>
+                    <h1 className="text-2xl md:text-4xl font-black text-[var(--color-scout-ink)] tracking-tighter uppercase leading-none">
+                        Repositorio <span className="text-[var(--color-scout-primary)] italic">Digital PDF</span>
                     </h1>
                 </div>
             </header>
@@ -105,7 +105,7 @@ const Descargas = () => {
                                     <span className="text-[8px] font-bold text-[var(--color-scout-muted)] uppercase mb-1">
                                         Subido por: {file.user?.name || 'Distrito'}
                                     </span>
-                                    <h2 className="font-bold tracking-tight uppercase leading-tight text-xs md:text-sm mb-1 line-clamp-2 text-[var(--color-scout-primary)]">
+                                    <h2 className="font-bold tracking-tight uppercase leading-tight text-xs md:text-sm mb-1 line-clamp-2 text-[var(--color-scout-ink)]">
                                         {file.nombre}
                                     </h2>
                                     <p className="text-[10px] text-[var(--color-scout-muted)] leading-tight line-clamp-2">
@@ -143,7 +143,7 @@ const Descargas = () => {
                 if (!f) return null;
                 return (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
-                        <div className="absolute inset-0 bg-[var(--color-scout-primary)]/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
+                        <div className="absolute inset-0 bg-[var(--color-scout-ink)]/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
 
                         <div className="relative bg-[var(--color-scout-bg-card)] w-full max-w-4xl max-h-[85vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-300 text-left">
                             <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:rotate-90 transition-all cursor-pointer">
@@ -180,7 +180,7 @@ const Descargas = () => {
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-scout-muted)] block mb-4">
                                     Subido por: {f.user?.name || 'Distrito'}
                                 </span>
-                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-primary)]">
+                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-ink)]">
                                     {f.nombre}
                                 </h2>
 
@@ -198,7 +198,7 @@ const Descargas = () => {
                                         <ShieldCheck className="text-[var(--color-scout-muted)] shrink-0 mt-0.5" />
                                         <div>
                                             <p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Información de integridad</p>
-                                            <p className="text-sm font-bold uppercase text-[var(--color-scout-primary)]">
+                                            <p className="text-sm font-bold uppercase text-[var(--color-scout-ink)]">
                                                 Fecha de publicación: {new Date(f.created_at).toLocaleDateString('es-AR')} • Origen verificado
                                             </p>
                                         </div>
