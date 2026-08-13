@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { Menu, X, Mail } from 'lucide-react';
 import { FacebookIcon, InstagramIcon, LinkedinIcon } from '../ui/SocialIcons';
+import ThemeToggle from '../ui/ThemeToggle';
 import logoDistritoHorizontal from '../../assets/logo_distrito_horizontal.svg';
-import logosCombinados from '../../assets/logos_combinados.png';
+import logosCombinados from '../../assets/logos_combinados.webp';
 
 const PublicLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,21 +38,25 @@ const PublicLayout = () => {
             <Link to="/cursos" className="hover:underline decoration-2 underline-offset-8">Cursos</Link>
             <Link to="/galeria" className="hover:underline decoration-2 underline-offset-8">Galería</Link>
             <Link to="/descargas" className="hover:underline decoration-2 underline-offset-8">Descargas</Link>
+            <ThemeToggle />
             <Link
               to="/login"
-              className="px-6 py-2 bg-scout-primary text-scout-bg-card text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-scout-primary-hover transition-all shadow-lg ml-2"
+              className="px-6 py-2 bg-scout-primary text-white text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-scout-primary-hover transition-all shadow-lg ml-2"
             >
               Ingresar
             </Link>
           </div>
 
-          {/* BOTÓN HAMBURGUESA */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 text-scout-primary hover:bg-scout-bg-panel rounded-md transition-colors"
-          >
-            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          {/* ACCIONES MOBILE */}
+          <div className="lg:hidden flex items-center gap-1">
+            <ThemeToggle />
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-scout-primary hover:bg-scout-bg-panel rounded-md transition-colors"
+            >
+              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
 
         </div>
       </nav>
@@ -69,7 +74,7 @@ const PublicLayout = () => {
             <Link
               to="/login"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="mt-6 w-full py-4 bg-scout-primary text-scout-bg-card text-center text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-scout-primary-hover transition-all shadow-lg"
+              className="mt-6 w-full py-4 bg-scout-primary text-white text-center text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-scout-primary-hover transition-all shadow-lg"
             >
               Ingresar
             </Link>
@@ -83,7 +88,7 @@ const PublicLayout = () => {
       </main>
 
       {/* FOOTER */}
-      <footer className="bg-scout-ink text-scout-bg-card pt-16 pb-8 mt-auto">
+      <footer className="bg-scout-scrim text-white pt-16 pb-8 mt-auto">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr] gap-10 md:gap-8 mb-14">
 
@@ -94,7 +99,7 @@ const PublicLayout = () => {
                 alt="Distrito 3 - Zona 13 - Scouts de Argentina"
                 className="h-14"
               />
-              <p className="text-[13px] text-scout-bg-card opacity-60 leading-relaxed max-w-xs">
+              <p className="text-[13px] text-white opacity-60 leading-relaxed max-w-xs">
                 Sistema centralizado para la gestión administrativa, institucional y de programas educativos.
               </p>
               <div className="flex items-center gap-4 pt-1">
@@ -126,7 +131,7 @@ const PublicLayout = () => {
 
             {/* Columna 4: Ingeniería */}
             <div className="space-y-4">
-              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-scout-bg-card border-b-2 border-scout-primary pb-2 inline-block">
+              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white border-b-2 border-scout-primary pb-2 inline-block">
                 Desarrollo
               </h4>
               <div className="space-y-1">

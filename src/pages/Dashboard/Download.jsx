@@ -230,7 +230,7 @@ const Bibliografia = () => {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-scout-primary/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
                     <div className="relative bg-scout-bg-card w-full max-w-xl rounded-[3rem] overflow-hidden shadow-2xl p-8 md:p-12 animate-in zoom-in-95 duration-300 text-left">
-                        <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-scout-bg-card rounded-full hover:scale-110 transition-transform cursor-pointer">
+                        <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-white rounded-full hover:scale-110 transition-transform cursor-pointer">
                             <X size={20} />
                         </button>
                         <TipoBadge tipo={itemExpandido.tipo} />

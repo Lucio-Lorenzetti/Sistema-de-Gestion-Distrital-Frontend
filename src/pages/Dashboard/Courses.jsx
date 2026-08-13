@@ -7,6 +7,7 @@ import {
   ExternalLink, Zap, Unlock, X, Clock
 } from 'lucide-react';
 import MetricCard from '../../components/ui/MetricCard';
+import EstadoBadge from '../../components/ui/EstadoBadge';
 
 const CURSOS_ENDPOINT = '/courses';
 
@@ -40,14 +41,6 @@ const addDays = (fechaStr, dias) => {
   const fecha = new Date(fechaStr);
   fecha.setDate(fecha.getDate() + dias);
   return fecha.toISOString().split('T')[0];
-};
-
-const EstadoBadge = ({ estado }) => {
-  const styles =
-    estado === 'Abierto' ? 'bg-scout-success text-white' :
-      estado === 'Cerrado' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
-        'bg-scout-bg-panel text-scout-muted border border-scout-border';
-  return <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md whitespace-nowrap ${styles}`}>{estado}</span>;
 };
 
 const CategoriaBadge = ({ categoria }) => (
@@ -299,7 +292,7 @@ const GestionCursos = () => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
           <div className="absolute inset-0 bg-scout-primary/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
           <div className="relative bg-scout-bg-card w-full max-w-2xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl p-8 md:p-16 overflow-y-auto animate-in zoom-in-95 duration-300">
-            <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-scout-bg-card rounded-full hover:scale-110 transition-transform">
+            <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-white rounded-full hover:scale-110 transition-transform">
               <X size={20} />
             </button>
 

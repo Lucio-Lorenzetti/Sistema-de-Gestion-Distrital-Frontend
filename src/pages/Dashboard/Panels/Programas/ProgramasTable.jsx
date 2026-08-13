@@ -1,7 +1,7 @@
 // src/pages/Dashboard/Panels/Programas/ProgramasTable.jsx
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, ChevronLeft, ChevronRight, Eye, Pencil, Send, Download, MessageSquare, Undo2 } from 'lucide-react';
+import { ClipboardList, ChevronLeft, ChevronRight, Eye, Pencil, Send, Download, MessageSquare, Undo2, CheckCircle2, BadgeCheck } from 'lucide-react';
 import FiltroDropdown from './FiltroDropdown';
 import EstadoBadge from '../../../../components/ui/EstadoBadge';
 import ProgramaDetalleModal from './ProgramaDetalleModal';
@@ -42,6 +42,8 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
     const [expandedId, setExpandedId] = useState(null);
     const [enviandoId, setEnviandoId] = useState(null);
     const [volviendoId, setVolviendoId] = useState(null);
+    const [aprobandoId, setAprobandoId] = useState(null);
+    const [solicitandoId, setSolicitandoId] = useState(null);
     const [descargandoId, setDescargandoId] = useState(null);
     const [error, setError] = useState(null);
 
@@ -76,13 +78,12 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
 
     const programaExpandido = programas.find((p) => p.id === expandedId);
 
-    // El autor siempre puede gestionar su programa. Mientras esté en borrador, también puede
-    // hacerlo cualquier educador de la misma rama+grupo (armado colaborativo antes de publicar).
-    // Auxiliares, Jefe de Grupo y Director nunca comparten rama_id Y grupo_id con un programa
-    // a la vez, así que esta condición ya los deja afuera sin necesidad de chequear el rol.
-    const puedeGestionar = (programa) => {
-        if (programa.estado !== 'borrador') return false;
-
+    // El autor de un programa, y cualquier educador de la misma rama+grupo, tienen
+    // exactamente las mismas capacidades sobre él (editar, enviar, volver a borrador,
+    // solicitar aprobación) — es trabajo colaborativo del mismo grupo, no algo
+    // personal del autor. Auxiliares, Jefe de Grupo y Director nunca comparten
+    // rama_id Y grupo_id con un programa a la vez, así que quedan afuera solos.
+    const esColaborador = (programa) => {
         const esAutor = Number(programa.owner?.id) === Number(user?.id);
         const compartenRamaYGrupo =
             Number(programa.rama?.id) === Number(user?.rama?.id) &&
@@ -91,9 +92,27 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
         return esAutor || compartenRamaYGrupo;
     };
 
-    // El dueño también puede retroceder su programa de "enviado" a "borrador" para seguir editándolo.
-    const puedeVolverABorrador = (programa) =>
-        Number(programa.owner?.id) === Number(user?.id) && programa.estado === 'enviado';
+    const puedeGestionar = (programa) => programa.estado === 'borrador' && esColaborador(programa);
+
+    // Cualquier colaborador puede retroceder el programa de "enviado" a "borrador" para seguir editándolo.
+    const puedeVolverABorrador = (programa) => programa.estado === 'enviado' && esColaborador(programa);
+
+    // Distinto de "Enviar a revisión" (borrador → enviado): esto no cambia el estado,
+    // solo marca que ya se considera el programa listo — el botón aparece recién
+    // cuando está 'enviado'. Mismo criterio que ProgramPolicy::solicitarAprobacion().
+    const puedeSolicitarAprobacion = (programa) => programa.estado === 'enviado' && esColaborador(programa);
+
+    // Mismo criterio que ProgramPolicy::updateStatus() en el backend para la transición
+    // enviado → aprobado: Aux Prog General (cualquiera) o Aux Prog Rama (solo su rama).
+    const puedeAprobar = (programa) => {
+        if (programa.estado !== 'enviado') return false;
+
+        const roles = (user?.roles ?? []).map((r) => r.nombre.toLowerCase());
+        if (roles.includes('aux prog general')) return true;
+        if (roles.includes('aux prog rama')) return Number(programa.rama?.id) === Number(user?.rama?.id);
+
+        return false;
+    };
 
     const handleEnviar = async (programa) => {
         setEnviandoId(programa.id);
@@ -126,6 +145,37 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
             setError('No se pudo volver el programa a borrador: ' + err.message);
         } finally {
             setVolviendoId(null);
+        }
+    };
+
+    const handleAprobar = async (programa) => {
+        setAprobandoId(programa.id);
+        setError(null);
+        try {
+            await authorizedFetch(`/programas/${programa.id}/estado`, {
+                method: 'PATCH',
+                body: { estado: 'aprobado' },
+            });
+            await onEstadoActualizado?.();
+        } catch (err) {
+            console.error('Error al aprobar el programa:', err);
+            setError('No se pudo aprobar el programa: ' + err.message);
+        } finally {
+            setAprobandoId(null);
+        }
+    };
+
+    const handleSolicitarAprobacion = async (programa) => {
+        setSolicitandoId(programa.id);
+        setError(null);
+        try {
+            await authorizedFetch(`/programas/${programa.id}/solicitar-aprobacion`, { method: 'PATCH' });
+            await onEstadoActualizado?.();
+        } catch (err) {
+            console.error('Error al solicitar la aprobación:', err);
+            setError('No se pudo solicitar la aprobación: ' + err.message);
+        } finally {
+            setSolicitandoId(null);
         }
     };
 
@@ -195,6 +245,8 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
                             {programasPagina.map((programa) => {
                                 const gestionable = puedeGestionar(programa);
                                 const puedeRetroceder = puedeVolverABorrador(programa);
+                                const aprobable = puedeAprobar(programa);
+                                const solicitable = puedeSolicitarAprobacion(programa);
                                 const enRevision = programa.estado === 'enviado';
                                 return (
                                     <tr key={programa.id} className="group hover:bg-scout-bg-panel transition-colors">
@@ -253,6 +305,32 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
                                                     >
                                                         <MessageSquare size={13} />
                                                     </Link>
+                                                )}
+
+                                                {solicitable && (
+                                                    <button
+                                                        onClick={() => handleSolicitarAprobacion(programa)}
+                                                        disabled={solicitandoId === programa.id || !!programa.aprobacion_solicitada_at}
+                                                        className={`p-1.5 rounded-lg border transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-default ${
+                                                            programa.aprobacion_solicitada_at
+                                                                ? 'border-scout-success/30 bg-scout-success/10 text-scout-success'
+                                                                : 'border-scout-border hover:bg-scout-bg-panel text-scout-muted hover:text-scout-primary'
+                                                        }`}
+                                                        title={programa.aprobacion_solicitada_at ? 'Aprobación ya solicitada' : 'Solicitar aprobación'}
+                                                    >
+                                                        <BadgeCheck size={13} />
+                                                    </button>
+                                                )}
+
+                                                {aprobable && (
+                                                    <button
+                                                        onClick={() => handleAprobar(programa)}
+                                                        disabled={aprobandoId === programa.id}
+                                                        className="p-1.5 rounded-lg border border-scout-success/30 hover:bg-scout-success/10 text-scout-success transition-colors cursor-pointer disabled:opacity-40"
+                                                        title="Aprobar programa"
+                                                    >
+                                                        <CheckCircle2 size={13} />
+                                                    </button>
                                                 )}
 
                                                 {puedeRetroceder && (

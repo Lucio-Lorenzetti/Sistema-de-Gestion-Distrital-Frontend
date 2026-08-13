@@ -1,15 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, ChevronRight, BookOpen, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import bgHero from '../../assets/f-bienvenida.jpg';
-import bgSeparador from '../../assets/f-bienvenida-mobile.jpg';
 import imgDefault from '../../assets/noticia-default.jpg';
+import bgHeroDesktop from '../../assets/f-bienvenida.webp';
+import bgHeroMobile from '../../assets/f-bienvenida-mobile.webp';
 import api from '../../api/axios';
+
+// Import de JS (no url() en CSS): así el asset se copia y hashea bien al build.
+// Antes esto vivía como url() en index.css (".hero-bg") pero este bundler no
+// resuelve rutas relativas ahí, quedaban rotas en producción.
+const useEsMobile = (breakpointPx = 768) => {
+    const [esMobile, setEsMobile] = useState(
+        () => window.matchMedia(`(max-width: ${breakpointPx}px)`).matches
+    );
+
+    useEffect(() => {
+        const mq = window.matchMedia(`(max-width: ${breakpointPx}px)`);
+        const handler = (e) => setEsMobile(e.matches);
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+    }, [breakpointPx]);
+
+    return esMobile;
+};
 
 const Home = () => {
     const [noticias, setNoticias] = useState([]);
     const [cursos, setCursos] = useState([]);
-    const [expandedId, setExpandedId] = useState(null);
+    const esMobile = useEsMobile();
 
     useEffect(() => {
         //Fetch Noticias
@@ -34,12 +52,8 @@ const Home = () => {
             {/* 1. HERO SECTION */}
             <section className="relative min-h-screen flex items-center justify-start px-6 md:px-20 overflow-hidden">
                 <div
-                    className="absolute inset-0 z-0 bg-fixed"
-                    style={{
-                        backgroundImage: `url(${bgHero})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                    }}
+                    className="absolute inset-0 z-0 bg-fixed bg-cover bg-center"
+                    style={{ backgroundImage: `url(${esMobile ? bgHeroMobile : bgHeroDesktop})` }}
                 />
                 <div className="absolute inset-0 bg-black/50 md:bg-black/40 z-0" />
 

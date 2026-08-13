@@ -10,6 +10,9 @@ export function useDocumentacion() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Sin "authorizedFetch" en las deps: no memoiza su referencia entre renders
+    // (mismo patrón que useProgramas.js), incluirlo hace que el efecto se
+    // vuelva a disparar en cada render -> loop infinito de fetches a /bibliografia.
     useEffect(() => {
         setLoading(true);
         authorizedFetch(DOCUMENTACION_ENDPOINT)
@@ -24,7 +27,7 @@ export function useDocumentacion() {
             .finally(() => {
                 setLoading(false);
             });
-    }, [authorizedFetch]);
+    }, []);
 
     return { documentos, loading, error };
 }

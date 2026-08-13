@@ -18,7 +18,7 @@ const GeneralPanel = () => {
 
     return (
         <>
-            <GeneralMetrics />
+            <GeneralMetrics programas={programas} />
 
             <div className="lg:col-span-2 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 flex flex-col justify-between shadow-sm min-h-[310px]">
                 <div className="space-y-6 w-full">

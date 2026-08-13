@@ -113,7 +113,7 @@ const Distrito = () => {
                 const g = GRUPOS_MOCK.find(item => item.id === expandedGrupoId);
                 return (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
-                        <div className="absolute inset-0 bg-[var(--color-scout-ink)]/60 backdrop-blur-md" onClick={() => setExpandedGrupoId(null)} />
+                        <div className="absolute inset-0 bg-[var(--color-scout-scrim)]/60 backdrop-blur-md" onClick={() => setExpandedGrupoId(null)} />
                         <div className="relative bg-[var(--color-scout-bg-card)] w-full max-w-4xl max-h-[85vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-300 text-left">
                             <button onClick={() => setExpandedGrupoId(null)} className="absolute top-6 right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:rotate-90 transition-all">
                                 <X size={20} />

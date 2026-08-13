@@ -89,7 +89,7 @@ const ProgramaDetalleModal = ({ programa, onClose }) => {
             onClick={onClose}
         />
         <div className="relative bg-scout-bg-card w-full max-w-3xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col animate-in zoom-in-95 duration-300">
-            <button onClick={onClose} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-scout-bg-card rounded-full hover:scale-110 transition-transform">
+            <button onClick={onClose} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-white rounded-full hover:scale-110 transition-transform">
                 <X size={20} />
             </button>
             <div className="p-8 md:p-16 overflow-y-auto">

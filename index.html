@@ -2,6 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Aplica el override de tema ANTES del primer paint para evitar el
+      // flash de claro→oscuro. Debe leer la misma clave/forma que persiste
+      // useThemeStore (zustand persist) en src/store/useThemeStore.js.
+      (function () {
+        try {
+          var raw = localStorage.getItem('scout-theme');
+          var pref = raw ? JSON.parse(raw).state.preference : 'system';
+          if (pref === 'dark') document.documentElement.classList.add('theme-dark');
+          else if (pref === 'light') document.documentElement.classList.add('theme-light');
+        } catch (e) {}
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

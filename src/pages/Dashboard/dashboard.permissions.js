@@ -13,8 +13,10 @@ export const RESUMEN_ACCESS = {
     cursos: [ROLES.AUX_COMUNICACION, ROLES.DIRECTOR],
     documentacion: [ROLES.AUX_COMUNICACION, ROLES.DIRECTOR],
     miPerfilPrograma: [ROLES.EDUCADOR],
-    programasAprobacion: [ROLES.AUX_PROGRAMA],
     comentariosPendientes: [ROLES.EDUCADOR],
+    // "Te Respondieron" para el auxiliar vive anidado adentro de este resumen
+    // (ProgramasAprobacionResumen), no como entrada aparte — ver ese archivo.
+    programasAprobacion: [ROLES.AUX_PROGRAMA],
 };
 
 // Qué GESTIÓN completa (ruta /gestion-x) puede abrir cada rol

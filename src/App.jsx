@@ -1,56 +1,67 @@
 // src/App.jsx
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { CreditCardIcon } from 'lucide-react';
 import { useAuthStore } from './store/useAuthStore';
 
-// Layouts
+// Layouts: eager — hacen falta apenas carga cualquier ruta, no tiene sentido separarlos.
 import PublicLayout from './components/layouts/PublicLayout';
 import MainLayout from './components/layouts/MainLayout';
 
+// Todo lo demás es lazy: cada página pesa su propio chunk y solo se descarga
+// cuando se navega a esa ruta, en vez de meter las ~25 páginas del sistema en
+// un único bundle inicial (era el grueso de los 564kB/136kB gzip del build).
+
 // Vistas Públicas
-import Home from './pages/Public/Home';
-import Distrito from './pages/Public/Distrito';
-import Cursos from './pages/Public/Cursos';
-import Galeria from './pages/Public/Galeria';
-import Noticias from './pages/Public/Noticias';
-import Descargas from './pages/Public/Descargas';
+const Home = lazy(() => import('./pages/Public/Home'));
+const Distrito = lazy(() => import('./pages/Public/Distrito'));
+const Cursos = lazy(() => import('./pages/Public/Cursos'));
+const Galeria = lazy(() => import('./pages/Public/Galeria'));
+const Noticias = lazy(() => import('./pages/Public/Noticias'));
+const Descargas = lazy(() => import('./pages/Public/Descargas'));
 
 // Vistas de Autenticación
-import Login from './pages/Auth/Login';
-import RecoverPassword from './pages/Auth/RecoverPassword';
-import EmailSent from './pages/Auth/EmailSent';
-import ResetPassword from './pages/Auth/ResetPassword';
-import ActivateAccount from './pages/Auth/ActivateAccount';
-import SelectFunction from './pages/Auth/SelectFunction';
+const Login = lazy(() => import('./pages/Auth/Login'));
+const RecoverPassword = lazy(() => import('./pages/Auth/RecoverPassword'));
+const EmailSent = lazy(() => import('./pages/Auth/EmailSent'));
+const ResetPassword = lazy(() => import('./pages/Auth/ResetPassword'));
+const ActivateAccount = lazy(() => import('./pages/Auth/ActivateAccount'));
+const SelectFunction = lazy(() => import('./pages/Auth/SelectFunction'));
 
 // Vistas de Dashboard (Privadas / Gestión)
-import Courses from './pages/Dashboard/Courses';
-import Dashboard from './pages/Dashboard/Dashboard';
-import Download from './pages/Dashboard/Download';
-import News from './pages/Dashboard/News';
-import Programs from './pages/Dashboard/Programs';
+const Courses = lazy(() => import('./pages/Dashboard/Courses'));
+const Dashboard = lazy(() => import('./pages/Dashboard/Dashboard'));
+const Download = lazy(() => import('./pages/Dashboard/Download'));
+const News = lazy(() => import('./pages/Dashboard/News'));
+const Programs = lazy(() => import('./pages/Dashboard/Programs'));
 
 // Vistas de Programas (Privadas / Gestión Programas)
-import CrearPrograma from './pages/Logueado/Programas/CrearPrograma';
-import CrearProgramaCuatrimestre from './pages/Logueado/Programas/CrearProgramaCuatrimestre';
-import CrearProgramaCampamento from './pages/Logueado/Programas/CrearProgramaCampamento';
-import CrearProgramaCFA from './pages/Logueado/Programas/CrearProgramaCFA';
-import EditarProgramaCuatrimestre from './pages/Logueado/Programas/EditarProgramaCuatrimestre';
-import EditarProgramaCampamento from './pages/Logueado/Programas/EditarProgramaCampamento';
-import EditarProgramaCFA from './pages/Logueado/Programas/EditarProgramaCFA';
-import RevisarPrograma from './pages/Logueado/Programas/RevisarPrograma';
+const CrearPrograma = lazy(() => import('./pages/Logueado/Programas/CrearPrograma'));
+const CrearProgramaCuatrimestre = lazy(() => import('./pages/Logueado/Programas/CrearProgramaCuatrimestre'));
+const CrearProgramaCampamento = lazy(() => import('./pages/Logueado/Programas/CrearProgramaCampamento'));
+const CrearProgramaCFA = lazy(() => import('./pages/Logueado/Programas/CrearProgramaCFA'));
+const EditarProgramaCuatrimestre = lazy(() => import('./pages/Logueado/Programas/EditarProgramaCuatrimestre'));
+const EditarProgramaCampamento = lazy(() => import('./pages/Logueado/Programas/EditarProgramaCampamento'));
+const EditarProgramaCFA = lazy(() => import('./pages/Logueado/Programas/EditarProgramaCFA'));
+const RevisarPrograma = lazy(() => import('./pages/Logueado/Programas/RevisarPrograma'));
 
 // Vistas de Cursos - CRUD (Privadas / Gestión Cursos)
-import CrearCurso from './pages/Logueado/Cursos/CrearCurso';
-import EditarCurso from './pages/Logueado/Cursos/EditarCurso';
+const CrearCurso = lazy(() => import('./pages/Logueado/Cursos/CrearCurso'));
+const EditarCurso = lazy(() => import('./pages/Logueado/Cursos/EditarCurso'));
 
 // Vistas de Noticias (Privadas / Gestión Noticias)
-import CrearNoticia from './pages/Logueado/Noticias/CrearNoticia';
-import EditarNoticia from './pages/Logueado/Noticias/EditarNoticia';
+const CrearNoticia = lazy(() => import('./pages/Logueado/Noticias/CrearNoticia'));
+const EditarNoticia = lazy(() => import('./pages/Logueado/Noticias/EditarNoticia'));
 
 // Vistas de Download (Privadas / Gestión Download)
-import CrearDownload from './pages/Logueado/Download/CrearDownload';
+const CrearDownload = lazy(() => import('./pages/Logueado/Download/CrearDownload'));
+
+const CargandoPagina = () => (
+  <div className="h-screen w-full flex items-center justify-center bg-scout-bg-panel">
+    <p className="text-scout-primary font-bold uppercase tracking-widest text-xs animate-pulse">
+      Cargando...
+    </p>
+  </div>
+);
 
 // Componente para arreglar el bug del scroll al cambiar de página
 const ScrollToTop = () => {
@@ -84,6 +95,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <Suspense fallback={<CargandoPagina />}>
       <Routes>
         {/* 1. CONTEXTO PÚBLICO (Accesible para todos) */}
         <Route element={<PublicLayout />}>
@@ -136,6 +148,7 @@ function App() {
         {/* REDIRECCIÓN POR DEFECTO AL HOME PÚBLICO */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

@@ -1,9 +1,10 @@
 // src/pages/Logueado/Programas/RevisarPrograma.jsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Layers, Users, Tag, MessageSquarePlus, Lock, Type, Stethoscope, Target, CalendarDays, MessagesSquare } from 'lucide-react';
+import { ArrowLeft, Layers, Users, Tag, MessageSquarePlus, Lock, Type, Stethoscope, Target, CalendarDays, MessagesSquare, Download, BadgeCheck, CheckCircle2 } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useAuthorizedFetch } from '../../../hooks/useAuthorizedFetch';
+import api from '../../../api/axios';
 import EstadoBadge from '../../../components/ui/EstadoBadge';
 import { getLineasPrograma } from '../../Dashboard/Panels/Programas/programaLineas';
 import { useProgramaNotas } from '../../Dashboard/Panels/Programas/useProgramaNotas';
@@ -53,6 +54,30 @@ const puedeComentarPrograma = (programa, user) => {
     if (roles.includes('aux prog rama')) return Number(programa.rama?.id) === Number(user?.rama?.id);
 
     return Number(programa.rama?.id) === Number(user?.rama?.id);
+};
+
+// Mismo criterio que ProgramasTable.jsx / ProgramPolicy::updateStatus() y
+// solicitarAprobacion(): autor o cualquier educador de la misma rama+grupo.
+const esColaboradorPrograma = (programa, user) => {
+    const esAutor = Number(programa?.owner?.id) === Number(user?.id);
+    const compartenRamaYGrupo =
+        Number(programa?.rama?.id) === Number(user?.rama?.id) &&
+        Number(programa?.grupo?.id) === Number(user?.grupo?.id);
+
+    return esAutor || compartenRamaYGrupo;
+};
+
+const puedeSolicitarAprobacionPrograma = (programa, user) =>
+    programa?.estado === 'enviado' && esColaboradorPrograma(programa, user);
+
+const puedeAprobarPrograma = (programa, user) => {
+    if (programa?.estado !== 'enviado') return false;
+
+    const roles = (user?.roles ?? []).map((r) => r.nombre.toLowerCase());
+    if (roles.includes('aux prog general')) return true;
+    if (roles.includes('aux prog rama')) return Number(programa.rama?.id) === Number(user?.rama?.id);
+
+    return false;
 };
 
 const LineaConHilos = ({ linea, hilos, puedeComentar, onAbrirComposer, composerAbierto, onResponder, onToggleResuelta, children }) => (
@@ -105,18 +130,29 @@ const RevisarPrograma = () => {
     const [composerTexto, setComposerTexto] = useState('');
     const [enviandoComposer, setEnviandoComposer] = useState(false);
 
+    const [accionandoEstado, setAccionandoEstado] = useState(false);
+    const [descargando, setDescargando] = useState(false);
+
     const { notas, crearHilo, responder, toggleResuelta } = useProgramaNotas(id);
 
-    useEffect(() => {
+    // Nombrado (en vez de inline en el useEffect) para poder volver a pedirlo
+    // después de solicitar aprobación / aprobar, y reflejar el estado nuevo sin recargar la página.
+    const fetchPrograma = useCallback(() => {
         setIsLoading(true);
-        authorizedFetch(`/programas/${id}`)
+        return authorizedFetch(`/programas/${id}`)
             .then(setPrograma)
             .catch((err) => setError(err.message))
             .finally(() => setIsLoading(false));
     }, [id]);
 
+    useEffect(() => {
+        fetchPrograma();
+    }, [fetchPrograma]);
+
     const lineas = useMemo(() => getLineasPrograma(programa), [programa]);
     const puedeComentar = useMemo(() => puedeComentarPrograma(programa, user), [programa, user]);
+    const puedeSolicitarAprobacion = useMemo(() => puedeSolicitarAprobacionPrograma(programa, user), [programa, user]);
+    const puedeAprobar = useMemo(() => puedeAprobarPrograma(programa, user), [programa, user]);
 
     const lineRefsExistentes = useMemo(
         () => new Set(lineas.flatMap((s) => s.lineas.map((l) => l.lineRef))),
@@ -158,6 +194,51 @@ const RevisarPrograma = () => {
         }
     };
 
+    const handleSolicitarAprobacion = async () => {
+        setAccionandoEstado(true);
+        setError(null);
+        try {
+            await authorizedFetch(`/programas/${id}/solicitar-aprobacion`, { method: 'PATCH' });
+            await fetchPrograma();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setAccionandoEstado(false);
+        }
+    };
+
+    const handleAprobar = async () => {
+        setAccionandoEstado(true);
+        setError(null);
+        try {
+            await authorizedFetch(`/programas/${id}/estado`, { method: 'PATCH', body: { estado: 'aprobado' } });
+            await fetchPrograma();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setAccionandoEstado(false);
+        }
+    };
+
+    const handleDescargar = async () => {
+        setDescargando(true);
+        try {
+            const res = await api.get(`/programas/${id}/pdf`, { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${programa?.titulo || 'programa'}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('Error al descargar el PDF:', err);
+        } finally {
+            setDescargando(false);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="h-full w-full flex items-center justify-center bg-scout-bg-panel">
@@ -189,17 +270,59 @@ const RevisarPrograma = () => {
                 className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm border-t-[6px]"
                 style={{ borderTopColor: RAMA_ACCENT_COLORS[programa.rama?.nombre] || ACCENT_COLOR_DEFAULT }}
             >
-                <div className="flex items-center gap-3 mb-4 flex-wrap">
-                    <EstadoBadge estado={ESTADO_LABELS[programa.estado] || programa.estado} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-scout-muted flex items-center gap-1">
-                        <Layers size={11} /> {programa.rama?.nombre || '—'}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-scout-muted flex items-center gap-1">
-                        <Users size={11} /> {programa.grupo?.nombre || '—'}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-scout-muted flex items-center gap-1">
-                        <Tag size={11} /> {TIPO_LABELS[programa.tipo] || programa.tipo || '—'}
-                    </span>
+                <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
+                    <div className="flex items-center gap-3 flex-wrap">
+                        <EstadoBadge estado={ESTADO_LABELS[programa.estado] || programa.estado} />
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-scout-muted flex items-center gap-1">
+                            <Layers size={11} /> {programa.rama?.nombre || '—'}
+                        </span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-scout-muted flex items-center gap-1">
+                            <Users size={11} /> {programa.grupo?.nombre || '—'}
+                        </span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-scout-muted flex items-center gap-1">
+                            <Tag size={11} /> {TIPO_LABELS[programa.tipo] || programa.tipo || '—'}
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                        <button
+                            type="button"
+                            onClick={handleDescargar}
+                            disabled={descargando}
+                            title="Descargar PDF"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-scout-border text-[10px] font-black uppercase tracking-widest text-scout-muted hover:text-scout-primary hover:bg-scout-bg-panel transition-colors cursor-pointer disabled:opacity-40"
+                        >
+                            <Download size={13} /> PDF
+                        </button>
+
+                        {puedeSolicitarAprobacion && (
+                            <button
+                                type="button"
+                                onClick={handleSolicitarAprobacion}
+                                disabled={accionandoEstado || !!programa.aprobacion_solicitada_at}
+                                title={programa.aprobacion_solicitada_at ? 'Aprobación ya solicitada' : 'Solicitar aprobación'}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-default ${
+                                    programa.aprobacion_solicitada_at
+                                        ? 'border-scout-success/30 bg-scout-success/10 text-scout-success'
+                                        : 'border-scout-border text-scout-muted hover:text-scout-primary hover:bg-scout-bg-panel'
+                                }`}
+                            >
+                                <BadgeCheck size={13} /> {programa.aprobacion_solicitada_at ? 'Aprobación solicitada' : 'Solicitar aprobación'}
+                            </button>
+                        )}
+
+                        {puedeAprobar && (
+                            <button
+                                type="button"
+                                onClick={handleAprobar}
+                                disabled={accionandoEstado}
+                                title="Aprobar programa"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-scout-success/30 text-[10px] font-black uppercase tracking-widest text-scout-success hover:bg-scout-success/10 transition-colors cursor-pointer disabled:opacity-40"
+                            >
+                                <CheckCircle2 size={13} /> Aprobar
+                            </button>
+                        )}
+                    </div>
                 </div>
                 <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none mb-2 text-scout-ink">
                     {programa.titulo}

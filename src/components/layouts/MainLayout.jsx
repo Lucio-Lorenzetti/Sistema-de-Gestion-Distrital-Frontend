@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import Sidebar from './Sidebar';
+import ThemeToggle from '../ui/ThemeToggle';
 
 const MainLayout = () => {
   const { user } = useAuthStore();
@@ -29,6 +30,7 @@ const MainLayout = () => {
         {/* Navbar Superior */}
         <header className="h-16 bg-scout-bg-card border-b border-scout-border flex items-center justify-end px-8 sticky top-0 z-10 shrink-0">
           <div className="flex items-center space-x-4">
+            <ThemeToggle />
             <div className="text-right">
               <p className="text-sm font-bold text-scout-primary leading-none">
                 {userName}
@@ -37,7 +39,7 @@ const MainLayout = () => {
                 {formatRoleDisplay()}
               </p>
             </div>
-            <div className="w-9 h-9 bg-scout-primary text-scout-bg-card rounded-full border border-scout-primary-hover flex items-center justify-center font-black text-xs shadow-sm">
+            <div className="w-9 h-9 bg-scout-primary text-white rounded-full border border-scout-primary-hover flex items-center justify-center font-black text-xs shadow-sm">
               {userInitials}
             </div>
           </div>

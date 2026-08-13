@@ -24,7 +24,7 @@ const Galeria = () => {
                     {ALBUMES.map(album => (
                         <a key={album.id} href={album.link} target="_blank" rel="noopener noreferrer"
                             className="group bg-scout-bg-card rounded-[2rem] overflow-hidden border border-scout-border shadow-sm hover:shadow-2xl transition-all duration-500">
-                            <div className="h-64 bg-scout-ink flex items-center justify-center text-scout-bg-card relative">
+                            <div className="h-64 bg-scout-scrim flex items-center justify-center text-white relative">
                                 <Camera size={40} className="group-hover:scale-125 transition-transform duration-500 opacity-30" />
                                 <div className="absolute inset-0 bg-scout-primary/0 group-hover:bg-scout-primary/20 transition-all" />
                                 <span className="absolute top-6 right-6 bg-scout-bg-card text-scout-ink text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
