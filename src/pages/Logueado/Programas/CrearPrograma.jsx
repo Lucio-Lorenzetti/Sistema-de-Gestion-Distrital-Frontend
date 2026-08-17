@@ -8,7 +8,7 @@ import { useAuthStore } from '../../../store/useAuthStore';
 const TIPO_OPTIONS = [
     { key: 'cuatrimestre', label: 'Programa de Cuatrimestre', route: '/gestion-programas/crear/cuatrimestre' },
     { key: 'campamento', label: 'Programa de Acantonamiento/Campamento', route: '/gestion-programas/crear/campamento' },
-    { key: 'cfa', label: 'Programa Campamento Final', route: '/gestion-programas/crear/cfa' },
+    { key: 'cfa', label: 'Programa Campamento Anual', route: '/gestion-programas/crear/cfa' },
 ];
 
 const CrearPrograma = () => {
@@ -95,7 +95,7 @@ const CrearPrograma = () => {
                                     value={titulo}
                                     onChange={(e) => setTitulo(e.target.value)}
                                     required
-                                    placeholder={"Ej: Programa Primer Cuatrimestre de " + (user.rama?.nombre || 'Rama') + " (" + (user.grupo?.nombre || 'Grupo') + ")" + " 202x"}
+                                    placeholder={"Ej: Programa Primer Cuatrimestre de " + (user?.rama?.nombre || 'Rama') + " (" + (user?.grupo?.nombre || 'Grupo') + ")" + " 202x"}
                                     className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>

@@ -1,106 +1,27 @@
 // src/pages/Logueado/Programas/EditarProgramaCampamento.jsx
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { CalendarDays, RefreshCw, Send } from 'lucide-react';
+import { CalendarDays, RefreshCw, Send, MapPin, Wallet, Bus } from 'lucide-react';
 import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 import RichTextToolbar from '../../../components/ui/RichTextToolbar';
-
-const parseFechaLocal = (isoDate) => {
-    if (!isoDate) return null;
-    const [y, m, d] = isoDate.split('-').map(Number);
-    return new Date(y, m - 1, d);
-};
-
-const formatDDMM = (date) => {
-    const dd = String(date.getDate()).padStart(2, '0');
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    return `${dd}/${mm}`;
-};
-
-const NOMBRES_DIAS = [
-    'Domingo',
-    'Lunes',
-    'Martes',
-    'Miércoles',
-    'Jueves',
-    'Viernes',
-    'Sábado',
-];
-
-const obtenerDiasRango = (inicio, fin) => {
-    const dias = [];
-    if (!inicio || !fin || inicio > fin) return dias;
-    const cursor = new Date(inicio);
-    while (cursor <= fin) {
-        dias.push({
-            nombreDia: NOMBRES_DIAS[cursor.getDay()],
-            fechaFormatted: formatDDMM(new Date(cursor)),
-        });
-        cursor.setDate(cursor.getDate() + 1);
-    }
-    return dias;
-};
-
-const escapeHtml = (str = '') =>
-    String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-
-const linea = (parts) => (Array.isArray(parts) ? parts : [{ text: parts, bold: false }]);
-
-const agregarTextoMultilinea = (lineasTarget, texto) => {
-    if (!texto) {
-        lineasTarget.push(linea(''));
-        return;
-    }
-    const renglones = String(texto).split('\n');
-    renglones.forEach((renglon) => {
-        lineasTarget.push(linea(renglon));
-    });
-};
-
-const generarCronogramaDia = (esPrimerDia, esUltimoDia, contadorActividadRef) => {
-    const horarios = [];
-
-    if (esPrimerDia) {
-        horarios.push({ hora: '08:00hs', desc: 'Concentración' });
-    } else {
-        horarios.push({ hora: '08:00hs', desc: 'Diana / Desayuno' });
-    }
-    horarios.push({ hora: '09:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-    horarios.push({ hora: '11:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-    horarios.push({ hora: '13:00hs', desc: 'Almuerzo' });
-
-    if (esUltimoDia) {
-        horarios.push({ hora: '16:00hs', desc: 'Desconcentración' });
-        return horarios;
-    }
-
-    horarios.push({ hora: '15:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-    horarios.push({ hora: '17:00hs', desc: 'Merienda' });
-    horarios.push({ hora: '18:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-    horarios.push({ hora: '20:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-    horarios.push({ hora: '21:30hs', desc: 'Cena' });
-    horarios.push({ hora: '23:00hs', desc: 'Silencio' });
-
-    return horarios;
-};
+import {
+    parseFechaLocal,
+    obtenerDiasRango,
+    linea,
+    agregarTextoMultilinea,
+    generarCronogramaDia,
+    lineasToHtml,
+    textoPlanoAHtml,
+    sincronizarActividades,
+    DISCLAIMER_PLANTILLA,
+} from './plantillaPrograma';
 
 const buildTemplateLineas = (datos, inicio, fin) => {
     const dias = obtenerDiasRango(inicio, fin);
     const lineas = [];
 
-    lineas.push(
-        linea([
-            {
-                text: 'Este Template es para unificar criterios mínimos de un programa de campamento para el distrito, se pide que de base se respete la información solicitada, y en el caso de querer agregar cosas es bienvenido, dicho programa se generará a partir de los datos ingresados más la descripción ingresada acá.',
-                bold: false,
-                color: '#9ca3af',
-            },
-        ])
-    );
+    lineas.push(linea([{ text: DISCLAIMER_PLANTILLA.campamento, bold: false, color: '#9ca3af' }]));
     lineas.push(linea(''));
 
     lineas.push(linea([{ text: 'Título', bold: true }]));
@@ -117,13 +38,6 @@ const buildTemplateLineas = (datos, inicio, fin) => {
 
     lineas.push(linea([{ text: 'Objetivo', bold: true }]));
     agregarTextoMultilinea(lineas, datos.objetivos);
-    lineas.push(linea(''));
-
-    lineas.push(linea([{ text: 'INFORMACIÓN ADICIONAL', bold: true }]));
-    lineas.push(linea('- Lugar: '));
-    lineas.push(linea('- Comidas: '));
-    lineas.push(linea('- Valor: '));
-    lineas.push(linea('- Transporte / Lugar de concentración: '));
     lineas.push(linea(''));
 
     lineas.push(linea([{ text: 'CRONOGRAMA DE ACTIVIDADES', bold: true }]));
@@ -146,11 +60,11 @@ const buildTemplateLineas = (datos, inicio, fin) => {
                 contadorActividadRef
             );
             horarios.forEach((h) => {
-                const esActividadGenerica = h.desc.startsWith('Actividad');
+                const matchActividad = h.desc.match(/^Actividad (\d+)$/);
                 lineas.push(
                     linea([
                         { text: `${h.hora} `, bold: true },
-                        { text: h.desc, bold: esActividadGenerica },
+                        { text: h.desc, bold: !!matchActividad, actividadRef: matchActividad ? Number(matchActividad[1]) : undefined },
                     ])
                 );
             });
@@ -171,7 +85,11 @@ const buildTemplateLineas = (datos, inicio, fin) => {
     lineas.push(linea([{ text: 'ANEXOS', bold: true }]));
     if (totalActividadesGeneradas > 0) {
         for (let i = 1; i <= totalActividadesGeneradas; i++) {
-            lineas.push(linea([{ text: `Anexo Actividad ${i}:`, bold: true }]));
+            lineas.push(linea([
+                { text: 'Anexo ', bold: true },
+                { text: `Actividad ${i}`, bold: true, actividadRef: i },
+                { text: ':', bold: true },
+            ]));
             lineas.push(linea('Objetivo de la Actividad: . . .'));
             lineas.push(linea('Desarrollo de la actividad: . . .'));
             lineas.push(linea('Responsables: . . .'));
@@ -189,34 +107,6 @@ const buildTemplateLineas = (datos, inicio, fin) => {
     return lineas;
 };
 
-const lineasToHtml = (lineas) =>
-    lineas
-        .map((parts) => {
-            const inner = parts
-                .map((p) => {
-                    const textoEscapado = escapeHtml(p.text);
-                    const tagApertura = p.bold ? '<strong>' : '';
-                    const tagCierre = p.bold ? '</strong>' : '';
-                    const style = p.color ? ` style="color: ${p.color};"` : '';
-
-                    if (p.color) {
-                        return `<span${style}>${tagApertura}${textoEscapado}${tagCierre}</span>`;
-                    }
-                    return `${tagApertura}${textoEscapado}${tagCierre}`;
-                })
-                .join('');
-            return `<div>${inner || '<br>'}</div>`;
-        })
-        .join('');
-
-const textoPlanoAHtml = (texto) => {
-    if (!texto) return '';
-    return String(texto)
-        .split('\n')
-        .map((renglon) => `<div>${escapeHtml(renglon) || '<br>'}</div>`)
-        .join('');
-};
-
 const EditarProgramaCampamento = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -226,6 +116,7 @@ const EditarProgramaCampamento = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingData, setIsLoadingData] = useState(true);
     const [error, setError] = useState(null);
+    const [tipoIncorrecto, setTipoIncorrecto] = useState(false);
 
     const [formData, setFormData] = useState({
         titulo: '',
@@ -235,6 +126,9 @@ const EditarProgramaCampamento = () => {
     });
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
+    const [lugar, setLugar] = useState('');
+    const [valor, setValor] = useState('');
+    const [transporte, setTransporte] = useState('');
     const [contenidoInicialHtml, setContenidoInicialHtml] = useState('');
     const [contenidoVacio, setContenidoVacio] = useState(true);
 
@@ -249,6 +143,12 @@ const EditarProgramaCampamento = () => {
             try {
                 const res = await api.get(`/programas/${id}`);
                 const programa = res.data;
+
+                if (programa.tipo && programa.tipo !== 'campamento') {
+                    setTipoIncorrecto(true);
+                    return;
+                }
+
                 const cronograma = programa.cronograma || {};
 
                 setFormData({
@@ -259,6 +159,9 @@ const EditarProgramaCampamento = () => {
                 });
                 setFechaInicio(programa.fechaInicio || programa.fecha_inicio || '');
                 setFechaFin(programa.fechaFin || programa.fecha_fin || '');
+                setLugar(programa.lugar || '');
+                setValor(programa.valor || '');
+                setTransporte(programa.transporte || '');
                 // El contenido viaja anidado en "cronograma" (columna del backend); toleramos
                 // también que venga plano y en snake_case, y el "contenido" viejo en texto plano.
                 setContenidoInicialHtml(
@@ -302,6 +205,11 @@ const EditarProgramaCampamento = () => {
             return;
         }
 
+        const hayContenido = contenidoRef.current?.innerText?.trim();
+        if (hayContenido && !window.confirm('Esto va a reemplazar el contenido actual del programa. ¿Continuar?')) {
+            return;
+        }
+
         setError(null);
         const lineas = buildTemplateLineas(formData, inicio, fin);
         if (contenidoRef.current) {
@@ -313,6 +221,7 @@ const EditarProgramaCampamento = () => {
     const handleContenidoInput = () => {
         const texto = contenidoRef.current?.innerText ?? '';
         setContenidoVacio(texto.trim().length === 0);
+        sincronizarActividades(contenidoRef.current);
     };
 
     const handleSubmit = async (e) => {
@@ -343,6 +252,9 @@ const EditarProgramaCampamento = () => {
             educadores_a_cargo: formData.educadoresACargo,
             contenidoHtml: contenidoHtmlActual,
             contenido_html: contenidoHtmlActual,
+            lugar,
+            valor,
+            transporte,
         };
 
         try {
@@ -361,6 +273,22 @@ const EditarProgramaCampamento = () => {
         return (
             <div className="h-full w-full flex items-center justify-center bg-scout-bg-panel">
                 <p className="text-scout-primary font-bold uppercase tracking-widest text-xs animate-pulse">Cargando programa...</p>
+            </div>
+        );
+    }
+
+    if (tipoIncorrecto) {
+        return (
+            <div className="h-full w-full flex flex-col items-center justify-center gap-4 bg-scout-bg-panel p-10 text-center">
+                <p className="text-sm font-bold text-scout-muted uppercase tracking-tight">
+                    Este programa no es de tipo Campamento.
+                </p>
+                <Link
+                    to="/gestion-programas"
+                    className="text-[10px] font-black uppercase tracking-widest text-scout-primary hover:text-scout-primary-hover transition-colors"
+                >
+                    Volver a Programas
+                </Link>
             </div>
         );
     }
@@ -482,6 +410,54 @@ const EditarProgramaCampamento = () => {
                                     value={fechaFin}
                                     onChange={(e) => setFechaFin(e.target.value)}
                                     required
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 shrink-0 mt-6">
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                Lugar
+                            </label>
+                            <div className="relative">
+                                <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-scout-muted pointer-events-none" />
+                                <input
+                                    type="text"
+                                    value={lugar}
+                                    onChange={(e) => setLugar(e.target.value)}
+                                    placeholder="Ej: Predio Scout Bahía Blanca"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                Valor
+                            </label>
+                            <div className="relative">
+                                <Wallet size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-scout-muted pointer-events-none" />
+                                <input
+                                    type="text"
+                                    value={valor}
+                                    onChange={(e) => setValor(e.target.value)}
+                                    placeholder="Ej: $15.000"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                Transporte / Lugar de concentración
+                            </label>
+                            <div className="relative">
+                                <Bus size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-scout-muted pointer-events-none" />
+                                <input
+                                    type="text"
+                                    value={transporte}
+                                    onChange={(e) => setTransporte(e.target.value)}
+                                    placeholder="Ej: Sede del grupo, 8hs"
                                     className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>

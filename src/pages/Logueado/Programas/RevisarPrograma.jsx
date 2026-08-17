@@ -1,11 +1,12 @@
 // src/pages/Logueado/Programas/RevisarPrograma.jsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Layers, Users, Tag, MessageSquarePlus, Lock, Type, Stethoscope, Target, CalendarDays, MessagesSquare, Download, BadgeCheck, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Layers, Users, Tag, MessageSquarePlus, Lock, Type, Stethoscope, Target, CalendarDays, MessagesSquare, Download, BadgeCheck, CheckCircle2, XCircle, MapPin } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useAuthorizedFetch } from '../../../hooks/useAuthorizedFetch';
 import api from '../../../api/axios';
 import EstadoBadge from '../../../components/ui/EstadoBadge';
+import RechazarProgramaModal from '../../../components/ui/RechazarProgramaModal';
 import { getLineasPrograma } from '../../Dashboard/Panels/Programas/programaLineas';
 import { useProgramaNotas } from '../../Dashboard/Panels/Programas/useProgramaNotas';
 import HiloComentario from './HiloComentario';
@@ -39,6 +40,7 @@ const SECCION_ICONOS = {
     educadores: Users,
     diagnostico: Stethoscope,
     objetivos: Target,
+    infoAdicional: MapPin,
 };
 const getIconoSeccion = (seccionKey) => SECCION_ICONOS[seccionKey] || CalendarDays;
 
@@ -132,6 +134,7 @@ const RevisarPrograma = () => {
 
     const [accionandoEstado, setAccionandoEstado] = useState(false);
     const [descargando, setDescargando] = useState(false);
+    const [mostrarModalRechazo, setMostrarModalRechazo] = useState(false);
 
     const { notas, crearHilo, responder, toggleResuelta } = useProgramaNotas(id);
 
@@ -212,6 +215,20 @@ const RevisarPrograma = () => {
         setError(null);
         try {
             await authorizedFetch(`/programas/${id}/estado`, { method: 'PATCH', body: { estado: 'aprobado' } });
+            await fetchPrograma();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setAccionandoEstado(false);
+        }
+    };
+
+    const handleRechazar = async (motivo) => {
+        setAccionandoEstado(true);
+        setError(null);
+        try {
+            await authorizedFetch(`/programas/${id}/estado`, { method: 'PATCH', body: { estado: 'rechazado', motivo } });
+            setMostrarModalRechazo(false);
             await fetchPrograma();
         } catch (err) {
             setError(err.message);
@@ -312,15 +329,26 @@ const RevisarPrograma = () => {
                         )}
 
                         {puedeAprobar && (
-                            <button
-                                type="button"
-                                onClick={handleAprobar}
-                                disabled={accionandoEstado}
-                                title="Aprobar programa"
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-scout-success/30 text-[10px] font-black uppercase tracking-widest text-scout-success hover:bg-scout-success/10 transition-colors cursor-pointer disabled:opacity-40"
-                            >
-                                <CheckCircle2 size={13} /> Aprobar
-                            </button>
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={handleAprobar}
+                                    disabled={accionandoEstado}
+                                    title="Aprobar programa"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-scout-success/30 text-[10px] font-black uppercase tracking-widest text-scout-success hover:bg-scout-success/10 transition-colors cursor-pointer disabled:opacity-40"
+                                >
+                                    <CheckCircle2 size={13} /> Aprobar
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setMostrarModalRechazo(true)}
+                                    disabled={accionandoEstado}
+                                    title="Rechazar programa"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-scout-accent/30 text-[10px] font-black uppercase tracking-widest text-scout-accent hover:bg-scout-accent-light transition-colors cursor-pointer disabled:opacity-40"
+                                >
+                                    <XCircle size={13} /> Rechazar
+                                </button>
+                            </>
                         )}
                     </div>
                 </div>
@@ -425,6 +453,15 @@ const RevisarPrograma = () => {
                     </div>
                 )}
             </div>
+
+            {mostrarModalRechazo && (
+                <RechazarProgramaModal
+                    programa={programa}
+                    onConfirm={handleRechazar}
+                    onClose={() => setMostrarModalRechazo(false)}
+                    isSubmitting={accionandoEstado}
+                />
+            )}
         </div>
     );
 };

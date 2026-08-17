@@ -4,64 +4,21 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { CalendarDays, RefreshCw, Send, ArrowLeft } from 'lucide-react';
 import api from '../../../api/axios';
 import RichTextToolbar from '../../../components/ui/RichTextToolbar';
-
-// --- Helpers de fecha ---
-const parseFechaLocal = (isoDate) => {
-    if (!isoDate) return null;
-    const [y, m, d] = isoDate.split('-').map(Number);
-    return new Date(y, m - 1, d);
-};
-
-const formatDDMM = (date) => {
-    const dd = String(date.getDate()).padStart(2, '0');
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    return `${dd}/${mm}`;
-};
-
-const obtenerSabados = (inicio, fin) => {
-    const sabados = [];
-    if (!inicio || !fin || inicio > fin) return sabados;
-    const cursor = new Date(inicio);
-    while (cursor <= fin) {
-        if (cursor.getDay() === 6) sabados.push(formatDDMM(new Date(cursor)));
-        cursor.setDate(cursor.getDate() + 1);
-    }
-    return sabados;
-};
-
-const escapeHtml = (str = '') =>
-    String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-
-const linea = (parts) => (Array.isArray(parts) ? parts : [{ text: parts, bold: false }]);
-
-const agregarTextoMultilinea = (lineasTarget, texto) => {
-    if (!texto) {
-        lineasTarget.push(linea(''));
-        return;
-    }
-    const renglones = String(texto).split('\n');
-    renglones.forEach((renglon) => {
-        lineasTarget.push(linea(renglon));
-    });
-};
+import {
+    parseFechaLocal,
+    obtenerSabados,
+    linea,
+    agregarTextoMultilinea,
+    lineasToHtml,
+    sincronizarActividades,
+    DISCLAIMER_PLANTILLA,
+} from './plantillaPrograma';
 
 const buildTemplateLineas = (datos, inicio, fin) => {
     const sabados = obtenerSabados(inicio, fin);
     const lineas = [];
 
-    // Ahora sí toma el color #9ca3af
-    lineas.push(
-        linea([
-            {
-                text: 'Este programa fue generado mediante el Sistema de Gestión del Distrito 3 - Zona 13 - Scouts de Argentina. Esta plantilla tiene como objetivo unificar los criterios mínimos de un programa de campamento/acantonamiento a nivel distrital. Se solicita respetar como base la información aquí requerida; toda información adicional que se considere pertinente es bienvenida. El programa se generará a partir de los datos ingresados en el paso anterior, junto con la descripción incorporada en esta sección.',
-                bold: false,
-                color: '#9ca3af',
-            },
-        ])
-    );
+    lineas.push(linea([{ text: DISCLAIMER_PLANTILLA.cuatrimestre, bold: false, color: '#9ca3af' }]));
     lineas.push(linea(''));
 
     lineas.push(linea([{ text: 'Título', bold: true }]));
@@ -85,7 +42,8 @@ const buildTemplateLineas = (datos, inicio, fin) => {
         sabados.forEach((f, i) => {
             lineas.push([
                 { text: f, bold: true },
-                { text: ` - Actividad ${i + 1}/Título X`, bold: false },
+                { text: ` - Actividad ${i + 1}/`, bold: false },
+                { text: 'Título X', bold: false, actividadRef: i + 1 },
             ]);
         });
     } else {
@@ -96,7 +54,11 @@ const buildTemplateLineas = (datos, inicio, fin) => {
     lineas.push(linea([{ text: 'ANEXOS', bold: true }]));
     if (sabados.length > 0) {
         sabados.forEach((f, i) => {
-            lineas.push(linea([{ text: `Anexo ${i + 1}/Título X:`, bold: true }]));
+            lineas.push(linea([
+                { text: `Anexo ${i + 1}/`, bold: true },
+                { text: 'Título X', bold: true, actividadRef: i + 1 },
+                { text: ':', bold: true },
+            ]));
             lineas.push(linea('Objetivo de la Actividad: . . .'));
             lineas.push(linea('Desarrollo de la actividad: . . .'));
             lineas.push(linea('Responsables: . . .'));
@@ -104,7 +66,11 @@ const buildTemplateLineas = (datos, inicio, fin) => {
             lineas.push(linea(''));
         });
     } else {
-        lineas.push(linea([{ text: 'Anexo 1/Título X:', bold: true }]));
+        lineas.push(linea([
+            { text: 'Anexo 1/', bold: true },
+            { text: 'Título X', bold: true, actividadRef: 1 },
+            { text: ':', bold: true },
+        ]));
         lineas.push(linea('Objetivo de la Actividad: . . .'));
         lineas.push(linea('Desarrollo de la actividad: . . .'));
         lineas.push(linea('Responsables: . . .'));
@@ -113,26 +79,6 @@ const buildTemplateLineas = (datos, inicio, fin) => {
 
     return lineas;
 };
-
-const lineasToHtml = (lineas) =>
-    lineas
-        .map((parts) => {
-            const inner = parts
-                .map((p) => {
-                    const textoEscapado = escapeHtml(p.text);
-                    const tagApertura = p.bold ? '<strong>' : '';
-                    const tagCierre = p.bold ? '</strong>' : '';
-                    const style = p.color ? ` style="color: ${p.color};"` : '';
-
-                    if (p.color) {
-                        return `<span${style}>${tagApertura}${textoEscapado}${tagCierre}</span>`;
-                    }
-                    return `${tagApertura}${textoEscapado}${tagCierre}`;
-                })
-                .join('');
-            return `<div>${inner || '<br>'}</div>`;
-        })
-        .join('');
 
 const CrearProgramaCuatrimestre = () => {
     const navigate = useNavigate();
@@ -180,6 +126,11 @@ const CrearProgramaCuatrimestre = () => {
             return;
         }
 
+        const hayContenido = contenidoRef.current?.innerText?.trim();
+        if (hayContenido && !window.confirm('Esto va a reemplazar el contenido que ya escribiste. ¿Continuar?')) {
+            return;
+        }
+
         setError(null);
         const lineas = buildTemplateLineas(datosPasoUno, inicio, fin);
         if (contenidoRef.current) {
@@ -191,6 +142,7 @@ const CrearProgramaCuatrimestre = () => {
     const handleContenidoInput = () => {
         const texto = contenidoRef.current?.innerText ?? '';
         setContenidoVacio(texto.trim().length === 0);
+        sincronizarActividades(contenidoRef.current);
     };
 
     const handleSubmit = async (e) => {

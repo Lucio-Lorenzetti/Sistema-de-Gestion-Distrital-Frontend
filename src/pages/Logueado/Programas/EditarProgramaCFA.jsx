@@ -1,105 +1,21 @@
 // src/pages/Logueado/Programas/EditarProgramaCFA.jsx
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { CalendarDays, RefreshCw, Send } from 'lucide-react';
+import { CalendarDays, RefreshCw, Send, MapPin, Wallet, Bus } from 'lucide-react';
 import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 import RichTextToolbar from '../../../components/ui/RichTextToolbar';
-
-const parseFechaLocal = (isoDate) => {
-    if (!isoDate) return null;
-    const [y, m, d] = isoDate.split('-').map(Number);
-    return new Date(y, m - 1, d);
-};
-
-const formatDDMM = (date) => {
-    const dd = String(date.getDate()).padStart(2, '0');
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    return `${dd}/${mm}`;
-};
-
-const NOMBRES_DIAS = [
-    'Domingo',
-    'Lunes',
-    'Martes',
-    'Miércoles',
-    'Jueves',
-    'Viernes',
-    'Sábado',
-];
-
-const obtenerDiasRango = (inicio, fin) => {
-    const dias = [];
-    if (!inicio || !fin || inicio > fin) return dias;
-    const cursor = new Date(inicio);
-    while (cursor <= fin) {
-        dias.push({
-            id: cursor.toISOString().split('T')[0],
-            nombreDia: NOMBRES_DIAS[cursor.getDay()],
-            fechaFormatted: formatDDMM(new Date(cursor)),
-        });
-        cursor.setDate(cursor.getDate() + 1);
-    }
-    return dias;
-};
-
-const distribuirEnFilas = (dias) => {
-    const total = dias.length;
-    if (total === 0) return [];
-    if (total <= 10) return [dias];
-
-    const mitadArriba = Math.floor(total / 2);
-    const fila1 = dias.slice(0, mitadArriba);
-    const fila2 = dias.slice(mitadArriba);
-
-    return [fila1, fila2];
-};
-
-const escapeHtml = (str = '') =>
-    String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-
-const linea = (parts) => (Array.isArray(parts) ? parts : [{ text: parts, bold: false }]);
-
-const agregarTextoMultilinea = (lineasTarget, texto) => {
-    if (!texto) {
-        lineasTarget.push(linea(''));
-        return;
-    }
-    const renglones = String(texto).split('\n');
-    renglones.forEach((renglon) => {
-        lineasTarget.push(linea(renglon));
-    });
-};
-
-const generarCronogramaDia = (esPrimerDia, esUltimoDia, contadorActividadRef) => {
-    const horarios = [];
-
-    if (esPrimerDia) {
-        horarios.push({ hora: '08:00hs', desc: 'Concentración' });
-    } else {
-        horarios.push({ hora: '08:00hs', desc: 'Diana / Desayuno' });
-    }
-    horarios.push({ hora: '09:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-    horarios.push({ hora: '11:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-    horarios.push({ hora: '13:00hs', desc: 'Almuerzo' });
-
-    if (esUltimoDia) {
-        horarios.push({ hora: '16:00hs', desc: 'Desconcentración' });
-        return horarios;
-    }
-
-    horarios.push({ hora: '15:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-    horarios.push({ hora: '17:00hs', desc: 'Merienda' });
-    horarios.push({ hora: '18:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-    horarios.push({ hora: '20:00hs', desc: `Actividad ${contadorActividadRef.val++}` });
-    horarios.push({ hora: '21:30hs', desc: 'Cena' });
-    horarios.push({ hora: '23:00hs', desc: 'Silencio' });
-
-    return horarios;
-};
+import {
+    parseFechaLocal,
+    obtenerDiasRango,
+    distribuirEnFilas,
+    linea,
+    agregarTextoMultilinea,
+    generarCronogramaDia,
+    lineasToHtml,
+    sincronizarActividades,
+    DISCLAIMER_PLANTILLA,
+} from './plantillaPrograma';
 
 const buildTemplateDiaLineas = (datos, diaInfo, numeroDia, esPrimerDia, esUltimoDia) => {
     const lineas = [];
@@ -115,7 +31,11 @@ const buildTemplateDiaLineas = (datos, diaInfo, numeroDia, esPrimerDia, esUltimo
     );
     lineas.push(linea(''));
 
+    // Solo el Día 1 incluye el bloque de Título, Educadores, Diagnóstico, Objetivos e Info Adicional
     if (esPrimerDia) {
+        lineas.push(linea([{ text: DISCLAIMER_PLANTILLA.cfa, bold: false, color: '#9ca3af' }]));
+        lineas.push(linea(''));
+
         lineas.push(linea([{ text: 'Título', bold: true }]));
         agregarTextoMultilinea(lineas, datos.titulo);
         lineas.push(linea(''));
@@ -131,12 +51,6 @@ const buildTemplateDiaLineas = (datos, diaInfo, numeroDia, esPrimerDia, esUltimo
         lineas.push(linea([{ text: 'Objetivo del Día', bold: true }]));
         agregarTextoMultilinea(lineas, datos.objetivos);
         lineas.push(linea(''));
-
-        lineas.push(linea([{ text: 'INFORMACIÓN ADICIONAL', bold: true }]));
-        lineas.push(linea('- Lugar: '));
-        lineas.push(linea('- Valor: '));
-        lineas.push(linea('- Transporte / Lugar de concentración: '));
-        lineas.push(linea(''));
     }
 
     lineas.push(linea([{ text: 'CRONOGRAMA DEL DÍA', bold: true }]));
@@ -145,11 +59,11 @@ const buildTemplateDiaLineas = (datos, diaInfo, numeroDia, esPrimerDia, esUltimo
     const horarios = generarCronogramaDia(esPrimerDia, esUltimoDia, contadorActividadRef);
 
     horarios.forEach((h) => {
-        const esActividadGenerica = h.desc.startsWith('Actividad');
+        const matchActividad = h.desc.match(/^Actividad (\d+)$/);
         lineas.push(
             linea([
                 { text: `${h.hora} `, bold: true },
-                { text: h.desc, bold: esActividadGenerica },
+                { text: h.desc, bold: !!matchActividad, actividadRef: matchActividad ? Number(matchActividad[1]) : undefined },
             ])
         );
     });
@@ -160,7 +74,11 @@ const buildTemplateDiaLineas = (datos, diaInfo, numeroDia, esPrimerDia, esUltimo
 
     if (totalActividades > 0) {
         for (let i = 1; i <= totalActividades; i++) {
-            lineas.push(linea([{ text: `Anexo Actividad ${i}:`, bold: true }]));
+            lineas.push(linea([
+                { text: 'Anexo ', bold: true },
+                { text: `Actividad ${i}`, bold: true, actividadRef: i },
+                { text: ':', bold: true },
+            ]));
             lineas.push(linea('Objetivo de la Actividad: '));
             lineas.push(linea('Desarrollo de la actividad: '));
             lineas.push(linea('Responsables: '));
@@ -179,26 +97,6 @@ const buildTemplateDiaLineas = (datos, diaInfo, numeroDia, esPrimerDia, esUltimo
     return lineas;
 };
 
-const lineasToHtml = (lineas) =>
-    lineas
-        .map((parts) => {
-            const inner = parts
-                .map((p) => {
-                    const textoEscapado = escapeHtml(p.text);
-                    const tagApertura = p.bold ? '<strong>' : '';
-                    const tagCierre = p.bold ? '</strong>' : '';
-                    const style = p.color ? ` style="color: ${p.color};"` : '';
-
-                    if (p.color) {
-                        return `<span${style}>${tagApertura}${textoEscapado}${tagCierre}</span>`;
-                    }
-                    return `${tagApertura}${textoEscapado}${tagCierre}`;
-                })
-                .join('');
-            return `<div>${inner || '<br>'}</div>`;
-        })
-        .join('');
-
 const EditarProgramaCFA = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -208,6 +106,7 @@ const EditarProgramaCFA = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingData, setIsLoadingData] = useState(true);
     const [error, setError] = useState(null);
+    const [tipoIncorrecto, setTipoIncorrecto] = useState(false);
 
     const [formData, setFormData] = useState({
         titulo: '',
@@ -217,6 +116,9 @@ const EditarProgramaCFA = () => {
     });
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
+    const [lugar, setLugar] = useState('');
+    const [valor, setValor] = useState('');
+    const [transporte, setTransporte] = useState('');
     const [diaActivoId, setDiaActivoId] = useState(null);
     const [contenidosPorDia, setContenidosPorDia] = useState({});
 
@@ -233,6 +135,12 @@ const EditarProgramaCFA = () => {
             try {
                 const res = await api.get(`/programas/${id}`);
                 const programa = res.data;
+
+                if (programa.tipo && programa.tipo !== 'cfa') {
+                    setTipoIncorrecto(true);
+                    return;
+                }
+
                 const cronograma = programa.cronograma || {};
                 // El backend puede mandar los días como array directo en "dias",
                 // anidados en "cronograma.dias", o "cronograma" siendo directamente el array.
@@ -249,6 +157,9 @@ const EditarProgramaCFA = () => {
                 });
                 setFechaInicio(programa.fechaInicio || programa.fecha_inicio || '');
                 setFechaFin(programa.fechaFin || programa.fecha_fin || '');
+                setLugar(programa.lugar || '');
+                setValor(programa.valor || '');
+                setTransporte(programa.transporte || '');
 
                 const nuevosContenidos = {};
                 diasFuente.forEach((d) => {
@@ -291,6 +202,22 @@ const EditarProgramaCFA = () => {
         );
     }
 
+    if (tipoIncorrecto) {
+        return (
+            <div className="h-full w-full flex flex-col items-center justify-center gap-4 bg-scout-bg-panel p-10 text-center">
+                <p className="text-sm font-bold text-scout-muted uppercase tracking-tight">
+                    Este programa no es de tipo CFA.
+                </p>
+                <Link
+                    to="/gestion-programas"
+                    className="text-[10px] font-black uppercase tracking-widest text-scout-primary hover:text-scout-primary-hover transition-colors"
+                >
+                    Volver a Programas
+                </Link>
+            </div>
+        );
+    }
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -324,6 +251,12 @@ const EditarProgramaCFA = () => {
             return;
         }
 
+        const hayContenido = Object.values(contenidosPorDia).some((html) => html?.replace(/<[^>]+>/g, '').trim())
+            || contenidoRef.current?.innerText?.trim();
+        if (hayContenido && !window.confirm('Esto va a reemplazar el contenido de todos los días. ¿Continuar?')) {
+            return;
+        }
+
         setError(null);
 
         const nuevosContenidos = {};
@@ -349,6 +282,7 @@ const EditarProgramaCFA = () => {
     };
 
     const handleContenidoInput = () => {
+        sincronizarActividades(contenidoRef.current);
         if (contenidoRef.current && diaActivoId) {
             const html = contenidoRef.current.innerHTML;
             setContenidosPorDia((prev) => ({
@@ -396,6 +330,9 @@ const EditarProgramaCFA = () => {
             fecha_fin: fechaFin,
             educadores_a_cargo: formData.educadoresACargo,
             dias: contenidosConsolidados,
+            lugar,
+            valor,
+            transporte,
         };
 
         try {
@@ -423,7 +360,7 @@ const EditarProgramaCFA = () => {
                         Panel de Control Privado • Edición
                     </span>
                     <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase">
-                        Editar Programa Campamento Final (CFA)
+                        Editar Programa Campamento Anual (CFA)
                     </h1>
                     {user && (
                         <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest mt-1">
@@ -529,6 +466,54 @@ const EditarProgramaCFA = () => {
                                     value={fechaFin}
                                     onChange={(e) => setFechaFin(e.target.value)}
                                     required
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 shrink-0 mt-6">
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                Lugar
+                            </label>
+                            <div className="relative">
+                                <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-scout-muted pointer-events-none" />
+                                <input
+                                    type="text"
+                                    value={lugar}
+                                    onChange={(e) => setLugar(e.target.value)}
+                                    placeholder="Ej: Predio Scout Bahía Blanca"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                Valor
+                            </label>
+                            <div className="relative">
+                                <Wallet size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-scout-muted pointer-events-none" />
+                                <input
+                                    type="text"
+                                    value={valor}
+                                    onChange={(e) => setValor(e.target.value)}
+                                    placeholder="Ej: $15.000"
+                                    className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
+                                Transporte / Lugar de concentración
+                            </label>
+                            <div className="relative">
+                                <Bus size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-scout-muted pointer-events-none" />
+                                <input
+                                    type="text"
+                                    value={transporte}
+                                    onChange={(e) => setTransporte(e.target.value)}
+                                    placeholder="Ej: Sede del grupo, 8hs"
                                     className="w-full border border-scout-border rounded-xl p-3 pl-10 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>

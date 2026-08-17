@@ -34,46 +34,14 @@ const hexToRgba = (hex, alpha) => {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-// Lugar/Valor/Transporte no son columnas propias: viven como líneas de texto libre
-// dentro de la plantilla generada ("- Lugar: ...", etc). Se extraen del HTML guardado.
+// Lugar/Valor/Transporte son columnas reales de "programs" (solo las llenan
+// Campamento y CFA). Antes se adivinaban parseando la plantilla de texto libre.
 const extraerInfoAdicional = (programa) => {
     if (!['campamento', 'cfa'].includes(programa.tipo)) return null;
 
-    const cronograma = programa.cronograma || {};
-    let html = '';
-
-    if (Array.isArray(cronograma) || cronograma.dias) {
-        const dias = Array.isArray(cronograma) ? cronograma : cronograma.dias || [];
-        html = dias[0]?.contenidoHtml || dias[0]?.contenido_html || '';
-    } else {
-        html = cronograma.contenidoHtml || cronograma.contenido_html || '';
-    }
-
-    if (!html) return null;
-
-    // No se puede usar innerText acá: requiere que el nodo esté en el layout renderizado,
-    // y este <div> se procesa desconectado del documento. textContent no inserta saltos de
-    // línea entre los <div> de cada renglón de la plantilla, así que se reemplazan a mano.
-    const texto = html
-        .replace(/<\/(div|p|li)>/gi, '\n')
-        .replace(/<br\s*\/?>/gi, '\n')
-        .replace(/<[^>]+>/g, '')
-        .replace(/&nbsp;/gi, ' ')
-        .replace(/&amp;/gi, '&')
-        .replace(/&lt;/gi, '<')
-        .replace(/&gt;/gi, '>');
-
-    const extraerCampo = (regex) => {
-        const match = texto.match(regex);
-        const valor = match?.[1]?.trim();
-        return valor || null;
-    };
-
-    const lugar = extraerCampo(/^-\s*Lugar:\s*(.*)$/im);
-    const valor = extraerCampo(/^-\s*Valor:\s*(.*)$/im);
-    const transporte = extraerCampo(/^-\s*Transporte[^:]*:\s*(.*)$/im);
-
+    const { lugar, valor, transporte } = programa;
     if (!lugar && !valor && !transporte) return null;
+
     return { lugar, valor, transporte };
 };
 

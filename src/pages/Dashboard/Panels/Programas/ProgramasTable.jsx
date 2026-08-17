@@ -1,9 +1,10 @@
 // src/pages/Dashboard/Panels/Programas/ProgramasTable.jsx
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, ChevronLeft, ChevronRight, Eye, Pencil, Send, Download, MessageSquare, Undo2, CheckCircle2, BadgeCheck } from 'lucide-react';
+import { ClipboardList, ChevronLeft, ChevronRight, Eye, Pencil, Send, Download, MessageSquare, Undo2, CheckCircle2, XCircle, BadgeCheck, Trash2, Info } from 'lucide-react';
 import FiltroDropdown from './FiltroDropdown';
 import EstadoBadge from '../../../../components/ui/EstadoBadge';
+import RechazarProgramaModal from '../../../../components/ui/RechazarProgramaModal';
 import ProgramaDetalleModal from './ProgramaDetalleModal';
 import { useGruposCatalogo } from './useGruposCatalogo';
 import { useAuthStore } from '../../../../store/useAuthStore';
@@ -45,6 +46,9 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
     const [aprobandoId, setAprobandoId] = useState(null);
     const [solicitandoId, setSolicitandoId] = useState(null);
     const [descargandoId, setDescargandoId] = useState(null);
+    const [eliminandoId, setEliminandoId] = useState(null);
+    const [rechazandoId, setRechazandoId] = useState(null);
+    const [programaARechazar, setProgramaARechazar] = useState(null);
     const [error, setError] = useState(null);
 
     const gruposDisponibles = useMemo(
@@ -94,8 +98,12 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
 
     const puedeGestionar = (programa) => programa.estado === 'borrador' && esColaborador(programa);
 
-    // Cualquier colaborador puede retroceder el programa de "enviado" a "borrador" para seguir editándolo.
-    const puedeVolverABorrador = (programa) => programa.estado === 'enviado' && esColaborador(programa);
+    // Mismo criterio que ProgramPolicy::delete() en el backend: solo el autor, sin importar el estado.
+    const puedeEliminar = (programa) => Number(programa.owner?.id) === Number(user?.id);
+
+    // Cualquier colaborador puede retroceder el programa de "enviado" o "rechazado" a
+    // "borrador" para seguir editándolo (y desde ahí reenviarlo a revisión).
+    const puedeVolverABorrador = (programa) => ['enviado', 'rechazado'].includes(programa.estado) && esColaborador(programa);
 
     // Distinto de "Enviar a revisión" (borrador → enviado): esto no cambia el estado,
     // solo marca que ya se considera el programa listo — el botón aparece recién
@@ -165,6 +173,25 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
         }
     };
 
+    const handleRechazar = async (motivo) => {
+        const programa = programaARechazar;
+        setRechazandoId(programa.id);
+        setError(null);
+        try {
+            await authorizedFetch(`/programas/${programa.id}/estado`, {
+                method: 'PATCH',
+                body: { estado: 'rechazado', motivo },
+            });
+            setProgramaARechazar(null);
+            await onEstadoActualizado?.();
+        } catch (err) {
+            console.error('Error al rechazar el programa:', err);
+            setError('No se pudo rechazar el programa: ' + err.message);
+        } finally {
+            setRechazandoId(null);
+        }
+    };
+
     const handleSolicitarAprobacion = async (programa) => {
         setSolicitandoId(programa.id);
         setError(null);
@@ -176,6 +203,23 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
             setError('No se pudo solicitar la aprobación: ' + err.message);
         } finally {
             setSolicitandoId(null);
+        }
+    };
+
+    const handleEliminar = async (programa) => {
+        if (!window.confirm(`¿Eliminar el programa "${programa.titulo}"? Vas a poder restaurarlo desde la papelera.`)) {
+            return;
+        }
+        setEliminandoId(programa.id);
+        setError(null);
+        try {
+            await authorizedFetch(`/programas/${programa.id}`, { method: 'DELETE' });
+            await onEstadoActualizado?.();
+        } catch (err) {
+            console.error('Error al eliminar el programa:', err);
+            setError('No se pudo eliminar el programa: ' + err.message);
+        } finally {
+            setEliminandoId(null);
         }
     };
 
@@ -247,6 +291,7 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
                                 const puedeRetroceder = puedeVolverABorrador(programa);
                                 const aprobable = puedeAprobar(programa);
                                 const solicitable = puedeSolicitarAprobacion(programa);
+                                const eliminable = puedeEliminar(programa);
                                 const enRevision = programa.estado === 'enviado';
                                 return (
                                     <tr key={programa.id} className="group hover:bg-scout-bg-panel transition-colors">
@@ -256,7 +301,16 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
                                         <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.rama?.nombre || '—'}</td>
                                         <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.grupo?.nombre || '—'}</td>
                                         <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.owner?.name || 'Sin asignar'}</td>
-                                        <td className="py-4 pr-4"><EstadoBadge estado={ESTADO_LABELS[programa.estado] || programa.estado} /></td>
+                                        <td className="py-4 pr-4">
+                                            <div className="flex items-center gap-1.5">
+                                                <EstadoBadge estado={ESTADO_LABELS[programa.estado] || programa.estado} />
+                                                {programa.estado === 'rechazado' && programa.motivo_rechazo && (
+                                                    <span title={programa.motivo_rechazo} className="text-scout-accent cursor-help">
+                                                        <Info size={13} />
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
                                         <td className="py-4 text-right">
                                             <div className="flex items-center justify-end gap-1">
                                                 <button
@@ -323,14 +377,24 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
                                                 )}
 
                                                 {aprobable && (
-                                                    <button
-                                                        onClick={() => handleAprobar(programa)}
-                                                        disabled={aprobandoId === programa.id}
-                                                        className="p-1.5 rounded-lg border border-scout-success/30 hover:bg-scout-success/10 text-scout-success transition-colors cursor-pointer disabled:opacity-40"
-                                                        title="Aprobar programa"
-                                                    >
-                                                        <CheckCircle2 size={13} />
-                                                    </button>
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleAprobar(programa)}
+                                                            disabled={aprobandoId === programa.id}
+                                                            className="p-1.5 rounded-lg border border-scout-success/30 hover:bg-scout-success/10 text-scout-success transition-colors cursor-pointer disabled:opacity-40"
+                                                            title="Aprobar programa"
+                                                        >
+                                                            <CheckCircle2 size={13} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setProgramaARechazar(programa)}
+                                                            disabled={rechazandoId === programa.id}
+                                                            className="p-1.5 rounded-lg border border-scout-accent/30 hover:bg-scout-accent-light text-scout-accent transition-colors cursor-pointer disabled:opacity-40"
+                                                            title="Rechazar programa"
+                                                        >
+                                                            <XCircle size={13} />
+                                                        </button>
+                                                    </>
                                                 )}
 
                                                 {puedeRetroceder && (
@@ -341,6 +405,17 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
                                                         title="Volver a borrador"
                                                     >
                                                         <Undo2 size={13} />
+                                                    </button>
+                                                )}
+
+                                                {eliminable && (
+                                                    <button
+                                                        onClick={() => handleEliminar(programa)}
+                                                        disabled={eliminandoId === programa.id}
+                                                        className="p-1.5 rounded-lg border border-scout-accent/30 hover:bg-scout-accent-light text-scout-accent transition-colors cursor-pointer disabled:opacity-40"
+                                                        title="Eliminar"
+                                                    >
+                                                        <Trash2 size={13} />
                                                     </button>
                                                 )}
                                             </div>
@@ -364,6 +439,15 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
             )}
 
             {programaExpandido && <ProgramaDetalleModal programa={programaExpandido} onClose={() => setExpandedId(null)} />}
+
+            {programaARechazar && (
+                <RechazarProgramaModal
+                    programa={programaARechazar}
+                    onConfirm={handleRechazar}
+                    onClose={() => setProgramaARechazar(null)}
+                    isSubmitting={rechazandoId === programaARechazar.id}
+                />
+            )}
         </div>
     );
 };

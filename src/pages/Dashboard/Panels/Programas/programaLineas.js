@@ -7,6 +7,7 @@ export const SECCION_LABELS = {
     educadores: 'Educadores a Cargo',
     diagnostico: 'Diagnóstico',
     objetivos: 'Objetivos',
+    infoAdicional: 'Información Adicional',
     cronograma: 'Cronograma',
 };
 
@@ -78,6 +79,15 @@ export const getLineasPrograma = (programa) => {
     }
     if (programa.objetivos) {
         secciones.push({ seccion: 'objetivos', label: SECCION_LABELS.objetivos, lineas: lineaCampo('objetivos', programa.objetivos) });
+    }
+
+    // Solo Campamento y CFA piden Lugar/Valor/Transporte.
+    if (programa.lugar || programa.valor || programa.transporte) {
+        const lineas = [];
+        if (programa.lugar) lineas.push({ lineRef: 'campo:lugar', tipo: 'campo', contenido: `Lugar: ${programa.lugar}` });
+        if (programa.valor) lineas.push({ lineRef: 'campo:valor', tipo: 'campo', contenido: `Valor: ${programa.valor}` });
+        if (programa.transporte) lineas.push({ lineRef: 'campo:transporte', tipo: 'campo', contenido: `Transporte: ${programa.transporte}` });
+        secciones.push({ seccion: 'infoAdicional', label: SECCION_LABELS.infoAdicional, lineas });
     }
 
     const cronograma = programa.cronograma || {};
