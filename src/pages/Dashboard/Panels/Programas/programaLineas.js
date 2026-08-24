@@ -11,6 +11,13 @@ export const SECCION_LABELS = {
     cronograma: 'Cronograma',
 };
 
+// Mismo criterio y misma lista que ProgramController::quitarSeccionesDuplicadas()
+// en el backend (que ya limpia el PDF): el editor deja Título/Educadores a
+// Cargo/Diagnóstico/Objetivo baqueados como texto libre en el cronograma, pero
+// esos datos ya se muestran arriba desde los campos reales del programa — acá se
+// recortan del texto libre antes de mostrarlo, para no repetirlos en pantalla.
+const ENCABEZADOS_DUPLICADOS = ['Título', 'Educadores a Cargo', 'Diagnóstico', 'Objetivo'];
+
 // El HTML lo escriben educadores vía contentEditable y hoy se inyecta sin escapar
 // en el PDF (pdf.blade.php), pero acá lo va a ver toda la rama en el navegador —
 // se sanea antes de mostrarlo (scripts, handlers inline, hrefs/src con javascript:).
@@ -51,6 +58,36 @@ export const splitHtmlEnLineas = (html) => {
     });
 
     return lineas;
+};
+
+// Una línea es "encabezado en negrita" si es un único <strong>...</strong> sin
+// nada más alrededor (p. ej. la línea generada por linea([{text:'Título', bold:true}])).
+const esEncabezadoBold = (lineaHtml) => /^<strong>[\s\S]*<\/strong>$/i.test(lineaHtml.trim());
+
+// Devuelve el set de índices (sobre el array YA generado por splitHtmlEnLineas,
+// sin recortar) que hay que ocultar al mostrar el programa: mismo criterio que
+// quitarSeccionesDuplicadas() en el backend — desde el encabezado buscado hasta
+// el próximo encabezado en negrita (o el final). Importante: no se borran líneas
+// del array ni se renumeran las siguientes, solo se marcan para no renderizarse
+// — así un comentario ya anclado a un lineRef `cronograma:N`/`dia:D:N` posterior
+// sigue apuntando a la misma línea real de siempre, en vez de correrse.
+const indicesDuplicados = (lineasHtml, encabezados) => {
+    const ocultar = new Set();
+
+    encabezados.forEach((encabezado) => {
+        const inicio = lineasHtml.findIndex(
+            (html, i) => !ocultar.has(i) && esEncabezadoBold(html) && html.replace(/<[^>]+>/g, '').trim() === encabezado
+        );
+        if (inicio === -1) return;
+
+        let fin = lineasHtml.length;
+        for (let i = inicio + 1; i < lineasHtml.length; i++) {
+            if (esEncabezadoBold(lineasHtml[i])) { fin = i; break; }
+        }
+        for (let i = inicio; i < fin; i++) ocultar.add(i);
+    });
+
+    return ocultar;
 };
 
 const lineaCampo = (seccion, contenido) => ([{
@@ -97,22 +134,33 @@ export const getLineasPrograma = (programa) => {
             const html = dia?.contenidoHtml || dia?.contenido_html || '';
             const lineasHtml = splitHtmlEnLineas(html);
             if (!lineasHtml.length) return;
+            const ocultar = indicesDuplicados(lineasHtml, ENCABEZADOS_DUPLICADOS);
+
+            const lineas = lineasHtml
+                .map((contenido, i) => ({ i, contenido }))
+                .filter(({ i }) => !ocultar.has(i))
+                .map(({ i, contenido }) => ({ lineRef: `dia:${d}:${i}`, tipo: 'html', contenido }));
+            if (!lineas.length) return;
 
             secciones.push({
                 seccion: `dia-${d}`,
                 label: dia?.nombreDia && dia?.fechaFormatted ? `${dia.nombreDia} ${dia.fechaFormatted}` : `Día ${d + 1}`,
-                lineas: lineasHtml.map((contenido, i) => ({ lineRef: `dia:${d}:${i}`, tipo: 'html', contenido })),
+                lineas,
             });
         });
     } else {
         const html = cronograma.contenidoHtml || cronograma.contenido_html || '';
         const lineasHtml = splitHtmlEnLineas(html);
         if (lineasHtml.length) {
-            secciones.push({
-                seccion: 'cronograma',
-                label: SECCION_LABELS.cronograma,
-                lineas: lineasHtml.map((contenido, i) => ({ lineRef: `cronograma:${i}`, tipo: 'html', contenido })),
-            });
+            const ocultar = indicesDuplicados(lineasHtml, ENCABEZADOS_DUPLICADOS);
+            const lineas = lineasHtml
+                .map((contenido, i) => ({ i, contenido }))
+                .filter(({ i }) => !ocultar.has(i))
+                .map(({ i, contenido }) => ({ lineRef: `cronograma:${i}`, tipo: 'html', contenido }));
+
+            if (lineas.length) {
+                secciones.push({ seccion: 'cronograma', label: SECCION_LABELS.cronograma, lineas });
+            }
         }
     }
 

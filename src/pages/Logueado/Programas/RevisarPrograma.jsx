@@ -1,7 +1,7 @@
 // src/pages/Logueado/Programas/RevisarPrograma.jsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Layers, Users, Tag, MessageSquarePlus, Lock, Type, Stethoscope, Target, CalendarDays, MessagesSquare, Download, BadgeCheck, CheckCircle2, XCircle, MapPin } from 'lucide-react';
+import { ArrowLeft, Layers, Users, Tag, MessageSquarePlus, Lock, MessagesSquare, Download, BadgeCheck, CheckCircle2, XCircle } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useAuthorizedFetch } from '../../../hooks/useAuthorizedFetch';
 import api from '../../../api/axios';
@@ -34,15 +34,6 @@ const RAMA_ACCENT_COLORS = {
     'Rovers': '#DA251C',
 };
 const ACCENT_COLOR_DEFAULT = '#00AAF2';
-
-const SECCION_ICONOS = {
-    titulo: Type,
-    educadores: Users,
-    diagnostico: Stethoscope,
-    objetivos: Target,
-    infoAdicional: MapPin,
-};
-const getIconoSeccion = (seccionKey) => SECCION_ICONOS[seccionKey] || CalendarDays;
 
 // Misma cascada de roles que ProgramPolicy::comment() en el backend — "Educador"
 // es el rol por defecto (un usuario sin roles cargados cuenta como educador),
@@ -82,9 +73,16 @@ const puedeAprobarPrograma = (programa, user) => {
     return false;
 };
 
+// Las 6 plantillas (Crear/Editar × Cuatrimestre/Campamento/CFA) generan esta
+// línea en negrita, sin formato adicional, justo donde termina el cronograma
+// de horarios y arranca el desarrollo de cada actividad — es el único punto
+// dentro de una sección donde tiene sentido volver a marcar el cambio de renglón.
+const esInicioAnexos = (linea) =>
+    linea.tipo === 'html' && linea.contenido.replace(/<[^>]+>/g, '').trim() === 'ANEXOS';
+
 const LineaConHilos = ({ linea, hilos, puedeComentar, onAbrirComposer, composerAbierto, onResponder, onToggleResuelta, children }) => (
-    <div className="py-1.5">
-        <div className="group relative flex items-start gap-2 rounded-lg px-2 py-1 hover:bg-scout-bg-card transition-colors">
+    <div className={`py-0.5 ${esInicioAnexos(linea) ? 'mt-2 pt-2 border-t border-scout-border' : ''}`}>
+        <div className="group relative flex items-start gap-2 rounded-lg px-2 py-0.5 hover:bg-scout-bg-card transition-colors">
             {puedeComentar && (
                 <button
                     type="button"
@@ -99,11 +97,11 @@ const LineaConHilos = ({ linea, hilos, puedeComentar, onAbrirComposer, composerA
             )}
             {linea.tipo === 'html' ? (
                 <div
-                    className="flex-1 text-sm text-scout-ink leading-relaxed [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+                    className={`flex-1 text-sm text-scout-ink [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 ${hilos.length > 0 ? 'leading-relaxed' : 'leading-snug'}`}
                     dangerouslySetInnerHTML={{ __html: linea.contenido }}
                 />
             ) : (
-                <p className="flex-1 text-sm text-scout-ink leading-relaxed whitespace-pre-line">{linea.contenido || '—'}</p>
+                <p className={`flex-1 text-sm text-scout-ink whitespace-pre-line ${hilos.length > 0 ? 'leading-relaxed' : 'leading-snug'}`}>{linea.contenido || '—'}</p>
             )}
         </div>
         {children}
@@ -372,64 +370,60 @@ const RevisarPrograma = () => {
             </div>
 
             <div className="flex flex-col gap-6 mt-6">
-                {lineas.map((seccion) => {
-                    const IconoSeccion = getIconoSeccion(seccion.seccion);
-                    return (
-                    <div key={seccion.seccion} className="bg-scout-bg-card rounded-[2rem] border border-scout-border border-l-4 border-l-scout-primary shadow-sm overflow-hidden">
-                        <div className="flex items-center gap-3 px-8 py-4 bg-scout-primary/5 border-b border-scout-border">
-                            <span className="shrink-0 p-2 rounded-xl bg-scout-primary/10 text-scout-primary">
-                                <IconoSeccion size={14} />
-                            </span>
-                            <h3 className="flex-1 text-sm font-black uppercase tracking-wide text-scout-ink">{seccion.label}</h3>
-                            <span className="text-[9px] font-bold text-scout-muted uppercase tracking-widest">
-                                {seccion.lineas.length} línea{seccion.lineas.length !== 1 ? 's' : ''}
-                            </span>
+                {lineas.length > 0 && (
+                    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border shadow-sm overflow-hidden">
+                        <div className="px-8 pt-8 pb-4">
+                            <h2 className="text-lg font-black uppercase tracking-wide text-scout-ink">Programa</h2>
                         </div>
-                        <div className="p-8">
-                        <div className="divide-y divide-scout-border bg-scout-bg-panel/50 rounded-2xl px-3">
-                            {seccion.lineas.map((linea) => {
-                                const hilos = notasPorLinea.get(linea.lineRef) || [];
+                        <div className="px-8 pb-8">
+                        <div className="bg-scout-bg-panel/50 rounded-2xl px-5 py-4">
+                        {lineas.map((seccion) => (
+                            <div key={seccion.seccion} className="py-2">
+                                <h3 className="text-base font-black uppercase text-scout-ink mb-1">{seccion.label}</h3>
+                                {seccion.lineas.map((linea) => {
+                                    const hilos = notasPorLinea.get(linea.lineRef) || [];
 
-                                return (
-                                    <LineaConHilos
-                                        key={linea.lineRef}
-                                        linea={linea}
-                                        hilos={hilos}
-                                        puedeComentar={puedeComentar}
-                                        onAbrirComposer={abrirComposer}
-                                        composerAbierto={composerLineRef === linea.lineRef}
-                                        onResponder={responder}
-                                        onToggleResuelta={toggleResuelta}
-                                    >
-                                        {composerLineRef === linea.lineRef && (
-                                            <div className="mt-2 flex items-center gap-2">
-                                                <input
-                                                    type="text"
-                                                    autoFocus
-                                                    value={composerTexto}
-                                                    onChange={(e) => setComposerTexto(e.target.value)}
-                                                    onKeyDown={(e) => { if (e.key === 'Enter') handleCrearHilo(linea.lineRef); }}
-                                                    placeholder="Escribí un comentario sobre esta línea..."
-                                                    className="flex-1 border border-scout-border rounded-xl px-3 py-2 text-xs bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleCrearHilo(linea.lineRef)}
-                                                    disabled={enviandoComposer || !composerTexto.trim()}
-                                                    className="px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-scout-primary text-white hover:bg-scout-primary-hover transition-colors disabled:opacity-40 cursor-pointer shrink-0"
-                                                >
-                                                    Comentar
-                                                </button>
-                                            </div>
-                                        )}
-                                    </LineaConHilos>
-                                );
-                            })}
+                                    return (
+                                        <LineaConHilos
+                                            key={linea.lineRef}
+                                            linea={linea}
+                                            hilos={hilos}
+                                            puedeComentar={puedeComentar}
+                                            onAbrirComposer={abrirComposer}
+                                            composerAbierto={composerLineRef === linea.lineRef}
+                                            onResponder={responder}
+                                            onToggleResuelta={toggleResuelta}
+                                        >
+                                            {composerLineRef === linea.lineRef && (
+                                                <div className="mt-2 flex items-center gap-2">
+                                                    <input
+                                                        type="text"
+                                                        autoFocus
+                                                        value={composerTexto}
+                                                        onChange={(e) => setComposerTexto(e.target.value)}
+                                                        onKeyDown={(e) => { if (e.key === 'Enter') handleCrearHilo(linea.lineRef); }}
+                                                        placeholder="Escribí un comentario sobre esta línea..."
+                                                        className="flex-1 border border-scout-border rounded-xl px-3 py-2 text-xs bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleCrearHilo(linea.lineRef)}
+                                                        disabled={enviandoComposer || !composerTexto.trim()}
+                                                        className="px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-scout-primary text-white hover:bg-scout-primary-hover transition-colors disabled:opacity-40 cursor-pointer shrink-0"
+                                                    >
+                                                        Comentar
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </LineaConHilos>
+                                    );
+                                })}
+                            </div>
+                        ))}
                         </div>
                         </div>
                     </div>
-                    );
-                })}
+                )}
 
                 {notasHuerfanas.length > 0 && (
                     <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border border-l-4 border-l-scout-muted shadow-sm overflow-hidden">
