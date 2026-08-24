@@ -20,7 +20,7 @@ const Comentario = ({ nota, esRaiz }) => (
         </div>
         <div className="flex-1 min-w-0 pb-1">
             <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-black text-scout-ink">{nota.user?.name || 'Usuario'}</span>
+                <span className="text-xs font-black text-scout-ink">{nota.user?.nombre_visible || nota.user?.name || 'Usuario'}</span>
                 <span className="text-[10px] font-bold text-scout-muted">{formatFecha(nota.created_at)}</span>
             </div>
             <p className="text-xs text-scout-ink leading-relaxed whitespace-pre-line mt-0.5">{nota.contenido}</p>

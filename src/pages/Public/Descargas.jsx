@@ -103,7 +103,7 @@ const Descargas = () => {
 
                                 <div className="p-4 flex flex-col justify-center flex-grow overflow-hidden text-left">
                                     <span className="text-[8px] font-bold text-[var(--color-scout-muted)] uppercase mb-1">
-                                        Subido por: {file.user?.name || 'Distrito'}
+                                        Subido por: {file.user?.nombre_visible || file.user?.name || 'Distrito'}
                                     </span>
                                     <h2 className="font-bold tracking-tight uppercase leading-tight text-xs md:text-sm mb-1 line-clamp-2 text-[var(--color-scout-ink)]">
                                         {file.nombre}
@@ -178,7 +178,7 @@ const Descargas = () => {
 
                             <div className="md:w-2/3 p-8 md:p-16 overflow-y-auto">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-scout-muted)] block mb-4">
-                                    Subido por: {f.user?.name || 'Distrito'}
+                                    Subido por: {f.user?.nombre_visible || f.user?.name || 'Distrito'}
                                 </span>
                                 <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-ink)]">
                                     {f.nombre}

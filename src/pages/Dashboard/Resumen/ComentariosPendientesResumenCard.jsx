@@ -34,7 +34,7 @@ const ComentariosPendientesResumenCard = () => {
                             <div className="min-w-0">
                                 <p className="text-xs font-black text-scout-ink truncate">{c.program?.titulo}</p>
                                 <p className="text-xs text-scout-muted truncate">
-                                    <span className="font-bold text-scout-ink">{c.user?.name}:</span> {c.contenido}
+                                    <span className="font-bold text-scout-ink">{c.user?.nombre_visible || c.user?.name}:</span> {c.contenido}
                                 </p>
                             </div>
                             <span className="shrink-0 text-[9px] font-bold text-scout-muted uppercase tracking-widest whitespace-nowrap">

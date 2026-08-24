@@ -1,10 +1,16 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, LayoutDashboard, FileText, FolderArchive, GraduationCap, Megaphone, Users, Settings, LogOut } from 'lucide-react';
+import { Home, LayoutDashboard, FileText, FolderArchive, GraduationCap, Megaphone, Users, UserCircle, Settings, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
+
+// Gestión de usuarios es cosa de quien administra personas, no de cualquiera —
+// mismo criterio que UserPolicy::viewAny() en el backend (más Developer, que
+// bypassea todo igual, pero se lista acá para que el ítem aparezca en el nav).
+const ROLES_CON_GESTION_USUARIOS = ['director', 'jefe de grupo', 'developer'];
 
 const Sidebar = () => {
   const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -16,14 +22,18 @@ const Sidebar = () => {
     }
   };
 
+  const roleNames = (user?.roles ?? []).map((r) => r.nombre.toLowerCase());
+  const puedeGestionarUsuarios = roleNames.some((r) => ROLES_CON_GESTION_USUARIOS.includes(r));
+
   const menuItems = [
     { name: 'Home', path: '/', icon: <Home size={20} /> },
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'Programas', path: '/gestion-programas', icon: <FileText size={20} /> },
     { name: 'Noticias', path: '/noticias-internas', icon: <Megaphone size={20} /> },
-    { name: 'Cursos', path: '/gestion-cursos/administrar', icon: <GraduationCap size={20} /> },    
+    { name: 'Cursos', path: '/gestion-cursos/administrar', icon: <GraduationCap size={20} /> },
     { name: 'Biblioteca', path: '/library', icon: <FolderArchive size={20} /> },
-    { name: 'Usuarios', path: '/usuarios', icon: <Users size={20} /> },
+    ...(puedeGestionarUsuarios ? [{ name: 'Usuarios', path: '/usuarios', icon: <Users size={20} /> }] : []),
+    { name: 'Mi Perfil', path: '/mi-perfil', icon: <UserCircle size={20} /> },
     { name: 'Sistema', path: '/configuracion', icon: <Settings size={20} /> },
   ];
 

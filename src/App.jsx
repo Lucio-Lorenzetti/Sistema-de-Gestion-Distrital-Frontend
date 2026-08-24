@@ -21,11 +21,11 @@ const Descargas = lazy(() => import('./pages/Public/Descargas'));
 
 // Vistas de Autenticación
 const Login = lazy(() => import('./pages/Auth/Login'));
+const Register = lazy(() => import('./pages/Auth/Register'));
+const SolicitudEnviada = lazy(() => import('./pages/Auth/SolicitudEnviada'));
 const RecoverPassword = lazy(() => import('./pages/Auth/RecoverPassword'));
 const EmailSent = lazy(() => import('./pages/Auth/EmailSent'));
 const ResetPassword = lazy(() => import('./pages/Auth/ResetPassword'));
-const ActivateAccount = lazy(() => import('./pages/Auth/ActivateAccount'));
-const SelectFunction = lazy(() => import('./pages/Auth/SelectFunction'));
 
 // Vistas de Dashboard (Privadas / Gestión)
 const Courses = lazy(() => import('./pages/Dashboard/Courses'));
@@ -33,6 +33,8 @@ const Dashboard = lazy(() => import('./pages/Dashboard/Dashboard'));
 const Download = lazy(() => import('./pages/Dashboard/Download'));
 const News = lazy(() => import('./pages/Dashboard/News'));
 const Programs = lazy(() => import('./pages/Dashboard/Programs'));
+const Usuarios = lazy(() => import('./pages/Dashboard/Usuarios'));
+const MiPerfil = lazy(() => import('./pages/Dashboard/MiPerfil'));
 
 // Vistas de Programas (Privadas / Gestión Programas)
 const CrearPrograma = lazy(() => import('./pages/Logueado/Programas/CrearPrograma'));
@@ -109,11 +111,11 @@ function App() {
 
         {/* 2. CONTEXTO DE AUTENTICACIÓN (Limpio, solo formularios) */}
         <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Register />} />
+        <Route path="/solicitud-enviada" element={<SolicitudEnviada />} />
         <Route path="/recuperar-contrasena" element={<RecoverPassword />} />
         <Route path="/correo-enviado" element={<EmailSent />} />
         <Route path="/restablecer-contrasena" element={<ResetPassword />} />
-        <Route path="/activar-cuenta" element={<ActivateAccount />} />
-        <Route path="/seleccionar-funcion" element={<SelectFunction />} />
 
         {/* 3. CONTEXTO PRIVADO (Gestión Interna) */}
         <Route element={<MainLayout />}>
@@ -141,7 +143,8 @@ function App() {
           <Route path="/library" element={<Download />} />          
           <Route path="/library/crear" element={<CrearDownload />} />
 
-          <Route path="/usuarios" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Gestión de Usuarios</div>} />
+          <Route path="/usuarios" element={<Usuarios />} />
+          <Route path="/mi-perfil" element={<MiPerfil />} />
           <Route path="/configuracion" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Configuración del Sistema</div>} />
         </Route>
 

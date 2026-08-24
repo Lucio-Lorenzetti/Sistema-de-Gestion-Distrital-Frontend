@@ -356,7 +356,7 @@ const RevisarPrograma = () => {
                     {programa.titulo}
                 </h1>
                 <p className="text-[10px] font-black uppercase tracking-widest text-scout-muted">
-                    Autor: <span className="text-scout-ink">{programa.owner?.name || 'Sin asignar'}</span>
+                    Autor: <span className="text-scout-ink">{programa.owner?.nombre_visible || programa.owner?.name || 'Sin asignar'}</span>
                 </p>
 
                 {programa.estado !== 'enviado' && (
@@ -456,7 +456,7 @@ const RevisarPrograma = () => {
 
             {mostrarModalRechazo && (
                 <RechazarProgramaModal
-                    programa={programa}
+                    titulo={programa.titulo}
                     onConfirm={handleRechazar}
                     onClose={() => setMostrarModalRechazo(false)}
                     isSubmitting={accionandoEstado}

@@ -10,9 +10,9 @@ import { useGruposCatalogo } from './useGruposCatalogo';
 import { useAuthStore } from '../../../../store/useAuthStore';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 import api from '../../../../api/axios';
+import { ORDEN_RAMAS } from '../../../../utils/ordenRamas';
 
 const ITEMS_PER_PAGE = 3;
-const ORDEN_RAMAS = ['Castores', 'Lobatos', 'Unidad Scout', 'Caminantes', 'Rovers'];
 
 const FILTROS_ESTADO = [
     { key: 'Todos', label: 'Todos' },
@@ -300,7 +300,7 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
                                         </td>
                                         <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.rama?.nombre || '—'}</td>
                                         <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.grupo?.nombre || '—'}</td>
-                                        <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.owner?.name || 'Sin asignar'}</td>
+                                        <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{programa.owner?.nombre_visible || programa.owner?.name || 'Sin asignar'}</td>
                                         <td className="py-4 pr-4">
                                             <div className="flex items-center gap-1.5">
                                                 <EstadoBadge estado={ESTADO_LABELS[programa.estado] || programa.estado} />
@@ -442,7 +442,7 @@ const ProgramasTable = ({ programas, isLoading, onEstadoActualizado }) => {
 
             {programaARechazar && (
                 <RechazarProgramaModal
-                    programa={programaARechazar}
+                    titulo={programaARechazar.titulo}
                     onConfirm={handleRechazar}
                     onClose={() => setProgramaARechazar(null)}
                     isSubmitting={rechazandoId === programaARechazar.id}

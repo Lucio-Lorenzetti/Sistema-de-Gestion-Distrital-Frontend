@@ -33,7 +33,7 @@ const ProgramaListaResumen = ({ titulo, icon, programas, emptyText, fechaCampo, 
                         <div className="min-w-0">
                             <p className="text-xs font-black text-scout-ink truncate">{p.titulo}</p>
                             <p className="text-xs text-scout-muted truncate">
-                                <span className="font-bold text-scout-ink">{p.owner?.name || 'Sin asignar'}</span> · {p.rama?.nombre || '—'} · {p.grupo?.nombre || '—'}
+                                <span className="font-bold text-scout-ink">{p.owner?.nombre_visible || p.owner?.name || 'Sin asignar'}</span> · {p.rama?.nombre || '—'} · {p.grupo?.nombre || '—'}
                             </p>
                         </div>
                         <span className="shrink-0 text-[9px] font-bold text-scout-muted uppercase tracking-widest whitespace-nowrap">

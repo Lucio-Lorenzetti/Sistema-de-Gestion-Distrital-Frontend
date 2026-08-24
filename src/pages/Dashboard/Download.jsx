@@ -167,7 +167,7 @@ const Bibliografia = () => {
                                                 <p className="text-xs font-bold text-scout-ink transition-colors">{item.nombre}</p>
                                             </td>
                                             <td className="py-4 pr-4"><TipoBadge tipo={item.tipo} /></td>
-                                            <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{item.user?.name || 'Sin asignar'}</td>
+                                            <td className="py-4 pr-4 text-xs text-scout-muted font-medium whitespace-nowrap">{item.user?.nombre_visible || item.user?.name || 'Sin asignar'}</td>
                                             <td className="py-4 pr-4">
                                                 <span className="text-[9px] text-scout-muted flex items-center gap-1 whitespace-nowrap">
                                                     <Clock size={11} /> {new Date(item.created_at).toLocaleDateString('es-AR')}

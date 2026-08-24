@@ -2,13 +2,14 @@ import { Outlet } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import Sidebar from './Sidebar';
 import ThemeToggle from '../ui/ThemeToggle';
+import { rolesVisibles } from '../../pages/Dashboard/Panels/Usuarios/rolDisplay';
 
 const MainLayout = () => {
   const { user } = useAuthStore();
 
-  const userName = user?.name || 'Usuario Distrital';
+  const userName = user?.nombre_visible || user?.name || 'Usuario Distrital';
 
-  const userInitials = userName
+  const userInitials = (user?.name || 'Usuario Distrital')
     .split(' ')
     .map(n => n[0])
     .slice(0, 2)
@@ -17,7 +18,7 @@ const MainLayout = () => {
 
   const formatRoleDisplay = () => {
     if (user?.roles && user.roles.length > 0) {
-      return user.roles.map(r => r.nombre).join(' / ');
+      return rolesVisibles(user.roles).map(r => r.nombre).join(' / ');
     }
     return 'Educador';
   };
@@ -39,8 +40,12 @@ const MainLayout = () => {
                 {formatRoleDisplay()}
               </p>
             </div>
-            <div className="w-9 h-9 bg-scout-primary text-white rounded-full border border-scout-primary-hover flex items-center justify-center font-black text-xs shadow-sm">
-              {userInitials}
+            <div className="w-9 h-9 bg-scout-primary text-white rounded-full border border-scout-primary-hover flex items-center justify-center font-black text-xs shadow-sm overflow-hidden shrink-0">
+              {user?.foto_perfil_url ? (
+                <img src={user.foto_perfil_url} alt={userName} className="w-full h-full object-cover" />
+              ) : (
+                userInitials
+              )}
             </div>
           </div>
         </header>

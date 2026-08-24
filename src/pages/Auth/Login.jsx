@@ -28,17 +28,12 @@ const Login = () => {
       setToken(res.token);
       setUser(res.user);
 
-      if (res.must_change_password) {
-        navigate('/activar-cuenta');
-      } else if (res.has_multiple_roles) {
-        navigate('/seleccionar-funcion');
-      } else {
-        navigate('/dashboard');
-      }
+      navigate('/dashboard');
     } catch (err) {
       console.error(err);
       if (err.response?.status === 422) {
-        setError("El correo o la contraseña son incorrectos.");
+        const backendErrors = err.response?.data?.errors;
+        setError(backendErrors?.email?.[0] || 'El correo o la contraseña son incorrectos.');
       } else {
         setError("Error de conexión. Verificá que el servidor esté corriendo.");
       }
@@ -70,7 +65,9 @@ const Login = () => {
 
       <div className="mt-12 text-left bg-scout-bg-panel border border-scout-border p-5 rounded-md flex items-start space-x-3 text-sm text-scout-primary">
         <span className="text-scout-muted mt-0.5">ⓘ</span>
-        <p>Si no tenés usuario, contactá a tu Jefe de Grupo para solicitar acceso al sistema.</p>
+        <p>
+          Si no tenés usuario, <Link to="/registro" className="underline hover:text-scout-primary-hover">creá tu cuenta acá</Link> y solicitá el rol que corresponda.
+        </p>
       </div>
     </AuthLayout>
   );

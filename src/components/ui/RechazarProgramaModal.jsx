@@ -1,10 +1,18 @@
 // src/components/ui/RechazarProgramaModal.jsx
-// Modal compartido por ProgramasTable.jsx y RevisarPrograma.jsx: pide el motivo
-// (obligatorio) antes de rechazar un programa.
+// Modal genérico compartido por ProgramasTable.jsx/RevisarPrograma.jsx (rechazar
+// un programa) y SolicitudesRolTable.jsx (rechazar una solicitud de rol): pide
+// el motivo (obligatorio) antes de confirmar el rechazo.
 import React, { useState } from 'react';
 import { X, XCircle } from 'lucide-react';
 
-const RechazarProgramaModal = ({ programa, onConfirm, onClose, isSubmitting }) => {
+const RechazarProgramaModal = ({
+    titulo,
+    heading = 'Rechazar Programa',
+    mensaje = 'contale al autor por qué se rechaza para que pueda corregirlo.',
+    onConfirm,
+    onClose,
+    isSubmitting,
+}) => {
     const [motivo, setMotivo] = useState('');
 
     const handleConfirmar = () => {
@@ -25,10 +33,10 @@ const RechazarProgramaModal = ({ programa, onConfirm, onClose, isSubmitting }) =
 
                 <div className="flex items-center gap-2 mb-1">
                     <XCircle size={16} className="text-scout-accent" />
-                    <h2 className="text-sm font-black uppercase tracking-widest text-scout-ink">Rechazar Programa</h2>
+                    <h2 className="text-sm font-black uppercase tracking-widest text-scout-ink">{heading}</h2>
                 </div>
                 <p className="text-xs text-scout-muted font-medium mb-5">
-                    "{programa.titulo}" — contale al autor por qué se rechaza para que pueda corregirlo.
+                    "{titulo}" — {mensaje}
                 </p>
 
                 <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
