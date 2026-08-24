@@ -77,7 +77,7 @@ const UsuariosTable = ({ usuarios, isLoading, onCambio, grupos = [], ramas = [] 
     const handleFiltroRamaChange = (key) => { setFiltroRama(key); setCurrentPage(1); };
 
     const handleEliminar = async (usuario) => {
-        if (!window.confirm(`¿Eliminar la cuenta de "${usuario.name}"? Esta acción no se puede deshacer desde acá.`)) {
+        if (!window.confirm(`¿Eliminar la cuenta de "${usuario.name}"? Se puede restaurar después desde la Papelera.`)) {
             return;
         }
         setEliminandoId(usuario.id);

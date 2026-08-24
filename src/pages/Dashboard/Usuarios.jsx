@@ -1,13 +1,15 @@
 // src/pages/Dashboard/Usuarios.jsx
 import React, { useState } from 'react';
-import { Users, Crown, UserPlus } from 'lucide-react';
+import { Users, Crown, UserPlus, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useUsuarios } from './Panels/Usuarios/useUsuarios';
 import { useSolicitudesRol } from './Panels/Usuarios/useSolicitudesRol';
+import { usePapeleraUsuarios } from './Panels/Usuarios/usePapeleraUsuarios';
 import { useGruposCatalogo } from './Panels/Programas/useGruposCatalogo';
 import { useRamasCatalogo } from './Panels/Usuarios/useRamasCatalogo';
 import UsuariosTable from './Panels/Usuarios/UsuariosTable';
 import SolicitudesRolTable from './Panels/Usuarios/SolicitudesRolTable';
+import PapeleraUsuariosTable from './Panels/Usuarios/PapeleraUsuariosTable';
 import DesignarJefeGrupoModal from './Panels/Usuarios/DesignarJefeGrupoModal';
 import DesignarDirectorModal from './Panels/Usuarios/DesignarDirectorModal';
 
@@ -20,6 +22,7 @@ const Usuarios = () => {
 
     const [mostrarDesignarJefe, setMostrarDesignarJefe] = useState(false);
     const [mostrarDesignarDirector, setMostrarDesignarDirector] = useState(false);
+    const [vistaPapelera, setVistaPapelera] = useState(false);
 
     const roles = (user?.roles ?? []).map((r) => r.nombre.toLowerCase());
     const esDirector = roles.includes('director');
@@ -29,6 +32,10 @@ const Usuarios = () => {
     const puedeDesignarJefeDeGrupo = esDirector || esDeveloper || !!rolJefeDeGrupo;
     const puedeDesignarDirector = esDirector || esDeveloper;
 
+    // Papelera de usuarios: solo Developer (mismo criterio que borrar/restaurar
+    // en el backend — Director ni siquiera puede ver el listado, 403).
+    const { usuarios: papelera, isLoading: cargandoPapelera, refetch: refetchPapelera } = usePapeleraUsuarios(esDeveloper);
+
     // Si el actor es Jefe de Grupo (y no Director/Developer), el grupo a designar
     // es siempre el suyo — mismo criterio que UserPolicy::designarJefeDeGrupo().
     const grupoFijo = !esDirector && !esDeveloper && rolJefeDeGrupo
@@ -36,7 +43,11 @@ const Usuarios = () => {
         : null;
 
     const handleCambio = async () => {
-        await Promise.all([refetchUsuarios(), refetchSolicitudes()]);
+        await Promise.all([refetchUsuarios(), refetchSolicitudes(), esDeveloper ? refetchPapelera() : Promise.resolve()]);
+    };
+
+    const handleRestaurado = async () => {
+        await Promise.all([refetchPapelera(), refetchUsuarios()]);
     };
 
     return (
@@ -70,14 +81,33 @@ const Usuarios = () => {
                             <UserPlus size={12} /> Designar Director
                         </button>
                     )}
+                    {esDeveloper && (
+                        <button
+                            onClick={() => setVistaPapelera((prev) => !prev)}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-colors cursor-pointer ${
+                                vistaPapelera
+                                    ? 'bg-scout-primary text-white border-scout-primary'
+                                    : 'border-scout-border text-scout-muted hover:text-scout-primary hover:bg-scout-bg-panel'
+                            }`}
+                        >
+                            <Trash2 size={12} />
+                            {vistaPapelera ? 'Ver Usuarios' : `Papelera${papelera.length > 0 ? ` (${papelera.length})` : ''}`}
+                        </button>
+                    )}
                 </div>
             </div>
 
             <div className="grid grid-cols-1 gap-8 mt-8 overflow-y-auto" style={{ flex: 1, minHeight: 0 }}>
-                {(cargandoSolicitudes || solicitudes.length > 0) && (
-                    <SolicitudesRolTable solicitudes={solicitudes} isLoading={cargandoSolicitudes} onCambio={handleCambio} />
+                {vistaPapelera ? (
+                    <PapeleraUsuariosTable usuarios={papelera} isLoading={cargandoPapelera} onRestaurado={handleRestaurado} grupos={catalogoGrupos} ramas={catalogoRamas} />
+                ) : (
+                    <>
+                        {(cargandoSolicitudes || solicitudes.length > 0) && (
+                            <SolicitudesRolTable solicitudes={solicitudes} isLoading={cargandoSolicitudes} onCambio={handleCambio} />
+                        )}
+                        <UsuariosTable usuarios={usuarios} isLoading={cargandoUsuarios} onCambio={handleCambio} grupos={catalogoGrupos} ramas={catalogoRamas} />
+                    </>
                 )}
-                <UsuariosTable usuarios={usuarios} isLoading={cargandoUsuarios} onCambio={handleCambio} grupos={catalogoGrupos} ramas={catalogoRamas} />
             </div>
 
             {mostrarDesignarJefe && (
