@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import MetricCard from '../../components/ui/MetricCard';
 import EstadoBadge from '../../components/ui/EstadoBadge';
+import { usePapeleraCursos } from './Panels/Cursos/usePapeleraCursos';
+import PapeleraCursosTable from './Panels/Cursos/PapeleraCursosTable';
 
 const CURSOS_ENDPOINT = '/courses';
 
@@ -56,14 +58,26 @@ const GestionCursos = () => {
   const [filtroEstado, setFiltroEstado] = useState('Todos');
   const [filtroOpen, setFiltroOpen] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
+  const [vistaPapelera, setVistaPapelera] = useState(false);
   const filtroRef = useRef(null);
 
-  useEffect(() => {
-    api.get(CURSOS_ENDPOINT)
+  const { cursos: papelera, isLoading: isLoadingPapelera, refetch: refetchPapelera } = usePapeleraCursos();
+
+  const fetchCursos = () => {
+    setIsLoading(true);
+    return api.get(CURSOS_ENDPOINT)
       .then(res => setCursos(res.data))
       .catch(err => console.error('Error al cargar cursos:', err))
       .finally(() => setIsLoading(false));
+  };
+
+  useEffect(() => {
+    fetchCursos();
   }, []);
+
+  const handleRestaurado = async () => {
+    await Promise.all([refetchPapelera(), fetchCursos()]);
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -75,7 +89,10 @@ const GestionCursos = () => {
 
   const handleEliminar = (id) => {
     api.delete(`${CURSOS_ENDPOINT}/${id}`)
-      .then(() => setCursos(prev => prev.filter(c => c.id !== id)))
+      .then(() => {
+        setCursos(prev => prev.filter(c => c.id !== id));
+        refetchPapelera();
+      })
       .catch(err => console.error('Error al eliminar curso:', err));
   };
 
@@ -125,16 +142,30 @@ const GestionCursos = () => {
       style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '2.5rem' }}
     >
       {/* HEADER */}
-      <div className="border-b border-scout-border pb-4 shrink-0">
-        <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
-          Panel de Control Privado • Gestión de Cursos
-        </span>
-        <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase">
-          Cursos
-        </h1>
+      <div className="border-b border-scout-border pb-4 shrink-0 flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
+            Panel de Control Privado • Gestión de Cursos
+          </span>
+          <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase">
+            Cursos
+          </h1>
+        </div>
+        <button
+          onClick={() => setVistaPapelera((prev) => !prev)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-colors cursor-pointer ${
+            vistaPapelera
+              ? 'bg-scout-primary text-white border-scout-primary'
+              : 'border-scout-border text-scout-muted hover:text-scout-primary hover:bg-scout-bg-panel'
+          }`}
+        >
+          <Trash2 size={12} />
+          {vistaPapelera ? 'Ver Cursos' : `Papelera${papelera.length > 0 ? ` (${papelera.length})` : ''}`}
+        </button>
       </div>
 
-      {/* MÉTRICAS */}
+      {!vistaPapelera && (
+      /* MÉTRICAS */
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 shrink-0">
         <MetricCard icon={<CalendarCheck />} title="Cursos Abiertos" value={`${totalAbiertos} Activos`} sub="Inscripción disponible" color="border-scout-primary" />
         <MetricCard icon={<CalendarClock />} title="Cursos Cerrados" value={`${totalCerrados} Cerrados`} sub="Inscripción finalizada" color="border-scout-muted" />
@@ -155,9 +186,13 @@ const GestionCursos = () => {
           </div>
         </Link>
       </div>
+      )}
 
       {/* TABLA */}
       <div className="grid grid-cols-1 gap-8 mt-10" style={{ flex: 1, minHeight: 0 }}>
+        {vistaPapelera ? (
+          <PapeleraCursosTable cursos={papelera} isLoading={isLoadingPapelera} onRestaurado={handleRestaurado} />
+        ) : (
         <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col" style={{ minHeight: 0 }}>
           <div className="flex items-center justify-between shrink-0">
             <h2 className="text-xl font-black uppercase tracking-tight text-scout-primary shrink-0">Cursos Publicados</h2>
@@ -285,6 +320,7 @@ const GestionCursos = () => {
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* MODAL VER CURSO */}

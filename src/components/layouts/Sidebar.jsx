@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, LayoutDashboard, FileText, FolderArchive, GraduationCap, Megaphone, Users, UserCircle, Settings, LogOut } from 'lucide-react';
+import { Home, LayoutDashboard, FileText, FolderArchive, GraduationCap, Megaphone, Users, UserCircle, HelpCircle, Settings, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
+import { APP_VERSION } from '../../version';
 
 // Gestión de usuarios es cosa de quien administra personas, no de cualquiera —
 // mismo criterio que UserPolicy::viewAny() en el backend (más Developer, que
@@ -24,6 +25,7 @@ const Sidebar = () => {
 
   const roleNames = (user?.roles ?? []).map((r) => r.nombre.toLowerCase());
   const puedeGestionarUsuarios = roleNames.some((r) => ROLES_CON_GESTION_USUARIOS.includes(r));
+  const esDeveloper = roleNames.includes('developer');
 
   const menuItems = [
     { name: 'Home', path: '/', icon: <Home size={20} /> },
@@ -34,7 +36,9 @@ const Sidebar = () => {
     { name: 'Biblioteca', path: '/library', icon: <FolderArchive size={20} /> },
     ...(puedeGestionarUsuarios ? [{ name: 'Usuarios', path: '/usuarios', icon: <Users size={20} /> }] : []),
     { name: 'Mi Perfil', path: '/mi-perfil', icon: <UserCircle size={20} /> },
-    { name: 'Sistema', path: '/configuracion', icon: <Settings size={20} /> },
+    { name: 'Ayuda', path: '/ayuda', icon: <HelpCircle size={20} /> },
+    // Edición de metadata de roles — solo Developer, mismo criterio que RolePolicy::update().
+    ...(esDeveloper ? [{ name: 'Sistema', path: '/configuracion', icon: <Settings size={20} /> }] : []),
   ];
 
   return (
@@ -64,6 +68,9 @@ const Sidebar = () => {
       </nav>
 
       <div className="p-4 border-t border-scout-border">
+        <p className="text-left text-[10px] font-bold text-scout-muted uppercase tracking-widest mb-2">
+          Versión: v{APP_VERSION}
+        </p>
         <button
           onClick={handleLogout}
           className="flex items-center space-x-3 px-3 py-2 w-full text-sm font-medium text-scout-accent hover:bg-scout-accent-light rounded-sm transition-colors cursor-pointer"

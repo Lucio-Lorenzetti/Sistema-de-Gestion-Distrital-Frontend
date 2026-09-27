@@ -1,6 +1,6 @@
 // src/pages/Dashboard/MiPerfil.jsx
 import React, { useState, useRef } from 'react';
-import { UserCircle, KeyRound, Camera, Trash2, ShieldPlus, ClipboardList } from 'lucide-react';
+import { UserCircle, KeyRound, Camera, Trash2, ShieldPlus, ClipboardList, X } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useAuthorizedFetch } from '../../hooks/useAuthorizedFetch';
 import SolicitarRolModal from './Panels/Usuarios/SolicitarRolModal';
@@ -41,6 +41,9 @@ const MiPerfil = () => {
     const [subiendoFoto, setSubiendoFoto] = useState(false);
     const [errorFoto, setErrorFoto] = useState(null);
     const [imagenARecortar, setImagenARecortar] = useState(null);
+
+    const [renunciandoId, setRenunciandoId] = useState(null);
+    const [errorRoles, setErrorRoles] = useState(null);
 
     const handleGuardarPerfil = async (e) => {
         e.preventDefault();
@@ -118,6 +121,20 @@ const MiPerfil = () => {
             setErrorFoto(err.message);
         } finally {
             setSubiendoFoto(false);
+        }
+    };
+
+    const handleRenunciarRol = async (rol) => {
+        if (!window.confirm(`¿Renunciar al rol "${rol.nombre}"? Podés volver a pedirlo cuando quieras.`)) return;
+        setErrorRoles(null);
+        setRenunciandoId(rol.id);
+        try {
+            const actualizado = await authorizedFetch(`/me/roles/${rol.id}`, { method: 'DELETE' });
+            setUser({ ...user, ...actualizado });
+        } catch (err) {
+            setErrorRoles(err.message);
+        } finally {
+            setRenunciandoId(null);
         }
     };
 
@@ -282,14 +299,26 @@ const MiPerfil = () => {
                                 Solicitud enviada — queda pendiente de aprobación.
                             </p>
                         )}
+                        {errorRoles && <p className="text-xs font-bold text-scout-accent mb-3">{errorRoles}</p>}
 
                         <div className="flex flex-wrap gap-1.5 mb-3">
                             {rolesVisibles(user?.roles ?? []).length === 0 ? (
                                 <span className="text-xs text-scout-muted font-medium">Sin roles asignados.</span>
                             ) : (
                                 rolesVisibles(user?.roles ?? []).map((rol) => (
-                                    <span key={rol.id} className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${claseColorRol(rol.nombre)}`}>
+                                    <span key={rol.id} className={`inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest pl-2 pr-1 py-1 rounded-md ${claseColorRol(rol.nombre)}`}>
                                         {nombreRolConScope(rol, { ramas: catalogoRamas, grupos: catalogoGrupos })}
+                                        {rol.nombre.toLowerCase() !== 'developer' && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRenunciarRol(rol)}
+                                                disabled={renunciandoId === rol.id}
+                                                title="Renunciar a este rol"
+                                                className="p-0.5 rounded hover:bg-black/10 transition-colors cursor-pointer disabled:opacity-40"
+                                            >
+                                                <X size={10} />
+                                            </button>
+                                        )}
                                     </span>
                                 ))
                             )}

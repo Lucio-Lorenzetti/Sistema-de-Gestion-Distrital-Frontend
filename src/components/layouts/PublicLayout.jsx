@@ -5,6 +5,7 @@ import { FacebookIcon, InstagramIcon, LinkedinIcon } from '../ui/SocialIcons';
 import ThemeToggle from '../ui/ThemeToggle';
 import logoDistritoHorizontal from '../../assets/logo_distrito_horizontal.svg';
 import logosCombinados from '../../assets/logos_combinados.webp';
+import { APP_VERSION } from '../../version';
 
 const PublicLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -160,6 +161,9 @@ const PublicLayout = () => {
             </p>
             <div className="text-[10px] font-bold opacity-50 uppercase tracking-widest">
               Bahía Blanca • Buenos Aires • Argentina
+            </div>
+            <div className="text-[10px] font-bold opacity-50 uppercase tracking-widest">
+              v{APP_VERSION}
             </div>
           </div>
 

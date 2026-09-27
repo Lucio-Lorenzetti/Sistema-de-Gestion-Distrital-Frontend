@@ -35,6 +35,8 @@ const News = lazy(() => import('./pages/Dashboard/News'));
 const Programs = lazy(() => import('./pages/Dashboard/Programs'));
 const Usuarios = lazy(() => import('./pages/Dashboard/Usuarios'));
 const MiPerfil = lazy(() => import('./pages/Dashboard/MiPerfil'));
+const Ayuda = lazy(() => import('./pages/Dashboard/Ayuda'));
+const Sistema = lazy(() => import('./pages/Dashboard/Sistema'));
 
 // Vistas de Programas (Privadas / Gestión Programas)
 const CrearPrograma = lazy(() => import('./pages/Logueado/Programas/CrearPrograma'));
@@ -145,7 +147,8 @@ function App() {
 
           <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/mi-perfil" element={<MiPerfil />} />
-          <Route path="/configuracion" element={<div className="p-10 text-2xl font-bold text-gray-300">Próximamente: Configuración del Sistema</div>} />
+          <Route path="/ayuda" element={<Ayuda />} />
+          <Route path="/configuracion" element={<Sistema />} />
         </Route>
 
         {/* REDIRECCIÓN POR DEFECTO AL HOME PÚBLICO */}

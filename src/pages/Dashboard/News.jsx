@@ -9,6 +9,8 @@ import { useAuthorizedFetch } from '../../hooks/useAuthorizedFetch';
 import MetricCard from '../../components/ui/MetricCard';
 import EstadoBadge from '../../components/ui/EstadoBadge';
 import imgDefault from '../../assets/noticia-default.jpg';
+import { usePapeleraNoticias } from './Panels/Noticias/usePapeleraNoticias';
+import PapeleraNoticiasTable from './Panels/Noticias/PapeleraNoticiasTable';
 
 const NOTICIAS_ENDPOINT = '/news';
 const ITEMS_PER_PAGE = 3;
@@ -28,14 +30,26 @@ const News = () => {
     const [filtroEstado, setFiltroEstado] = useState('Todas');
     const [filtroOpen, setFiltroOpen] = useState(false);
     const [expandedId, setExpandedId] = useState(null);
+    const [vistaPapelera, setVistaPapelera] = useState(false);
     const filtroRef = useRef(null);
 
-    useEffect(() => {
-        authorizedFetch(NOTICIAS_ENDPOINT)
+    const { noticias: papelera, isLoading: isLoadingPapelera, refetch: refetchPapelera } = usePapeleraNoticias();
+
+    const fetchNoticias = () => {
+        setIsLoading(true);
+        return authorizedFetch(NOTICIAS_ENDPOINT)
             .then(setNoticias)
             .catch((err) => console.error('Error al cargar noticias:', err))
             .finally(() => setIsLoading(false));
+    };
+
+    useEffect(() => {
+        fetchNoticias();
     }, []);
+
+    const handleRestaurado = async () => {
+        await Promise.all([refetchPapelera(), fetchNoticias()]);
+    };
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -47,7 +61,10 @@ const News = () => {
 
     const handleEliminar = (id) => {
         authorizedFetch(`${NOTICIAS_ENDPOINT}/${id}`, { method: 'DELETE' })
-            .then(() => setNoticias((prev) => prev.filter((n) => n.id !== id)))
+            .then(() => {
+                setNoticias((prev) => prev.filter((n) => n.id !== id));
+                refetchPapelera();
+            })
             .catch((err) => console.error('Error al eliminar noticia:', err));
     };
 
@@ -81,16 +98,30 @@ const News = () => {
             style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '2.5rem' }}
         >
             {/* HEADER */}
-            <div className="border-b border-scout-border pb-4 shrink-0">
-                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
-                    Panel de Control Privado • Gestión de Noticias
-                </span>
-                <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase">
-                    Noticias
-                </h1>
+            <div className="border-b border-scout-border pb-4 shrink-0 flex items-end justify-between flex-wrap gap-3">
+                <div>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
+                        Panel de Control Privado • Gestión de Noticias
+                    </span>
+                    <h1 className="text-xl md:text-2xl font-black text-scout-primary tracking-tight uppercase">
+                        Noticias
+                    </h1>
+                </div>
+                <button
+                    onClick={() => setVistaPapelera((prev) => !prev)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-colors cursor-pointer ${
+                        vistaPapelera
+                            ? 'bg-scout-primary text-white border-scout-primary'
+                            : 'border-scout-border text-scout-muted hover:text-scout-primary hover:bg-scout-bg-panel'
+                    }`}
+                >
+                    <Trash2 size={12} />
+                    {vistaPapelera ? 'Ver Noticias' : `Papelera${papelera.length > 0 ? ` (${papelera.length})` : ''}`}
+                </button>
             </div>
 
-            {/* MÉTRICAS */}
+            {!vistaPapelera && (
+            /* MÉTRICAS */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 shrink-0">
                 <MetricCard icon={<Newspaper />} title="Noticias Publicadas" value={`${totalPublicadas} Artículos`} sub="Visibles en Home" color="border-scout-primary" />
                 <MetricCard icon={<Edit3 />} title="Noticias en Borrador" value={`${totalBorradores} Guardadas`} sub="Pendientes de revisión" color="border-scout-muted" />
@@ -111,9 +142,13 @@ const News = () => {
                     </div>
                 </Link>
             </div>
+            )}
 
             {/* TABLA */}
             <div className="grid grid-cols-1 gap-8 mt-10" style={{ flex: 1, minHeight: 0 }}>
+                {vistaPapelera ? (
+                    <PapeleraNoticiasTable noticias={papelera} isLoading={isLoadingPapelera} onRestaurado={handleRestaurado} />
+                ) : (
                 <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col" style={{ minHeight: 0 }}>
                     <div className="flex items-center justify-between shrink-0">
                         <h2 className="text-xl font-black uppercase tracking-tight text-scout-primary shrink-0">Noticias Publicadas</h2>
@@ -213,6 +248,7 @@ const News = () => {
                         </div>
                     )}
                 </div>
+                )}
             </div>
 
             {/* MODAL */}
