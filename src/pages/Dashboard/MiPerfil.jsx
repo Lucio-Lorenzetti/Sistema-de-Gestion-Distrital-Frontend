@@ -4,6 +4,7 @@ import { UserCircle, KeyRound, Camera, Trash2, ShieldPlus, ClipboardList, X } fr
 import { useAuthStore } from '../../store/useAuthStore';
 import { useAuthorizedFetch } from '../../hooks/useAuthorizedFetch';
 import SolicitarRolModal from './Panels/Usuarios/SolicitarRolModal';
+import AsignarRolModal from './Panels/Usuarios/AsignarRolModal';
 import RecortarFotoModal from './Panels/Usuarios/RecortarFotoModal';
 import { claseColorRol } from './Panels/Usuarios/rolColores';
 import { rolesVisibles, nombreRolConScope } from './Panels/Usuarios/rolDisplay';
@@ -30,6 +31,11 @@ const MiPerfil = () => {
 
     const [mostrarSolicitarRol, setMostrarSolicitarRol] = useState(false);
     const [solicitudEnviada, setSolicitudEnviada] = useState(false);
+    const [mostrarAsignarRol, setMostrarAsignarRol] = useState(false);
+
+    // Developer no solicita roles propios — los tiene que poder agregar/quitar
+    // directo, sin depender de que alguien más se los apruebe.
+    const esDeveloper = (user?.roles ?? []).some((r) => r.nombre.toLowerCase() === 'developer');
 
     const [currentPassword, setCurrentPassword] = useState('');
     const [password, setPassword] = useState('');
@@ -325,15 +331,21 @@ const MiPerfil = () => {
                         </div>
 
                         <p className="text-xs text-scout-muted font-medium mb-3">
-                            ¿Cambiaste de rama/grupo o querés sumar otro rol? Alguien con la potestad correspondiente lo tiene que aprobar.
+                            {esDeveloper
+                                ? 'Como Developer, agregás o quitás roles propios directo — no necesitás que nadie te lo apruebe.'
+                                : '¿Cambiaste de rama/grupo o querés sumar otro rol? Alguien con la potestad correspondiente lo tiene que aprobar.'}
                         </p>
 
                         <button
                             type="button"
-                            onClick={() => { setSolicitudEnviada(false); setMostrarSolicitarRol(true); }}
+                            onClick={() => {
+                                if (esDeveloper) { setMostrarAsignarRol(true); return; }
+                                setSolicitudEnviada(false);
+                                setMostrarSolicitarRol(true);
+                            }}
                             className="mt-auto flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border border-scout-border text-scout-muted hover:text-scout-primary hover:bg-scout-bg-panel transition-colors cursor-pointer"
                         >
-                            <ShieldPlus size={12} /> Solicitar rol / cambio
+                            <ShieldPlus size={12} /> {esDeveloper ? 'Agregar rol' : 'Solicitar rol / cambio'}
                         </button>
                     </div>
                 </div>
@@ -343,6 +355,18 @@ const MiPerfil = () => {
                 <SolicitarRolModal
                     onClose={() => setMostrarSolicitarRol(false)}
                     onSolicitado={async () => { setMostrarSolicitarRol(false); setSolicitudEnviada(true); }}
+                />
+            )}
+
+            {mostrarAsignarRol && (
+                <AsignarRolModal
+                    usuario={user}
+                    onClose={() => setMostrarAsignarRol(false)}
+                    onAsignado={async () => {
+                        const res = await authorizedFetch('/me');
+                        setUser({ ...user, ...res.user });
+                        setMostrarAsignarRol(false);
+                    }}
                 />
             )}
 

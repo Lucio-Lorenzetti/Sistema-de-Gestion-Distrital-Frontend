@@ -23,6 +23,13 @@ export const SECCIONES_AYUDA = [
                     'Podés tener más de un rol a la vez (por ejemplo, Educador y Aux Prog Rama), cada uno con su propio alcance (rama/grupo).',
                     'Para sumar un rol nuevo o cambiar de rama/grupo, usá "Solicitar rol / cambio" en Mi Perfil. Queda pendiente hasta que alguien con la potestad lo apruebe.',
                     'Si ya no ejercés un rol, podés renunciarlo vos mismo desde Mi Perfil (la "X" en la etiqueta del rol) — no hace falta pedirle a nadie que te lo saque.',
+                    'Si sos Developer, en vez de "Solicitar rol / cambio" ves "Agregar rol": se asigna directo, sin necesitar que nadie te lo apruebe.',
+                ],
+            },
+            {
+                subtitulo: 'Al registrarte',
+                items: [
+                    'Además de esperar que aprueben tu solicitud de rol, te llega un mail para verificar tu casilla — sin hacer eso, no vas a poder entrar aunque ya te hayan aprobado.',
                 ],
             },
         ],
@@ -38,6 +45,22 @@ export const SECCIONES_AYUDA = [
                     'Solicitud de rol Educador → la aprueba el Jefe de Grupo del grupo pedido.',
                     'Cualquier otro rol (Aux Prog General, Aux Prog Rama, Aux Comunicación) → lo aprueba el Director.',
                     'Jefe de Grupo y Director no se solicitan: los designa directamente quien tiene la potestad (el Director, o el propio Jefe de Grupo/Director saliente al traspasar). Nunca hay dos personas con el mismo cargo en el mismo grupo/distrito a la vez.',
+                    'Una persona puede combinar todos los roles "de distrito" que quiera (Director, Aux Prog General, Aux Prog Rama, Aux Comunicación), pero un rol "de grupo" (Jefe de Grupo o Educador) solo puede corresponder a UN grupo — nunca a dos grupos distintos en la misma persona. Dentro de un mismo grupo, la única combinación posible es Jefe de Grupo + Educador.',
+                ],
+            },
+        ],
+    },
+    {
+        id: 'notificaciones',
+        titulo: 'Notificaciones',
+        roles: [],
+        bloques: [
+            {
+                subtitulo: '',
+                items: [
+                    'La campanita 🔔 arriba a la derecha te avisa cuando: tu programa fue aprobado o rechazado, alguien comenta o te responde en un programa tuyo, o tu solicitud de rol fue aprobada o rechazada.',
+                    'Lo mismo te llega por mail a la casilla con la que te registraste, no hace falta que estés mirando el sistema.',
+                    'Clickear una notificación te lleva directo a lo que la generó y la marca como leída. También podés marcarlas todas leídas de una.',
                 ],
             },
         ],
@@ -115,6 +138,36 @@ export const SECCIONES_AYUDA = [
                 items: [
                     'Solo vos ves esta sección. Desde "Sistema" podés editar la metadata de cada rol: si requiere rama/grupo, si se puede autosolicitar, si reemplaza a alguien al designarlo.',
                     'El nombre del rol no se puede editar desde acá a propósito: se usa como texto fijo en varios chequeos de permisos del sistema.',
+                ],
+            },
+        ],
+    },
+    {
+        id: 'actualizaciones',
+        titulo: 'Actualizaciones (roadmap)',
+        roles: ['developer'],
+        bloques: [
+            {
+                subtitulo: '',
+                items: [
+                    'Solo vos ves esta sección. Es el roadmap de próximas versiones: agregás tus propias ideas (entran directo a "Próxima versión", sin necesitar aprobación) y triageás las que te llegan de Director en "Pendientes de revisar" (aceptar o descartar).',
+                    'Cada idea tiene una prioridad (Alta/Media/Baja) que podés poner al cargarla, y cambiar o sacar en cualquier momento desde la propia tarjeta.',
+                    'Las tarjetas se ordenan por prioridad (Alta primero, después Media, después Baja) y, dentro de cada prioridad, por antigüedad (la más vieja primero).',
+                    'El Asistente IA te ayuda a pensar ideas nuevas, con el roadmap actual como contexto para no repetir lo que ya está cargado — necesita que esté configurada una API key de Anthropic para funcionar.',
+                ],
+            },
+        ],
+    },
+    {
+        id: 'peticiones-mejora',
+        titulo: 'Peticiones de Mejora',
+        roles: ['director'],
+        bloques: [
+            {
+                subtitulo: '',
+                items: [
+                    'Solo vos ves esta sección. Desde acá le proponés ideas al Developer para versiones futuras del sistema — quedan "Pendiente" hasta que las revise.',
+                    'Podés ver el estado de cada una que mandaste (Pendiente, Próxima versión, Descartada, Implementada), pero no podés cambiarlo vos — eso lo decide Developer.',
                 ],
             },
         ],

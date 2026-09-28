@@ -10,7 +10,7 @@ const SolicitudEnviada = () => {
                 </div>
                 <h2 className="text-2xl font-bold text-scout-primary mb-4">Cuenta creada</h2>
                 <p className="text-scout-muted text-sm mb-8 leading-relaxed">
-                    Tu solicitud de rol quedó pendiente de aprobación. En cuanto la revisen vas a poder ingresar con tu correo y contraseña.
+                    Te mandamos un correo para verificar tu cuenta — revisá tu casilla (y la carpeta de spam, por las dudas). Además, tu solicitud de rol quedó pendiente de aprobación. Vas a poder ingresar recién cuando pase lo primero y lo segundo.
                 </p>
                 <Link to="/login">
                     <Button>← Volver a iniciar sesión</Button>

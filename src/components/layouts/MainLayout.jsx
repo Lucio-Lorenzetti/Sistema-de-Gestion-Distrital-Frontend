@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import Sidebar from './Sidebar';
 import ThemeToggle from '../ui/ThemeToggle';
+import NotificacionesBell from '../ui/NotificacionesBell';
 import { rolesVisibles } from '../../pages/Dashboard/Panels/Usuarios/rolDisplay';
 
 const MainLayout = () => {
@@ -31,6 +32,7 @@ const MainLayout = () => {
         {/* Navbar Superior */}
         <header className="h-16 bg-scout-bg-card border-b border-scout-border flex items-center justify-end px-8 sticky top-0 z-10 shrink-0">
           <div className="flex items-center space-x-4">
+            <NotificacionesBell />
             <ThemeToggle />
             <div className="text-right">
               <p className="text-sm font-bold text-scout-primary leading-none">

@@ -26,6 +26,7 @@ const SolicitudEnviada = lazy(() => import('./pages/Auth/SolicitudEnviada'));
 const RecoverPassword = lazy(() => import('./pages/Auth/RecoverPassword'));
 const EmailSent = lazy(() => import('./pages/Auth/EmailSent'));
 const ResetPassword = lazy(() => import('./pages/Auth/ResetPassword'));
+const VerificarEmail = lazy(() => import('./pages/Auth/VerificarEmail'));
 
 // Vistas de Dashboard (Privadas / Gestión)
 const Courses = lazy(() => import('./pages/Dashboard/Courses'));
@@ -37,6 +38,8 @@ const Usuarios = lazy(() => import('./pages/Dashboard/Usuarios'));
 const MiPerfil = lazy(() => import('./pages/Dashboard/MiPerfil'));
 const Ayuda = lazy(() => import('./pages/Dashboard/Ayuda'));
 const Sistema = lazy(() => import('./pages/Dashboard/Sistema'));
+const Actualizaciones = lazy(() => import('./pages/Dashboard/Actualizaciones'));
+const PeticionesMejora = lazy(() => import('./pages/Dashboard/PeticionesMejora'));
 
 // Vistas de Programas (Privadas / Gestión Programas)
 const CrearPrograma = lazy(() => import('./pages/Logueado/Programas/CrearPrograma'));
@@ -118,6 +121,7 @@ function App() {
         <Route path="/recuperar-contrasena" element={<RecoverPassword />} />
         <Route path="/correo-enviado" element={<EmailSent />} />
         <Route path="/restablecer-contrasena" element={<ResetPassword />} />
+        <Route path="/verificar-email/:id/:hash" element={<VerificarEmail />} />
 
         {/* 3. CONTEXTO PRIVADO (Gestión Interna) */}
         <Route element={<MainLayout />}>
@@ -149,6 +153,8 @@ function App() {
           <Route path="/mi-perfil" element={<MiPerfil />} />
           <Route path="/ayuda" element={<Ayuda />} />
           <Route path="/configuracion" element={<Sistema />} />
+          <Route path="/actualizaciones" element={<Actualizaciones />} />
+          <Route path="/peticiones-mejora" element={<PeticionesMejora />} />
         </Route>
 
         {/* REDIRECCIÓN POR DEFECTO AL HOME PÚBLICO */}

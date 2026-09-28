@@ -28,6 +28,18 @@ const ESTADO_STYLES = {
     // Sin uso real hoy (no lo emite ningún recurso actual) — se deja por si se
     // retoma un estado de "revisión con observaciones" más adelante.
     Observado: 'bg-yellow-100 text-yellow-700 border border-yellow-200',
+
+    // Peticiones de mejora (FeatureRequest.estado)
+    Pendiente: 'bg-scout-bg-panel text-scout-muted border border-scout-border',
+    'Próxima versión': 'bg-scout-primary/90 text-scout-on-brand',
+    Descartada: 'bg-red-900 text-white',
+    Implementada: 'bg-scout-success text-scout-on-brand',
+
+    // Peticiones de mejora (FeatureRequest.prioridad) — Media usa el hex a
+    // pedido (#ebd534) en vez de una clase de la paleta de Tailwind.
+    Alta: 'bg-red-900 text-white',
+    Media: 'bg-[#ebd534] text-black',
+    Baja: 'bg-green-900 text-white',
 };
 const DEFAULT_STYLE = 'bg-scout-bg-panel text-scout-primary border border-scout-border';
 
