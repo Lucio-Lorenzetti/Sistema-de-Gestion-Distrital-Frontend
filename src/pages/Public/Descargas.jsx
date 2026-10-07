@@ -89,10 +89,8 @@ const Descargas = () => {
                         {currentItems.map((file) => {
                             const esArchivo = file.tipo === 'archivo';
                             const colorVar = esArchivo ? '--color-scout-accent' : '--color-scout-primary';
-                            // El accent (rojo) tiene una variante "light" propia para el fondo;
-                            // el primary (celeste) no, así que para ese caso usamos el mismo
-                            // primary con poca opacidad en vez de un token inexistente.
-                            const iconBg = esArchivo ? 'bg-[var(--color-scout-accent-light)]' : `bg-[var(${colorVar})]/10`;
+                            const colorLightVar = esArchivo ? '--color-scout-accent-light' : '--color-scout-primary-light';
+                            const iconBg = `bg-[var(${colorLightVar})]`;
 
                             return (
                             <article

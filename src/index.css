@@ -18,6 +18,8 @@
   /* Azul de marca: botones, links y estados activos */
   --color-scout-primary-hover: #0B69CA;
   /* Azul oscuro para hover/interactividad sobre el primario */
+  --color-scout-primary-light: #e6f7ff;
+  /* Celeste super suave, contraparte de --color-scout-accent-light (Descargas: tipo "link") */
   --color-scout-muted: #6b7280;
   /* Gris medio para roles, subtítulos y textos secundarios (gray-500) */
 
@@ -64,6 +66,7 @@
     --color-scout-ink: #f0f2f5;
     --color-scout-primary: #33bbff;
     --color-scout-primary-hover: #5fcaff;
+    --color-scout-primary-light: #122634;
     --color-scout-accent: #ff6b62;
     --color-scout-accent-light: #2a1416;
     --color-scout-success: #22c55e;
@@ -80,6 +83,7 @@
   --color-scout-ink: #f0f2f5;
   --color-scout-primary: #33bbff;
   --color-scout-primary-hover: #5fcaff;
+  --color-scout-primary-light: #122634;
   --color-scout-accent: #ff6b62;
   --color-scout-accent-light: #2a1416;
   --color-scout-success: #22c55e;
