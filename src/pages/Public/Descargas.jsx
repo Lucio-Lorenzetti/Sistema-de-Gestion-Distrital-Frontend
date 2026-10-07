@@ -86,16 +86,24 @@ const Descargas = () => {
                     </div>
                 ) : (
                     <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${isFixedLayout ? 'md:h-[68vh]' : ''}`}>
-                        {currentItems.map((file) => (
+                        {currentItems.map((file) => {
+                            const esArchivo = file.tipo === 'archivo';
+                            const colorVar = esArchivo ? '--color-scout-accent' : '--color-scout-primary';
+                            // El accent (rojo) tiene una variante "light" propia para el fondo;
+                            // el primary (celeste) no, así que para ese caso usamos el mismo
+                            // primary con poca opacidad en vez de un token inexistente.
+                            const iconBg = esArchivo ? 'bg-[var(--color-scout-accent-light)]' : `bg-[var(${colorVar})]/10`;
+
+                            return (
                             <article
                                 key={file.id}
                                 onClick={() => setExpandedId(file.id)}
                                 className={`group relative bg-[var(--color-scout-bg-card)] rounded-[2rem] overflow-hidden border border-[var(--color-scout-border)] transition-all duration-300 flex flex-row cursor-pointer hover:shadow-xl ${isFixedLayout ? 'md:h-[20vh]' : 'h-auto py-4'}`}
                             >
-                                <div className="relative overflow-hidden flex-shrink-0 w-1/3 md:w-[25%] h-full bg-[var(--color-scout-accent-light)] flex items-center justify-center text-[var(--color-scout-accent)] border-r border-[var(--color-scout-accent)]/20">
+                                <div className={`relative overflow-hidden flex-shrink-0 w-1/3 md:w-[25%] h-full ${iconBg} flex items-center justify-center text-[var(${colorVar})] border-r border-[var(${colorVar})]/20`}>
                                     <FileText size={32} className="group-hover:scale-110 transition-transform duration-700" />
                                     <div className="absolute top-3 left-3">
-                                        <span className="bg-[var(--color-scout-accent)]/10 backdrop-blur-xl text-[var(--color-scout-accent)] text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">
+                                        <span className={`bg-[var(${colorVar})]/10 backdrop-blur-xl text-[var(${colorVar})] text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest`}>
                                             {file.tipo || 'Archivo'}
                                         </span>
                                     </div>
@@ -113,7 +121,8 @@ const Descargas = () => {
                                     </p>
                                 </div>
                             </article>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
 
@@ -150,7 +159,7 @@ const Descargas = () => {
                                 <X size={20} />
                             </button>
 
-                            <div className="md:w-1/3 bg-[var(--color-scout-accent)] flex flex-col items-center justify-center text-white p-12 text-center space-y-6 flex-shrink-0">
+                            <div className={`md:w-1/3 bg-[var(${f.tipo === 'archivo' ? '--color-scout-accent' : '--color-scout-primary'})] flex flex-col items-center justify-center text-white p-12 text-center space-y-6 flex-shrink-0`}>
                                 <FileText size={80} className="opacity-20" />
                                 <div>
                                     <span className="text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2 text-white">Tipo de Recurso</span>
@@ -169,7 +178,7 @@ const Descargas = () => {
                                         href={f.url_publica}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="w-full bg-[var(--color-scout-bg-card)] text-[var(--color-scout-accent)] py-4 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 hover:scale-105 transition-all shadow-xl cursor-pointer"
+                                        className="w-full bg-[var(--color-scout-bg-card)] text-[var(--color-scout-primary)] py-4 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 hover:scale-105 transition-all shadow-xl cursor-pointer"
                                     >
                                         Abrir Link <Download size={14} />
                                     </a>
