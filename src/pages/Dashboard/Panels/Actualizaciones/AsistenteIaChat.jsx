@@ -58,7 +58,7 @@ const AsistenteIaChat = () => {
             {noConfigurado ? (
                 <div className="flex-1 flex items-center justify-center px-6 text-center">
                     <p className="text-xs text-scout-muted font-medium">
-                        Todavía no configuraste la API key de Anthropic — agregá <code className="font-mono">ANTHROPIC_API_KEY</code> en el <code className="font-mono">.env</code> del backend (o en Render) para activar esto.
+                        Todavía no configuraste la API key de Gemini — agregá <code className="font-mono">GEMINI_API_KEY</code> en el <code className="font-mono">.env</code> del backend (o en Render) para activar esto.
                     </p>
                 </div>
             ) : (

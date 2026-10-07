@@ -25,8 +25,6 @@ const Cursos = () => {
     const startIndex = (currentPage - 1) * limit;
     const currentCursos = isAll ? cursos : cursos.slice(startIndex, startIndex + limit);
 
-    // Layout fijo solo cuando estamos en 4 y no hay modal abierto
-    const isFixedLayout = itemsPerPage === 4 && !expandedId;
     const formatearFecha = (fechaStr) => {
         if (!fechaStr) return '—';
         const partes = fechaStr.split(/[-/]/); 
@@ -36,12 +34,9 @@ const Cursos = () => {
     };
 
     const obtenerImagenCurso = (curso) => {
-        if (curso.categoria === 'Programa') {
-            return imgPrograma;
-        } else if (curso.categoria === 'Gestion') {
-            return imgGestion;
-        }
-        return imgDefault;
+        // El backend solo permite 'Programa' o 'Gestion' (Rule::in en
+        // CoursesController), pero si algún día cambia, que no rompa la página.
+        return curso.categoria === 'Programa' ? imgPrograma : imgGestion;
     };
 
     return (
