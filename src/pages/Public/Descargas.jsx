@@ -87,10 +87,15 @@ const Descargas = () => {
                 ) : (
                     <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${isFixedLayout ? 'md:h-[68vh]' : ''}`}>
                         {currentItems.map((file) => {
+                            // Clases completas y literales en cada rama: Tailwind solo genera
+                            // CSS para nombres de clase que aparecen enteros en el código.
                             const esArchivo = file.tipo === 'archivo';
-                            const colorVar = esArchivo ? '--color-scout-accent' : '--color-scout-primary';
-                            const colorLightVar = esArchivo ? '--color-scout-accent-light' : '--color-scout-primary-light';
-                            const iconBg = `bg-[var(${colorLightVar})]`;
+                            const iconPanel = esArchivo
+                                ? 'bg-[var(--color-scout-accent-light)] text-[var(--color-scout-accent)] border-[var(--color-scout-accent)]/20'
+                                : 'bg-[var(--color-scout-primary-light)] text-[var(--color-scout-primary)] border-[var(--color-scout-primary)]/20';
+                            const badge = esArchivo
+                                ? 'bg-[var(--color-scout-accent)]/10 text-[var(--color-scout-accent)]'
+                                : 'bg-[var(--color-scout-primary)]/10 text-[var(--color-scout-primary)]';
 
                             return (
                             <article
@@ -98,10 +103,10 @@ const Descargas = () => {
                                 onClick={() => setExpandedId(file.id)}
                                 className={`group relative bg-[var(--color-scout-bg-card)] rounded-[2rem] overflow-hidden border border-[var(--color-scout-border)] transition-all duration-300 flex flex-row cursor-pointer hover:shadow-xl ${isFixedLayout ? 'md:h-[20vh]' : 'h-auto py-4'}`}
                             >
-                                <div className={`relative overflow-hidden flex-shrink-0 w-1/3 md:w-[25%] h-full ${iconBg} flex items-center justify-center text-[var(${colorVar})] border-r border-[var(${colorVar})]/20`}>
+                                <div className={`relative overflow-hidden flex-shrink-0 w-1/3 md:w-[25%] h-full flex items-center justify-center border-r ${iconPanel}`}>
                                     <FileText size={32} className="group-hover:scale-110 transition-transform duration-700" />
                                     <div className="absolute top-3 left-3">
-                                        <span className={`bg-[var(${colorVar})]/10 backdrop-blur-xl text-[var(${colorVar})] text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest`}>
+                                        <span className={`backdrop-blur-xl text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest ${badge}`}>
                                             {file.tipo || 'Archivo'}
                                         </span>
                                     </div>
@@ -157,7 +162,7 @@ const Descargas = () => {
                                 <X size={20} />
                             </button>
 
-                            <div className={`md:w-1/3 bg-[var(${f.tipo === 'archivo' ? '--color-scout-accent' : '--color-scout-primary'})] flex flex-col items-center justify-center text-white p-12 text-center space-y-6 flex-shrink-0`}>
+                            <div className={`md:w-1/3 ${f.tipo === 'archivo' ? 'bg-[var(--color-scout-accent)]' : 'bg-[var(--color-scout-primary)]'} flex flex-col items-center justify-center text-white p-12 text-center space-y-6 flex-shrink-0`}>
                                 <FileText size={80} className="opacity-20" />
                                 <div>
                                     <span className="text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2 text-white">Tipo de Recurso</span>
