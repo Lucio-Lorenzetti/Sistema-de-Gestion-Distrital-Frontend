@@ -6,9 +6,15 @@ import ThemeToggle from '../ui/ThemeToggle';
 import logoDistritoHorizontal from '../../assets/logo_distrito_horizontal.svg';
 import logosCombinados from '../../assets/logos_combinados.webp';
 import { APP_VERSION } from '../../version';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const PublicLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // Con sesión iniciada (p. ej. llegó acá desde el sidebar porque no gestiona
+  // esta sección) el botón vuelve al panel en vez de mandarlo al login.
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const accesoPath = isAuthenticated ? '/dashboard' : '/login';
+  const accesoLabel = isAuthenticated ? 'Mi Panel' : 'Ingresar';
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-scout-bg-card">
@@ -41,10 +47,10 @@ const PublicLayout = () => {
             <Link to="/descargas" className="hover:underline decoration-2 underline-offset-8">Descargas</Link>
             <ThemeToggle />
             <Link
-              to="/login"
+              to={accesoPath}
               className="px-6 py-2 bg-scout-primary text-white text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-scout-primary-hover transition-all shadow-lg ml-2"
             >
-              Ingresar
+              {accesoLabel}
             </Link>
           </div>
 
@@ -73,11 +79,11 @@ const PublicLayout = () => {
             <Link to="/galeria" onClick={() => setIsMobileMenuOpen(false)} className="py-3 border-b border-scout-border w-full hover:text-scout-muted transition-colors">Galería</Link>
             <Link to="/descargas" onClick={() => setIsMobileMenuOpen(false)} className="py-3 border-b border-scout-border w-full hover:text-scout-muted transition-colors">Descargas</Link>
             <Link
-              to="/login"
+              to={accesoPath}
               onClick={() => setIsMobileMenuOpen(false)}
               className="mt-6 w-full py-4 bg-scout-primary text-white text-center text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-scout-primary-hover transition-all shadow-lg"
             >
-              Ingresar
+              {accesoLabel}
             </Link>
           </div>
         </div>

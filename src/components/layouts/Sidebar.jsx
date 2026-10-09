@@ -3,11 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, LayoutDashboard, FileText, FolderArchive, GraduationCap, Megaphone, Users, UserCircle, HelpCircle, Settings, Rocket, Lightbulb, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { APP_VERSION } from '../../version';
-
-// Gestión de usuarios es cosa de quien administra personas, no de cualquiera —
-// mismo criterio que UserPolicy::viewAny() en el backend (más Developer, que
-// bypassea todo igual, pero se lista acá para que el ítem aparezca en el nav).
-const ROLES_CON_GESTION_USUARIOS = ['director', 'jefe de grupo', 'developer'];
+import { getPermisos } from '../../utils/permisos';
 
 const Sidebar = () => {
   const logout = useAuthStore((state) => state.logout);
@@ -23,27 +19,27 @@ const Sidebar = () => {
     }
   };
 
-  const roleNames = (user?.roles ?? []).map((r) => r.nombre.toLowerCase());
-  const puedeGestionarUsuarios = roleNames.some((r) => ROLES_CON_GESTION_USUARIOS.includes(r));
-  const esDeveloper = roleNames.includes('developer');
-  const esDirector = roleNames.includes('director');
+  // Mismo criterio que las guardas de App.jsx (RequierePermiso) y las Policies
+  // del backend. Cursos/Noticias/Biblioteca no se ocultan: quien no las gestiona
+  // va directo a la versión pública, sin cerrar sesión.
+  const permisos = getPermisos(user);
 
   const menuItems = [
     { name: 'Home', path: '/', icon: <Home size={20} /> },
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
-    { name: 'Programas', path: '/gestion-programas', icon: <FileText size={20} /> },
-    { name: 'Noticias', path: '/noticias-internas', icon: <Megaphone size={20} /> },
-    { name: 'Cursos', path: '/gestion-cursos/administrar', icon: <GraduationCap size={20} /> },
-    { name: 'Biblioteca', path: '/library', icon: <FolderArchive size={20} /> },
-    ...(puedeGestionarUsuarios ? [{ name: 'Usuarios', path: '/usuarios', icon: <Users size={20} /> }] : []),
+    ...(permisos.verProgramas ? [{ name: 'Programas', path: '/gestion-programas', icon: <FileText size={20} /> }] : []),
+    { name: 'Noticias', path: permisos.gestionarComunicacion ? '/noticias-internas' : '/noticias', icon: <Megaphone size={20} /> },
+    { name: 'Cursos', path: permisos.gestionarComunicacion ? '/gestion-cursos/administrar' : '/cursos', icon: <GraduationCap size={20} /> },
+    { name: 'Biblioteca', path: permisos.gestionarComunicacion ? '/library' : '/descargas', icon: <FolderArchive size={20} /> },
+    ...(permisos.gestionarUsuarios ? [{ name: 'Usuarios', path: '/usuarios', icon: <Users size={20} /> }] : []),
     { name: 'Mi Perfil', path: '/mi-perfil', icon: <UserCircle size={20} /> },
     { name: 'Ayuda', path: '/ayuda', icon: <HelpCircle size={20} /> },
     // Director propone mejoras, Developer las triagea — dos pantallas
     // separadas para el mismo recurso (FeatureRequestController).
-    ...(esDirector ? [{ name: 'Peticiones de Mejora', path: '/peticiones-mejora', icon: <Lightbulb size={20} /> }] : []),
+    ...(permisos.esDirector ? [{ name: 'Peticiones de Mejora', path: '/peticiones-mejora', icon: <Lightbulb size={20} /> }] : []),
     // Edición de metadata de roles — solo Developer, mismo criterio que RolePolicy::update().
-    ...(esDeveloper ? [{ name: 'Sistema', path: '/configuracion', icon: <Settings size={20} /> }] : []),
-    ...(esDeveloper ? [{ name: 'Actualizaciones', path: '/actualizaciones', icon: <Rocket size={20} /> }] : []),
+    ...(permisos.sistema ? [{ name: 'Sistema', path: '/configuracion', icon: <Settings size={20} /> }] : []),
+    ...(permisos.sistema ? [{ name: 'Actualizaciones', path: '/actualizaciones', icon: <Rocket size={20} /> }] : []),
   ];
 
   return (

@@ -6,6 +6,7 @@ import { useAuthStore } from './store/useAuthStore';
 // Layouts: eager — hacen falta apenas carga cualquier ruta, no tiene sentido separarlos.
 import PublicLayout from './components/layouts/PublicLayout';
 import MainLayout from './components/layouts/MainLayout';
+import RequierePermiso from './components/layouts/RequierePermiso';
 
 // Todo lo demás es lazy: cada página pesa su propio chunk y solo se descarga
 // cuando se navega a esa ruta, en vez de meter las ~25 páginas del sistema en
@@ -124,37 +125,56 @@ function App() {
         <Route path="/verificar-email/:id/:hash" element={<VerificarEmail />} />
 
         {/* 3. CONTEXTO PRIVADO (Gestión Interna) */}
+        <Route element={<RequierePermiso />}>
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
 
-          <Route path="/gestion-programas" element={<Programs />} />
-          <Route path="/gestion-programas/crear" element={<CrearPrograma />} />
-          <Route path="/gestion-programas/crear/cuatrimestre" element={<CrearProgramaCuatrimestre />} />
-          <Route path="/gestion-programas/crear/campamento" element={<CrearProgramaCampamento />} />
-          <Route path="/gestion-programas/crear/cfa" element={<CrearProgramaCFA />} />
-          <Route path="/gestion-programas/editar/cuatrimestre/:id" element={<EditarProgramaCuatrimestre />} />
-          <Route path="/gestion-programas/editar/campamento/:id" element={<EditarProgramaCampamento />} />
-          <Route path="/gestion-programas/editar/cfa/:id" element={<EditarProgramaCFA />} />
-          <Route path="/gestion-programas/revisar/:id" element={<RevisarPrograma />} />
+          <Route element={<RequierePermiso permiso="verProgramas" />}>
+            <Route path="/gestion-programas" element={<Programs />} />
+            <Route element={<RequierePermiso permiso="crearProgramas" fallback="/gestion-programas" />}>
+              <Route path="/gestion-programas/crear" element={<CrearPrograma />} />
+              <Route path="/gestion-programas/crear/cuatrimestre" element={<CrearProgramaCuatrimestre />} />
+              <Route path="/gestion-programas/crear/campamento" element={<CrearProgramaCampamento />} />
+              <Route path="/gestion-programas/crear/cfa" element={<CrearProgramaCFA />} />
+            </Route>
+            <Route path="/gestion-programas/editar/cuatrimestre/:id" element={<EditarProgramaCuatrimestre />} />
+            <Route path="/gestion-programas/editar/campamento/:id" element={<EditarProgramaCampamento />} />
+            <Route path="/gestion-programas/editar/cfa/:id" element={<EditarProgramaCFA />} />
+            <Route path="/gestion-programas/revisar/:id" element={<RevisarPrograma />} />
+          </Route>
 
-          <Route path="/gestion-cursos" element={<Courses />} />
-          <Route path="/gestion-cursos/administrar" element={<Courses />} />
-          <Route path="/gestion-cursos/crear" element={<CrearCurso />} />
-          <Route path="/gestion-cursos/editar/:id" element={<EditarCurso />} />
+          {/* Sin permiso de gestión → la versión pública de la sección, sin cerrar sesión. */}
+          <Route element={<RequierePermiso permiso="gestionarComunicacion" fallback="/cursos" />}>
+            <Route path="/gestion-cursos" element={<Courses />} />
+            <Route path="/gestion-cursos/administrar" element={<Courses />} />
+            <Route path="/gestion-cursos/crear" element={<CrearCurso />} />
+            <Route path="/gestion-cursos/editar/:id" element={<EditarCurso />} />
+          </Route>
 
-          <Route path="/noticias-internas" element={<News />} />
-          <Route path="/noticias-internas/crear" element={<CrearNoticia />} />
-          <Route path="/noticias-internas/editar/:id" element={<EditarNoticia />} />
+          <Route element={<RequierePermiso permiso="gestionarComunicacion" fallback="/noticias" />}>
+            <Route path="/noticias-internas" element={<News />} />
+            <Route path="/noticias-internas/crear" element={<CrearNoticia />} />
+            <Route path="/noticias-internas/editar/:id" element={<EditarNoticia />} />
+          </Route>
 
-          <Route path="/library" element={<Download />} />          
-          <Route path="/library/crear" element={<CrearDownload />} />
+          <Route element={<RequierePermiso permiso="gestionarComunicacion" fallback="/descargas" />}>
+            <Route path="/library" element={<Download />} />
+            <Route path="/library/crear" element={<CrearDownload />} />
+          </Route>
 
-          <Route path="/usuarios" element={<Usuarios />} />
+          <Route element={<RequierePermiso permiso="gestionarUsuarios" />}>
+            <Route path="/usuarios" element={<Usuarios />} />
+          </Route>
           <Route path="/mi-perfil" element={<MiPerfil />} />
           <Route path="/ayuda" element={<Ayuda />} />
-          <Route path="/configuracion" element={<Sistema />} />
-          <Route path="/actualizaciones" element={<Actualizaciones />} />
-          <Route path="/peticiones-mejora" element={<PeticionesMejora />} />
+          <Route element={<RequierePermiso permiso="sistema" />}>
+            <Route path="/configuracion" element={<Sistema />} />
+            <Route path="/actualizaciones" element={<Actualizaciones />} />
+          </Route>
+          <Route element={<RequierePermiso permiso="peticionesMejora" />}>
+            <Route path="/peticiones-mejora" element={<PeticionesMejora />} />
+          </Route>
+        </Route>
         </Route>
 
         {/* REDIRECCIÓN POR DEFECTO AL HOME PÚBLICO */}
