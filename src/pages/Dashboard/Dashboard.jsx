@@ -48,7 +48,7 @@ const Dashboard = () => {
             )}
 
             {esJefeDeGrupo && (
-                <div className="mb-16 pb-6">
+                <div className="lg:col-span-3 mb-16 pb-6">
                     <MiGrupoCard />
                 </div>
             )}
