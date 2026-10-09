@@ -47,7 +47,7 @@ const recortarABlob = async (imageSrc, areaRecortePx) => {
     });
 };
 
-const RecortarFotoModal = ({ imageSrc, onCancel, onConfirmar }) => {
+const RecortarFotoModal = ({ imageSrc, onCancel, onConfirmar, titulo = 'Ajustar foto de perfil', cropShape = 'round' }) => {
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
     const [areaRecortePx, setAreaRecortePx] = useState(null);
@@ -80,7 +80,7 @@ const RecortarFotoModal = ({ imageSrc, onCancel, onConfirmar }) => {
                     <X size={16} />
                 </button>
 
-                <h2 className="text-sm font-black uppercase tracking-widest text-scout-ink mb-1">Ajustar foto de perfil</h2>
+                <h2 className="text-sm font-black uppercase tracking-widest text-scout-ink mb-1">{titulo}</h2>
                 <p className="text-xs text-scout-muted font-medium mb-4">Arrastrá para mover, deslizá para hacer zoom.</p>
 
                 {error && (
@@ -95,7 +95,7 @@ const RecortarFotoModal = ({ imageSrc, onCancel, onConfirmar }) => {
                         crop={crop}
                         zoom={zoom}
                         aspect={1}
-                        cropShape="round"
+                        cropShape={cropShape}
                         showGrid={false}
                         onCropChange={setCrop}
                         onZoomChange={setZoom}

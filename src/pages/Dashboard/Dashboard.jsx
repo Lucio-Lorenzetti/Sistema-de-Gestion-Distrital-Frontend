@@ -10,6 +10,7 @@ import DocumentacionResumenCard from './Resumen/DocumentacionResumenCard';
 import EducadorResumenCard from './Resumen/EducadorResumenCard';
 import ProgramasAprobacionResumen from './Resumen/ProgramasAprobacionResumen';
 import ComentariosPendientesResumenCard from './Resumen/ComentariosPendientesResumenCard';
+import MiGrupoCard from './Resumen/MiGrupoCard';
 
 const RESUMEN_COMPONENTS = {
     noticias: NoticiasResumenCard,
@@ -22,6 +23,11 @@ const RESUMEN_COMPONENTS = {
 
 const Dashboard = () => {
     const { user, role, roleLabel } = useUserRole();
+
+    // Va aparte del RESUMEN_ACCESS: useUserRole() resuelve UN rol principal
+    // (Director gana sobre Jefe de Grupo), pero un Director que además es
+    // Jefe de Grupo también tiene que poder editar su grupo — abajo de todo.
+    const esJefeDeGrupo = (user?.roles ?? []).some((r) => r.nombre.toLowerCase() === 'jefe de grupo');
 
     const visibleResumenes = Object.keys(RESUMEN_ACCESS).filter(
         (key) => canAccess(RESUMEN_ACCESS, key, role) && RESUMEN_COMPONENTS[key]
@@ -38,6 +44,12 @@ const Dashboard = () => {
                         const ResumenCard = RESUMEN_COMPONENTS[key];
                         return <ResumenCard key={key} />;
                     })}
+                </div>
+            )}
+
+            {esJefeDeGrupo && (
+                <div className="mb-16 pb-6">
+                    <MiGrupoCard />
                 </div>
             )}
         </DashboardLayout>
