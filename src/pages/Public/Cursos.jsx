@@ -56,7 +56,7 @@ const Cursos = () => {
                     <p className="text-[10px] font-bold text-[var(--color-scout-muted)] uppercase tracking-widest text-left">
                         Página {currentPage} de {totalPages || 1} • {totalItems} propuestas educativas
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         {[4, 6, 8, 'all'].map((opt) => (
                             <button
                                 key={opt}
@@ -77,7 +77,7 @@ const Cursos = () => {
                         <article
                             key={curso.id}
                             onClick={() => setExpandedId(curso.id)}
-                            className="group relative bg-[var(--color-scout-bg-card)] rounded-[2rem] overflow-hidden border border-[var(--color-scout-border)] transition-all duration-300 flex flex-col md:flex-row cursor-pointer hover:shadow-xl h-44 md:h-40 w-full"
+                            className="group relative bg-[var(--color-scout-bg-card)] rounded-[2rem] overflow-hidden border border-[var(--color-scout-border)] transition-all duration-300 flex flex-col md:flex-row cursor-pointer hover:shadow-xl md:h-40 w-full"
                         >
                             <div className="relative overflow-hidden flex-shrink-0 w-full h-32 md:h-full md:w-[35%] bg-[var(--color-scout-bg-panel)]">
                                 <img
@@ -108,8 +108,8 @@ const Cursos = () => {
                 </div>
 
                 {totalPages > 1 && (
-                    <footer className="flex justify-center items-center gap-3 px-6 py-8 mt-25">
-                        <div className="flex items-center gap-2 bg-[var(--color-scout-bg-card)] px-4 py-2 rounded-full border border-[var(--color-scout-border)] shadow-sm">
+                    <footer className="flex justify-center items-center gap-3 px-0 md:px-6 py-8 mt-6 md:mt-25">
+                        <div className="flex items-center gap-2 max-w-full overflow-x-auto bg-[var(--color-scout-bg-card)] px-4 py-2 rounded-full border border-[var(--color-scout-border)] shadow-sm">
                             <span className="text-[9px] font-black uppercase text-[var(--color-scout-muted)] mr-2">Páginas:</span>
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                                 <button
@@ -133,14 +133,16 @@ const Cursos = () => {
                 return (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
                         <div className="absolute inset-0 bg-[var(--color-scout-scrim)]/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
-                        <div className="relative bg-[var(--color-scout-bg-card)] w-full max-w-5xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-300 text-left">
-                            <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:scale-110 transition-transform">
+                        <div className="relative w-full max-w-5xl animate-in zoom-in-95 duration-300">
+                            <button onClick={() => setExpandedId(null)} className="absolute top-4 right-4 md:top-6 md:right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:scale-110 transition-transform">
                                 <X size={20} />
                             </button>
+                        {/* En mobile scrollea el panel entero (columnas apiladas); en desktop, solo la columna de texto. */}
+                        <div className="bg-[var(--color-scout-bg-card)] w-full max-h-[90vh] rounded-[2rem] md:rounded-[3rem] overflow-y-auto md:overflow-hidden shadow-2xl flex flex-col md:flex-row text-left">
                             
                             {/* Columna Izquierda del Modal con Imagen de Fondo */}
                             <div 
-                                className="md:w-2/5 relative flex flex-col items-center justify-between p-12 text-center flex-shrink-0 bg-cover bg-center min-h-[250px] md:min-h-full"
+                                className="md:w-2/5 relative flex flex-col items-center justify-between p-8 md:p-12 text-center flex-shrink-0 bg-cover bg-center min-h-[220px] md:min-h-full"
                                 style={{ backgroundImage: `url(${obtenerImagenCurso(c)})` }}
                             >
                                 <div className="absolute inset-0 backdrop-blur-[2px]" />
@@ -161,10 +163,10 @@ const Cursos = () => {
                                     </a>
                                 </div>
                             </div>
-                            <div className="md:w-3/5 p-8 md:p-16 overflow-y-auto">
+                            <div className="md:w-3/5 p-6 md:p-16 md:overflow-y-auto">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-scout-muted)] block mb-4">{c.ramas}</span>
-                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-ink)]">{c.titulo}</h2>
-                                <div className="grid grid-cols-2 gap-y-8 gap-x-4 mb-10 border-y border-[var(--color-scout-border)] py-10">
+                                <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-6 md:mb-10 break-words text-[var(--color-scout-ink)]">{c.titulo}</h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 md:gap-y-8 gap-x-4 mb-8 md:mb-10 border-y border-[var(--color-scout-border)] py-6 md:py-10">
                                     <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Fecha</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-ink)]"><Calendar size={16} className="text-[var(--color-scout-primary)]" /> {formatearFecha(c.fecha_fin)}</div></div>
                                     <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Lugar</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-ink)]"><MapPin size={16} className="text-[var(--color-scout-primary)]" /> {c.lugar}</div></div>
                                     <div className="space-y-1"><p className="text-[9px] font-black text-[var(--color-scout-muted)] uppercase tracking-widest">Costo</p><div className="flex items-center gap-2 text-sm font-bold text-[var(--color-scout-ink)]"><DollarSign size={16} className="text-[var(--color-scout-primary)]" /> {c.costo}</div></div>
@@ -176,6 +178,7 @@ const Cursos = () => {
                                     <p className="text-[var(--color-scout-muted)] leading-relaxed text-sm md:text-base">{c.descripcion}</p>
                                 </div>
                             </div>
+                        </div>
                         </div>
                     </div>
                 );

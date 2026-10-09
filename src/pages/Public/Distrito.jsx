@@ -134,7 +134,7 @@ const Distrito = () => {
                                 Contribuir a la educación de los jóvenes, a través de un sistema de valores basado en la Ley y la Promesa Scout, para ayudar a construir un mundo mejor donde las personas se desarrollen plenamente y jueguen un papel constructivo en la sociedad.
                             </p>
                         </div>
-                        <div className="space-y-6 text-left border-l border-[var(--color-scout-border)] md:pl-20">
+                        <div className="space-y-6 text-left md:border-l border-[var(--color-scout-border)] md:pl-20">
                             <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-[var(--color-scout-ink)]">Nuestra Historia</h2>
                             <div className="h-1 w-12 bg-[var(--color-scout-primary)] mb-6" />
                             <p className="text-[var(--color-scout-muted)] leading-relaxed text-sm md:text-lg">
@@ -145,9 +145,9 @@ const Distrito = () => {
                 </main>
             </div>
 
-            <section className="bg-[var(--color-scout-bg-card)] py-24 px-6 md:px-20 border-y border-[var(--color-scout-border)]">
+            <section className="bg-[var(--color-scout-bg-card)] py-16 md:py-24 px-6 md:px-20 border-y border-[var(--color-scout-border)]">
                 <div className="max-w-7xl mx-auto">
-                    <h2 className="text-3xl font-black uppercase tracking-tighter mb-16 flex items-center gap-4 text-[var(--color-scout-ink)]">
+                    <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter mb-10 md:mb-16 flex items-center gap-4 text-[var(--color-scout-ink)]">
                         Consejo Distrital <div className="h-1 w-12 bg-[var(--color-scout-primary)]" />
                     </h2>
                     {cargando ? estadoVacio('Cargando...') : error ? estadoVacio('No se pudo cargar el Consejo Distrital.') : consejo.length === 0 ? estadoVacio('Todavía no hay integrantes cargados.') : (
@@ -164,8 +164,8 @@ const Distrito = () => {
                 </div>
             </section>
 
-            <section className="py-24 px-6 md:px-20 max-w-7xl mx-auto">
-                <h2 className="text-3xl font-black uppercase tracking-tighter mb-16 flex items-center gap-4 text-[var(--color-scout-ink)]">
+            <section className="py-16 md:py-24 px-6 md:px-20 max-w-7xl mx-auto">
+                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter mb-10 md:mb-16 flex items-center gap-4 text-[var(--color-scout-ink)]">
                     Grupos del Distrito <div className="h-1 w-12 bg-[var(--color-scout-accent)]" />
                 </h2>
                 {cargando ? estadoVacio('Cargando...') : error ? estadoVacio('No se pudieron cargar los grupos.') : (
@@ -203,13 +203,15 @@ const Distrito = () => {
                 return (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
                         <div className="absolute inset-0 bg-[var(--color-scout-scrim)]/60 backdrop-blur-md" onClick={() => setExpandedGrupoId(null)} />
-                        <div className="relative bg-[var(--color-scout-bg-card)] w-full max-w-4xl max-h-[85vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-300 text-left">
-                            <button onClick={() => setExpandedGrupoId(null)} className="absolute top-6 right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:rotate-90 transition-all">
+                        <div className="relative w-full max-w-4xl animate-in zoom-in-95 duration-300">
+                            <button onClick={() => setExpandedGrupoId(null)} className="absolute top-4 right-4 md:top-6 md:right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:rotate-90 transition-all">
                                 <X size={20} />
                             </button>
+                        {/* En mobile scrollea el panel entero (columnas apiladas); en desktop, solo la columna de texto. */}
+                        <div className="bg-[var(--color-scout-bg-card)] w-full max-h-[85vh] rounded-[2rem] md:rounded-[3rem] overflow-y-auto md:overflow-hidden shadow-2xl flex flex-col md:flex-row text-left">
 
                             {g.foto_url ? (
-                                <div className="md:w-1/3 relative bg-[var(--color-scout-accent)] min-h-[14rem]">
+                                <div className="md:w-1/3 relative bg-[var(--color-scout-accent)] min-h-[14rem] shrink-0">
                                     <img src={g.foto_url} alt={g.nombre} className="absolute inset-0 w-full h-full object-cover" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                                     <div className="absolute bottom-0 inset-x-0 p-8 text-white text-center">
@@ -218,17 +220,17 @@ const Distrito = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="md:w-1/3 bg-[var(--color-scout-accent)] flex flex-col items-center justify-center text-white p-12 text-center space-y-6">
-                                    <div className="text-7xl font-black opacity-20">{numeroGrupo(g.numero)}</div>
+                                <div className="md:w-1/3 bg-[var(--color-scout-accent)] flex flex-col items-center justify-center text-white p-8 md:p-12 text-center space-y-4 md:space-y-6 shrink-0">
+                                    <div className="text-5xl md:text-7xl font-black opacity-20">{numeroGrupo(g.numero)}</div>
                                     <p className="text-xl font-black uppercase">Grupo Scout<br />{g.nombre}</p>
                                 </div>
                             )}
 
-                            <div className="md:w-2/3 p-8 md:p-16 overflow-y-auto">
+                            <div className="md:w-2/3 p-6 md:p-16 md:overflow-y-auto">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-scout-muted)] block mb-4">Ficha Institucional</span>
-                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-ink)]">G.S. {g.nombre}</h2>
+                                <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-6 md:mb-10 break-words text-[var(--color-scout-ink)]">G.S. {g.nombre}</h2>
 
-                                <div className="space-y-8 border-y border-[var(--color-scout-border)] py-10 mb-8">
+                                <div className="space-y-6 md:space-y-8 border-y border-[var(--color-scout-border)] py-6 md:py-10 mb-4 md:mb-8">
                                     {g.descripcion && (
                                         <DatoGrupo icono={Info} label="Acerca del Grupo">
                                             <p className="text-[var(--color-scout-muted)] leading-relaxed text-sm whitespace-pre-line">{g.descripcion}</p>
@@ -274,6 +276,7 @@ const Distrito = () => {
                                     </DatoGrupo>
                                 </div>
                             </div>
+                        </div>
                         </div>
                     </div>
                 );

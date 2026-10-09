@@ -45,7 +45,7 @@ const Noticias = () => {
                     <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest text-left">
                         Página {currentPage} de {totalPages || 1} • {totalItems} comunicados
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         {[4, 6, 8, 'all'].map((opt) => (
                             <button
                                 key={opt}
@@ -81,8 +81,8 @@ const Noticias = () => {
 
                 {/* PAGINACIÓN */}
                 {!isAll && totalPages > 1 && (
-                    <footer className="flex justify-center items-center gap-3 px-6 py-8 mt-6">
-                        <div className="flex items-center gap-2 bg-scout-bg-card px-4 py-2 rounded-full border border-scout-border">
+                    <footer className="flex justify-center items-center gap-3 px-0 md:px-6 py-8 mt-6">
+                        <div className="flex items-center gap-2 max-w-full overflow-x-auto bg-scout-bg-card px-4 py-2 rounded-full border border-scout-border">
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                                 <button
                                     key={page}
@@ -100,15 +100,17 @@ const Noticias = () => {
 
             {expandedId && noticiaExpandida && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="relative bg-scout-bg-card w-full max-w-5xl rounded-[3rem] p-8 md:p-16 shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
+                    <div className="relative w-full max-w-5xl">
                         <button
                             onClick={() => setExpandedId(null)}
-                            className="absolute top-6 right-6 p-2 bg-scout-primary text-white rounded-full z-10"
+                            className="absolute top-4 right-4 md:top-6 md:right-6 p-2 bg-scout-primary text-white rounded-full z-10"
                         >
                             <X size={20} />
                         </button>
+                    {/* En mobile scrollea el panel entero (columnas apiladas); en desktop, solo la columna de texto. */}
+                    <div className="bg-scout-bg-card w-full rounded-[2rem] md:rounded-[3rem] p-4 md:p-16 shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden max-h-[90vh]">
 
-                        <div className="md:w-1/2 h-64 md:h-auto">
+                        <div className="md:w-1/2 h-56 md:h-auto shrink-0">
                             <img
                                 src={noticiaExpandida.imagen || imgDefault}
                                 className="w-full h-full object-cover rounded-2xl"
@@ -116,13 +118,13 @@ const Noticias = () => {
                             />
                         </div>
 
-                        <div className="md:w-1/2 p-6 md:pl-12 overflow-y-auto text-left">
-                            <h2 className="text-3xl font-black uppercase text-scout-ink mb-6">
+                        <div className="md:w-1/2 p-2 pt-6 md:p-6 md:pl-12 md:overflow-y-auto text-left">
+                            <h2 className="text-2xl md:text-3xl font-black uppercase text-scout-ink mb-6 break-words">
                                 {noticiaExpandida.titulo}
                             </h2>
 
                             {noticiaExpandida.copete && (
-                                <p className="text-lg font-bold text-scout-accent mb-6 border-l-4 border-scout-accent pl-4">
+                                <p className="text-base md:text-lg font-bold text-scout-accent mb-6 border-l-4 border-scout-accent pl-4">
                                     {noticiaExpandida.copete}
                                 </p>
                             )}
@@ -135,6 +137,7 @@ const Noticias = () => {
                                 <p className="text-scout-muted italic text-sm">Sin contenido adicional.</p>
                             )}
                         </div>
+                    </div>
                     </div>
                 </div>
             )}

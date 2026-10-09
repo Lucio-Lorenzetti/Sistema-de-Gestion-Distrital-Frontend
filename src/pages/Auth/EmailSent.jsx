@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const EmailSent = () => {
   return (
     <div className="min-h-screen bg-scout-bg-card flex items-center justify-center p-6">
-      <div className="w-full max-w-[440px] border border-scout-border rounded-lg p-10 text-center shadow-sm">
+      <div className="w-full max-w-[440px] border border-scout-border rounded-lg p-6 md:p-10 text-center shadow-sm">
         <div className="w-16 h-16 border-2 border-scout-primary rounded-full flex items-center justify-center mx-auto mb-6">
           <span className="text-2xl text-scout-primary">✓</span>
         </div>

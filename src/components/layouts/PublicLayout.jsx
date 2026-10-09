@@ -97,10 +97,10 @@ const PublicLayout = () => {
       {/* FOOTER */}
       <footer className="bg-scout-scrim text-white pt-16 pb-8 mt-auto">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr] gap-10 md:gap-8 mb-14">
+          <div className="grid grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-10 md:gap-8 mb-14">
 
             {/* Columna 1: Identidad */}
-            <div className="space-y-5">
+            <div className="col-span-2 md:col-span-1 space-y-5">
               <img
                 src={logoDistritoHorizontal}
                 alt="Distrito 3 - Zona 13 - Scouts de Argentina"
@@ -137,7 +137,7 @@ const PublicLayout = () => {
             </ul>
 
             {/* Columna 4: Ingeniería */}
-            <div className="space-y-4">
+            <div className="col-span-2 md:col-span-1 space-y-4">
               <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white border-b-2 border-scout-primary pb-2 inline-block">
                 Desarrollo
               </h4>

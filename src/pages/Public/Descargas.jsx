@@ -13,8 +13,8 @@ const Descargas = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     // Conectamos con el endpoint real del backend que trae los registros y el archivo/link
+    // isLoading ya arranca en true y el efecto corre una sola vez (al montar).
     useEffect(() => {
-        setIsLoading(true);
         api.get(BIBLIOGRAFIA_ENDPOINT)
             .then((res) => {
                 setDescargas(res.data);
@@ -52,11 +52,11 @@ const Descargas = () => {
 
             <main className={`max-w-6xl mx-auto px-6 flex flex-col ${isFixedLayout ? 'md:h-[75vh] md:justify-start md:pt-4' : 'py-6'}`}>
 
-                <div className={`flex justify-between items-center mb-4 px-2 ${isFixedLayout ? 'md:h-[4vh]' : ''}`}>
+                <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 px-2 ${isFixedLayout ? 'md:h-[4vh]' : ''}`}>
                     <p className="text-[10px] font-bold text-[var(--color-scout-muted)] uppercase tracking-widest text-left">
                         Página {currentPage} de {totalPages} • {totalItems} archivos oficiales
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         {[4, 6, 8, 'all'].map((opt) => (
                             <button
                                 key={opt}
@@ -130,8 +130,8 @@ const Descargas = () => {
                 )}
 
                 {!isAll && totalPages > 1 && !isLoading && (
-                    <footer className={`flex justify-center items-center gap-3 px-6 mt-6 md:mt-0 ${isFixedLayout ? 'md:h-[10vh]' : 'py-8'}`}>
-                        <div className="flex items-center gap-2 bg-[var(--color-scout-bg-card)] px-4 py-2 rounded-full border border-[var(--color-scout-border)] shadow-sm">
+                    <footer className={`flex justify-center items-center gap-3 px-0 md:px-6 mt-6 md:mt-0 ${isFixedLayout ? 'md:h-[10vh]' : 'py-8'}`}>
+                        <div className="flex items-center gap-2 max-w-full overflow-x-auto bg-[var(--color-scout-bg-card)] px-4 py-2 rounded-full border border-[var(--color-scout-border)] shadow-sm">
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                                 <button
                                     key={page}
@@ -157,13 +157,15 @@ const Descargas = () => {
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
                         <div className="absolute inset-0 bg-[var(--color-scout-scrim)]/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
 
-                        <div className="relative bg-[var(--color-scout-bg-card)] w-full max-w-4xl max-h-[85vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-300 text-left">
-                            <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:rotate-90 transition-all cursor-pointer">
+                        <div className="relative w-full max-w-4xl animate-in zoom-in-95 duration-300">
+                            <button onClick={() => setExpandedId(null)} className="absolute top-4 right-4 md:top-6 md:right-6 z-10 p-2 bg-[var(--color-scout-primary)] text-white rounded-full hover:rotate-90 transition-all cursor-pointer">
                                 <X size={20} />
                             </button>
+                        {/* En mobile scrollea el panel entero (columnas apiladas); en desktop, solo la columna de texto. */}
+                        <div className="bg-[var(--color-scout-bg-card)] w-full max-h-[85vh] rounded-[2rem] md:rounded-[3rem] overflow-y-auto md:overflow-hidden shadow-2xl flex flex-col md:flex-row text-left">
 
-                            <div className={`md:w-1/3 ${f.tipo === 'archivo' ? 'bg-[var(--color-scout-accent)]' : 'bg-[var(--color-scout-primary)]'} flex flex-col items-center justify-center text-white p-12 text-center space-y-6 flex-shrink-0`}>
-                                <FileText size={80} className="opacity-20" />
+                            <div className={`md:w-1/3 ${f.tipo === 'archivo' ? 'bg-[var(--color-scout-accent)]' : 'bg-[var(--color-scout-primary)]'} flex flex-col items-center justify-center text-white p-8 md:p-12 text-center space-y-4 md:space-y-6 flex-shrink-0`}>
+                                <FileText className="w-12 h-12 md:w-20 md:h-20 opacity-20" />
                                 <div>
                                     <span className="text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2 text-white">Tipo de Recurso</span>
                                     <p className="text-2xl font-black uppercase">{f.tipo}</p>
@@ -188,15 +190,15 @@ const Descargas = () => {
                                 )}
                             </div>
 
-                            <div className="md:w-2/3 p-8 md:p-16 overflow-y-auto">
+                            <div className="md:w-2/3 p-6 md:p-16 md:overflow-y-auto">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-scout-muted)] block mb-4">
                                     Subido por: {f.user?.nombre_visible || f.user?.name || 'Distrito'}
                                 </span>
-                                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-10 text-[var(--color-scout-ink)]">
+                                <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-6 md:mb-10 break-words text-[var(--color-scout-ink)]">
                                     {f.nombre}
                                 </h2>
 
-                                <div className="space-y-8 border-y border-[var(--color-scout-border)] py-10 mb-8">
+                                <div className="space-y-6 md:space-y-8 border-y border-[var(--color-scout-border)] py-6 md:py-10 mb-4 md:mb-8">
                                     <div className="flex gap-4">
                                         <Info className="text-[var(--color-scout-muted)] shrink-0 mt-0.5" />
                                         <div>
@@ -217,6 +219,7 @@ const Descargas = () => {
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         </div>
                     </div>
                 );

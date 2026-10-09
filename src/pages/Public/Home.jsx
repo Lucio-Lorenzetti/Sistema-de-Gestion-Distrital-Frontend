@@ -52,13 +52,13 @@ const Home = () => {
             {/* 1. HERO SECTION */}
             <section className="relative min-h-screen flex items-center justify-start px-6 md:px-20 overflow-hidden">
                 <div
-                    className="absolute inset-0 z-0 bg-fixed bg-cover bg-center"
+                    className="absolute inset-0 z-0 md:bg-fixed bg-cover bg-center"
                     style={{ backgroundImage: `url(${esMobile ? bgHeroMobile : bgHeroDesktop})` }}
                 />
                 <div className="absolute inset-0 bg-black/50 md:bg-black/40 z-0" />
 
                 <div className="relative z-10 max-w-4xl w-full text-left pt-20 md:pt-10">
-                    <h1 className="text-4xl md:text-[90px] font-black tracking-tighter leading-[1] md:leading-[0.85] text-white uppercase mb-6 md:mb-8">
+                    <h1 className="text-5xl md:text-7xl lg:text-[90px] font-black tracking-tighter leading-[1] md:leading-[0.85] text-white uppercase mb-6 md:mb-8">
                         Gestión <br />
                         <span className="text-scout-accent italic">Distrito 3.</span>
                     </h1>
