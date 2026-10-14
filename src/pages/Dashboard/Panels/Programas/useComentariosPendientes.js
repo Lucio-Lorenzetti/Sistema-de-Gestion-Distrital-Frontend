@@ -1,25 +1,18 @@
 // src/pages/Dashboard/Panels/Programas/useComentariosPendientes.js
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 
 // Hilos sin resolver en programas 'enviado' que el usuario puede comentar —
 // para Educador/Aux Prog Rama, acotado a su rama; el backend hace ese filtro.
+// Lo usan dos tarjetas del Dashboard a la vez (pendientes + respondidos):
+// antes eran dos pedidos idénticos, ahora comparten el mismo resultado.
 export const useComentariosPendientes = () => {
     const { authorizedFetch } = useAuthorizedFetch();
-    const [comentarios, setComentarios] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
 
-    const fetchComentarios = useCallback(() => {
-        setIsLoading(true);
-        return authorizedFetch('/comentarios-pendientes')
-            .then(setComentarios)
-            .catch((err) => console.error('Error al cargar comentarios pendientes:', err))
-            .finally(() => setIsLoading(false));
-    }, []);
+    const { data: comentarios = [], isLoading, refetch } = useQuery({
+        queryKey: ['comentarios-pendientes'],
+        queryFn: () => authorizedFetch('/comentarios-pendientes'),
+    });
 
-    useEffect(() => {
-        fetchComentarios();
-    }, [fetchComentarios]);
-
-    return { comentarios, isLoading, refetch: fetchComentarios };
+    return { comentarios, isLoading, refetch };
 };

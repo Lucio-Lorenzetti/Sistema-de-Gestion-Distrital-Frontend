@@ -1,25 +1,18 @@
 // src/pages/Dashboard/Panels/Programas/useProgramas.js
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 
+// Lo usan Programs.jsx (la pantalla de gestión) Y varias tarjetas del
+// Dashboard (EducadorResumenCard, ProgramasAprobacionResumen) — antes cada
+// uno pedía /programas por su cuenta. En un dashboard donde se muestran dos
+// de esas tarjetas juntas, eran DOS pedidos idénticos en simultáneo.
 export const useProgramas = () => {
     const { authorizedFetch } = useAuthorizedFetch();
-    const [programas, setProgramas] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
 
-    // Sin dependencias: authorizedFetch no memoiza su referencia entre renders,
-    // así que incluirlo en las deps rehace el fetch en bucle.
-    const fetchProgramas = useCallback(() => {
-        setIsLoading(true);
-        return authorizedFetch('/programas')
-            .then(setProgramas)
-            .catch((err) => console.error('Error al cargar programas:', err))
-            .finally(() => setIsLoading(false));
-    }, []);
+    const { data: programas = [], isLoading, refetch } = useQuery({
+        queryKey: ['programas'],
+        queryFn: () => authorizedFetch('/programas'),
+    });
 
-    useEffect(() => {
-        fetchProgramas();
-    }, [fetchProgramas]);
-
-    return { programas, isLoading, refetch: fetchProgramas };
+    return { programas, isLoading, refetch };
 };

@@ -1,25 +1,14 @@
 // src/pages/Dashboard/Panels/Sistema/useRoles.js
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 
 export const useRoles = () => {
     const { authorizedFetch } = useAuthorizedFetch();
-    const [roles, setRoles] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
 
-    // Sin dependencias: authorizedFetch no memoiza su referencia entre renders,
-    // así que incluirlo en las deps rehace el fetch en bucle.
-    const fetchRoles = useCallback(() => {
-        setIsLoading(true);
-        return authorizedFetch('/roles')
-            .then(setRoles)
-            .catch((err) => console.error('Error al cargar roles:', err))
-            .finally(() => setIsLoading(false));
-    }, []);
+    const { data: roles = [], isLoading, refetch } = useQuery({
+        queryKey: ['roles'],
+        queryFn: () => authorizedFetch('/roles'),
+    });
 
-    useEffect(() => {
-        fetchRoles();
-    }, [fetchRoles]);
-
-    return { roles, isLoading, refetch: fetchRoles };
+    return { roles, isLoading, refetch };
 };

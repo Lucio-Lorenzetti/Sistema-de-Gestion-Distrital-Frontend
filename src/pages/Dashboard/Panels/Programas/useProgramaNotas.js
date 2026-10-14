@@ -1,47 +1,41 @@
 // src/pages/Dashboard/Panels/Programas/useProgramaNotas.js
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 
 export const useProgramaNotas = (programaId) => {
     const { authorizedFetch } = useAuthorizedFetch();
-    const [notas, setNotas] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
 
-    // Sin dependencias de authorizedFetch: no memoiza su referencia entre renders
-    // (mismo patrón que useProgramas.js), incluirlo en las deps rehace el fetch en bucle.
-    const fetchNotas = useCallback(() => {
-        setIsLoading(true);
-        return authorizedFetch(`/programas/${programaId}/notas`)
-            .then(setNotas)
-            .catch((err) => {
-                console.error('Error al cargar comentarios:', err);
-                setError(err.message);
-            })
-            .finally(() => setIsLoading(false));
-    }, [programaId]);
-
-    useEffect(() => {
-        fetchNotas();
-    }, [fetchNotas]);
+    const { data: notas = [], isLoading, error, refetch } = useQuery({
+        queryKey: ['programa-notas', programaId],
+        queryFn: () => authorizedFetch(`/programas/${programaId}/notas`),
+        enabled: !!programaId,
+    });
 
     const crearHilo = (lineRef, contenido) =>
         authorizedFetch(`/programas/${programaId}/notas`, {
             method: 'POST',
             body: { line_ref: lineRef, contenido },
-        }).then(fetchNotas);
+        }).then(() => refetch());
 
     const responder = (parentId, contenido) =>
         authorizedFetch(`/programas/${programaId}/notas`, {
             method: 'POST',
             body: { parent_id: parentId, contenido },
-        }).then(fetchNotas);
+        }).then(() => refetch());
 
     const toggleResuelta = (noteId, resuelta) =>
         authorizedFetch(`/programas/${programaId}/notas/${noteId}/resolucion`, {
             method: 'PATCH',
             body: { resuelta },
-        }).then(fetchNotas);
+        }).then(() => refetch());
 
-    return { notas, isLoading, error, refetch: fetchNotas, crearHilo, responder, toggleResuelta };
+    return {
+        notas,
+        isLoading,
+        error: error?.message ?? null,
+        refetch,
+        crearHilo,
+        responder,
+        toggleResuelta,
+    };
 };

@@ -1,25 +1,14 @@
 // src/pages/Dashboard/Panels/Noticias/usePapeleraNoticias.js
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 
 export const usePapeleraNoticias = () => {
     const { authorizedFetch } = useAuthorizedFetch();
-    const [noticias, setNoticias] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
 
-    // Sin dependencias: authorizedFetch no memoiza su referencia entre renders,
-    // así que incluirlo en las deps rehace el fetch en bucle.
-    const fetchPapelera = useCallback(() => {
-        setIsLoading(true);
-        return authorizedFetch('/news/papelera')
-            .then(setNoticias)
-            .catch((err) => console.error('Error al cargar la papelera de noticias:', err))
-            .finally(() => setIsLoading(false));
-    }, []);
+    const { data: noticias = [], isLoading, refetch } = useQuery({
+        queryKey: ['papelera-noticias'],
+        queryFn: () => authorizedFetch('/news/papelera'),
+    });
 
-    useEffect(() => {
-        fetchPapelera();
-    }, [fetchPapelera]);
-
-    return { noticias, isLoading, refetch: fetchPapelera };
+    return { noticias, isLoading, refetch };
 };

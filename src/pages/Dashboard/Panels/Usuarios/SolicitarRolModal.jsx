@@ -8,14 +8,15 @@ import { X, ShieldPlus } from 'lucide-react';
 import Select from '../../../../components/ui/Select';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 import { useAuthStore } from '../../../../store/useAuthStore';
-import { ordenarRamas } from '../../../../utils/ordenRamas';
+import { useGruposCatalogo } from '../Programas/useGruposCatalogo';
+import { useRamasCatalogo } from './useRamasCatalogo';
 
 const SolicitarRolModal = ({ onClose, onSolicitado }) => {
     const { authorizedFetch } = useAuthorizedFetch();
     const usuarioActual = useAuthStore((state) => state.user);
+    const { catalogoGrupos: grupos } = useGruposCatalogo();
+    const { catalogoRamas: ramas } = useRamasCatalogo();
     const [roles, setRoles] = useState([]);
-    const [grupos, setGrupos] = useState([]);
-    const [ramas, setRamas] = useState([]);
     const [roleId, setRoleId] = useState('');
     const [grupoId, setGrupoId] = useState('');
     const [ramaId, setRamaId] = useState('');
@@ -23,15 +24,9 @@ const SolicitarRolModal = ({ onClose, onSolicitado }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        Promise.all([
-            authorizedFetch('/roles/solicitables'),
-            authorizedFetch('/grupos'),
-            authorizedFetch('/ramas'),
-        ]).then(([resRoles, resGrupos, resRamas]) => {
-            setRoles(resRoles);
-            setGrupos(resGrupos);
-            setRamas(ordenarRamas(resRamas));
-        }).catch((err) => setError(err.message));
+        authorizedFetch('/roles/solicitables')
+            .then(setRoles)
+            .catch((err) => setError(err.message));
     }, []);
 
     const rolSeleccionado = useMemo(

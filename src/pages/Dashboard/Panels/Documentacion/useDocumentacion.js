@@ -1,33 +1,16 @@
 // src/pages/Dashboard/Panels/Documentacion/useDocumentacion.js
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 
 const DOCUMENTACION_ENDPOINT = '/bibliografia'; // O '/documents' según la ruta que maneje tu backend
 
 export function useDocumentacion() {
     const { authorizedFetch } = useAuthorizedFetch();
-    const [documentos, setDocumentos] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
-    // Sin "authorizedFetch" en las deps: no memoiza su referencia entre renders
-    // (mismo patrón que useProgramas.js), incluirlo hace que el efecto se
-    // vuelva a disparar en cada render -> loop infinito de fetches a /bibliografia.
-    useEffect(() => {
-        setLoading(true);
-        authorizedFetch(DOCUMENTACION_ENDPOINT)
-            .then((data) => {
-                setDocumentos(data);
-                setError(null);
-            })
-            .catch((err) => {
-                console.error('Error al cargar la documentación:', err);
-                setError('No se pudo cargar la documentación.');
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, []);
+    const { data: documentos = [], isLoading: loading, error } = useQuery({
+        queryKey: ['documentacion'],
+        queryFn: () => authorizedFetch(DOCUMENTACION_ENDPOINT),
+    });
 
-    return { documentos, loading, error };
+    return { documentos, loading, error: error ? 'No se pudo cargar la documentación.' : null };
 }

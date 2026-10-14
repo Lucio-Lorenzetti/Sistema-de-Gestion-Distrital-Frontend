@@ -1,5 +1,5 @@
 // src/pages/Dashboard/Panels/Actualizaciones/useFeatureRequests.js
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 
 export const ESTADO_LABELS = {
@@ -15,29 +15,23 @@ export const PRIORIDAD_LABELS = {
     baja: 'Baja',
 };
 
+const QUERY_KEY = ['peticiones-mejora'];
+
 export const useFeatureRequests = () => {
     const { authorizedFetch } = useAuthorizedFetch();
-    const [peticiones, setPeticiones] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const queryClient = useQueryClient();
 
-    const fetchPeticiones = useCallback(() => {
-        setIsLoading(true);
-        return authorizedFetch('/peticiones-mejora')
-            .then(setPeticiones)
-            .catch((err) => console.error('Error al cargar peticiones de mejora:', err))
-            .finally(() => setIsLoading(false));
-    }, []);
-
-    useEffect(() => {
-        fetchPeticiones();
-    }, [fetchPeticiones]);
+    const { data: peticiones = [], isLoading, refetch } = useQuery({
+        queryKey: QUERY_KEY,
+        queryFn: () => authorizedFetch('/peticiones-mejora'),
+    });
 
     const crearPeticion = async (contenido, { estado, prioridad } = {}) => {
         const body = { contenido };
         if (estado) body.estado = estado;
         if (prioridad) body.prioridad = prioridad;
         const nueva = await authorizedFetch('/peticiones-mejora', { method: 'POST', body });
-        setPeticiones((prev) => [nueva, ...prev]);
+        queryClient.setQueryData(QUERY_KEY, (prev) => [nueva, ...(prev ?? [])]);
     };
 
     const cambiarEstado = async (id, estado) => {
@@ -45,7 +39,7 @@ export const useFeatureRequests = () => {
             method: 'PATCH',
             body: { estado },
         });
-        setPeticiones((prev) => prev.map((p) => (p.id === id ? actualizada : p)));
+        queryClient.setQueryData(QUERY_KEY, (prev) => (prev ?? []).map((p) => (p.id === id ? actualizada : p)));
     };
 
     const cambiarPrioridad = async (id, prioridad) => {
@@ -53,13 +47,13 @@ export const useFeatureRequests = () => {
             method: 'PATCH',
             body: { prioridad },
         });
-        setPeticiones((prev) => prev.map((p) => (p.id === id ? actualizada : p)));
+        queryClient.setQueryData(QUERY_KEY, (prev) => (prev ?? []).map((p) => (p.id === id ? actualizada : p)));
     };
 
     const eliminarPeticion = async (id) => {
         await authorizedFetch(`/peticiones-mejora/${id}`, { method: 'DELETE' });
-        setPeticiones((prev) => prev.filter((p) => p.id !== id));
+        queryClient.setQueryData(QUERY_KEY, (prev) => (prev ?? []).filter((p) => p.id !== id));
     };
 
-    return { peticiones, isLoading, refetch: fetchPeticiones, crearPeticion, cambiarEstado, cambiarPrioridad, eliminarPeticion };
+    return { peticiones, isLoading, refetch, crearPeticion, cambiarEstado, cambiarPrioridad, eliminarPeticion };
 };

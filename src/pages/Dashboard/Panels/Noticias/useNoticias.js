@@ -1,23 +1,23 @@
 // src/pages/Dashboard/panels/noticias/useNoticias.js
-import { useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 
+// Lo usan GeneralMetrics y NoticiasResumenCard en el mismo Dashboard del
+// Director — antes cada uno pedía /news por su cuenta (2 pedidos idénticos
+// en simultáneo). Con useQuery comparten el resultado.
 export function useNoticias() {
-    const [noticias, setNoticias] = useState([]);
-    const [loading, setLoading] = useState(true);
     const { authorizedFetch } = useAuthorizedFetch();
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        authorizedFetch('/news')
-            .then(setNoticias)
-            .catch((err) => console.error('Error al cargar noticias:', err))
-            .finally(() => setLoading(false));
-    }, []);
+    const { data: noticias = [], isLoading: loading } = useQuery({
+        queryKey: ['noticias'],
+        queryFn: () => authorizedFetch('/news'),
+    });
 
     const eliminar = async (id) => {
         try {
             await authorizedFetch(`/news/${id}`, { method: 'DELETE' });
-            setNoticias((prev) => prev.filter((n) => n.id !== id));
+            queryClient.setQueryData(['noticias'], (prev) => (prev ?? []).filter((n) => n.id !== id));
         } catch (err) {
             console.error('Error al eliminar noticia:', err);
         }
@@ -29,7 +29,9 @@ export function useNoticias() {
                 method: 'PUT',
                 body: JSON.stringify({ estado: 'Publicada', publicado_at: new Date().toISOString() }),
             });
-            setNoticias((prev) => prev.map((n) => (n.id === id ? { ...n, estado: 'Publicada' } : n)));
+            queryClient.setQueryData(['noticias'], (prev) =>
+                (prev ?? []).map((n) => (n.id === id ? { ...n, estado: 'Publicada' } : n))
+            );
         } catch (err) {
             console.error('Error al publicar rápidamente:', err);
         }
