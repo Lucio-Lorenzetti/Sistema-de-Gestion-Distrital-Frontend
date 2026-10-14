@@ -6,7 +6,9 @@ const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
     headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        // 'Content-Type' no va acá: fijarlo en todos los pedidos (incluidos los GET)
+        // vuelve "no simple" a cada request y fuerza un preflight CORS extra.
+        // Axios lo agrega solo cuando hay body JSON (POST/PUT/PATCH).
     }
 });
 

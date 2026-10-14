@@ -85,12 +85,20 @@ const ScrollToTop = () => {
 function App() {
   const checkSession = useAuthStore((state) => state.checkSession);
   const isBootstrapping = useAuthStore((state) => state.isBootstrapping);
+  const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     checkSession();
   }, [checkSession]);
 
-  if (isBootstrapping) {
+  // zustand/persist ya rehidrató `user` desde localStorage de forma sincrónica
+  // antes de este primer render. Si ya hay un usuario guardado, mostramos la
+  // app de una con esos datos (antes esperaba SIEMPRE la respuesta de /me,
+  // hasta en páginas públicas) y dejamos que checkSession() valide en segundo
+  // plano: si el token ya no sirve, clearSession() lo saca igual.
+  // Solo queda esta pantalla para el caso raro de tener token pero ningún
+  // usuario persistido (ej. localStorage corrupto).
+  if (isBootstrapping && !user) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-scout-bg-panel">
         <p className="text-scout-primary font-bold uppercase tracking-widest text-xs animate-pulse">
