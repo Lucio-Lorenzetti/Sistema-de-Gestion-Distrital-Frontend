@@ -7,8 +7,14 @@ import logoDistritoHorizontal from '../../assets/logo_distrito_horizontal.svg';
 import logosCombinados from '../../assets/logos_combinados.webp';
 import { APP_VERSION } from '../../version';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useWebMcpPublicTools } from '../../webmcp/useWebMcpPublicTools';
 
 const PublicLayout = () => {
+  // Experimental (WebMCP) — ver src/webmcp/publicTools.js. No hace nada en
+  // navegadores sin soporte, que hoy son todos salvo Chrome con el origin
+  // trial o el flag activado.
+  useWebMcpPublicTools();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // Con sesión iniciada (p. ej. llegó acá desde el sidebar porque no gestiona
   // esta sección) el botón vuelve al panel en vez de mandarlo al login.

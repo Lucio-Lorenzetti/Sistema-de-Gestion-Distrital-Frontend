@@ -2,6 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Origin trial de WebMCP (experimental, ver src/webmcp/publicTools.js).
+         Atado al origen exacto https://distrito3zona13.vercel.app — vence el
+         29/03/2027. En cualquier otro dominio (localhost, previews de Vercel)
+         simplemente no aplica y el feature-detect en publicTools.js no hace nada. -->
+    <meta http-equiv="origin-trial" content="AnUTtSPS4XdU3FZm8k/SkWmNtHnbWVYbXEW9+1QfewL2QAeuNCHuurNamNVTX+RobJxPAO35MmlJfqus2ZMlnQoAAABaeyJvcmlnaW4iOiJodHRwczovL2Rpc3RyaXRvM3pvbmExMy52ZXJjZWwuYXBwOjQ0MyIsImZlYXR1cmUiOiJXZWJNQ1AiLCJleHBpcnkiOjE4MDYzNjQ4MDB9" />
     <script>
       // Aplica el override de tema ANTES del primer paint para evitar el
       // flash de claro→oscuro. Debe leer la misma clave/forma que persiste
