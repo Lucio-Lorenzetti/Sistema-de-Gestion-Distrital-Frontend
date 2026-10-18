@@ -57,8 +57,9 @@ export async function registerPublicWebMcpTools() {
         annotations: { readOnlyHint: true },
         execute: async () => {
             const cursos = await api.get('/courses').then((r) => r.data);
-            const hoy = new Date().toISOString().split('T')[0];
-            const abiertos = cursos.filter((c) => !c.fecha_cierre || hoy < c.fecha_cierre);
+            // El estado lo calcula el backend (Course::getEstadoAttribute), así la herramienta
+            // coincide siempre con lo que muestra el sitio.
+            const abiertos = cursos.filter((c) => c.estado === 'Abierto');
             return JSON.stringify(
                 abiertos.map((c) => ({ titulo: c.titulo, categoria: c.categoria, fecha_cierre: c.fecha_cierre }))
             );
