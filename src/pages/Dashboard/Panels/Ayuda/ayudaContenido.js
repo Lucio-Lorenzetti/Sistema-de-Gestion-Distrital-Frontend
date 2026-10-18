@@ -153,7 +153,7 @@ export const SECCIONES_AYUDA = [
                     'Solo vos ves esta sección. Es el roadmap de próximas versiones: agregás tus propias ideas (entran directo a "Próxima versión", sin necesitar aprobación) y triageás las que te llegan de Director en "Pendientes de revisar" (aceptar o descartar).',
                     'Cada idea tiene una prioridad (Alta/Media/Baja) que podés poner al cargarla, y cambiar o sacar en cualquier momento desde la propia tarjeta.',
                     'Las tarjetas se ordenan por prioridad (Alta primero, después Media, después Baja) y, dentro de cada prioridad, por antigüedad (la más vieja primero).',
-                    'El Asistente IA te ayuda a pensar ideas nuevas, con el roadmap actual como contexto para no repetir lo que ya está cargado — necesita que esté configurada una API key de Anthropic para funcionar.',
+                    'El Asistente IA te ayuda a pensar ideas nuevas, con el roadmap actual como contexto para no repetir lo que ya está cargado — necesita que esté configurada una API key de Gemini (GEMINI_API_KEY) para funcionar.',
                 ],
             },
         ],
