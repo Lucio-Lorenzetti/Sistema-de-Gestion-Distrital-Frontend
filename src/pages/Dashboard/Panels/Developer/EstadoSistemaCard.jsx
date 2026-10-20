@@ -36,7 +36,7 @@ const armarChequeos = (estado) => {
             nivel: base_de_datos.ok ? 'ok' : 'bad',
             detalle: base_de_datos.ok ? `Responde (${base_de_datos.ms} ms)` : 'No responde',
         },
-        { label: 'Cron anti-pausa (Supabase)', ...chequeoCron },
+        { label: 'Cron anti-pausa', ...chequeoCron },
         {
             label: 'Correo',
             nivel: servicios.correo.configurado ? 'ok' : 'warn',
@@ -67,7 +67,7 @@ const armarChequeos = (estado) => {
 };
 
 const EstadoSistemaCard = ({ estado, isLoading, isError, isFetching, onRefresh, actualizadoEn }) => (
-    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col gap-5 min-h-[310px]">
+    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col gap-4 min-h-[340px] h-full">
         <div className="flex items-center justify-between gap-3">
             <h2 className="text-xl font-black uppercase tracking-tight text-left text-scout-primary">Estado del Sistema</h2>
             <button
@@ -90,18 +90,20 @@ const EstadoSistemaCard = ({ estado, isLoading, isError, isFetching, onRefresh, 
             </p>
         ) : (
             <>
-                <ul className="space-y-3">
+                {/* Una línea por chequeo: etiqueta a la izquierda, detalle a la derecha (si es
+                    largo, baja a la línea siguiente). Reparte las filas en el alto disponible. */}
+                <ul className="flex-1 flex flex-col justify-evenly gap-2">
                     {armarChequeos(estado).map(({ label, nivel, detalle }) => (
                         <li key={label} className="flex items-start gap-3 text-xs">
                             <span className={`mt-1 w-2.5 h-2.5 rounded-full shrink-0 ${COLOR_NIVEL[nivel]}`} />
-                            <div className="min-w-0">
-                                <p className="font-bold text-scout-ink uppercase tracking-tight">{label}</p>
-                                <p className="text-scout-muted leading-snug break-words">{detalle}</p>
+                            <div className="flex-1 min-w-0 flex items-baseline justify-between gap-3">
+                                <p className="font-bold text-scout-ink uppercase tracking-tight shrink-0">{label}</p>
+                                <p className="text-scout-muted text-right leading-snug break-words min-w-0">{detalle}</p>
                             </div>
                         </li>
                     ))}
                 </ul>
-                <p className="text-[10px] text-scout-muted font-medium mt-auto pt-3 border-t border-scout-border">
+                <p className="text-[10px] text-scout-muted font-medium pt-3 border-t border-scout-border">
                     PHP {estado.entorno.php} · Laravel {estado.entorno.laravel}
                     {estado.entorno.commit ? ` · commit ${estado.entorno.commit}` : ''}
                     {actualizadoEn ? ` · actualizado ${tiempoRelativo(new Date(actualizadoEn).toISOString())}` : ''}

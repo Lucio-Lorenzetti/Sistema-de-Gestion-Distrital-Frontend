@@ -10,12 +10,12 @@ const ESTILO_NIVEL_GRAVE = 'bg-scout-accent-light text-scout-accent';
 
 const ErroresRecientesCard = ({ errores = [], isLoading }) => {
     const { current, page, setPage, totalPages } = usePaginatedFilter(errores, {
-        itemsPerPage: 4,
+        itemsPerPage: 3,
         defaultFilter: 'Todos',
     });
 
     return (
-        <div className="lg:col-span-2 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 flex flex-col justify-between shadow-sm min-h-[310px]">
+        <div className="lg:col-span-2 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 flex flex-col justify-between shadow-sm min-h-[340px] h-full">
             <div className="space-y-6 w-full">
                 <div>
                     <h2 className="text-xl font-black uppercase tracking-tight text-left text-scout-primary">Errores Recientes</h2>
@@ -40,7 +40,7 @@ const ErroresRecientesCard = ({ errores = [], isLoading }) => {
                                         </span>
                                         {e.origen && <span className="text-[10px] text-scout-muted font-bold truncate">{e.origen}</span>}
                                     </div>
-                                    <p className="text-scout-ink leading-snug break-words">{e.mensaje}</p>
+                                    <p className="text-scout-ink leading-snug break-words line-clamp-2" title={e.mensaje}>{e.mensaje}</p>
                                 </div>
                                 <span className="text-[9px] font-black uppercase text-scout-muted tracking-wider whitespace-nowrap pt-0.5">
                                     {tiempoRelativo(e.fecha)}

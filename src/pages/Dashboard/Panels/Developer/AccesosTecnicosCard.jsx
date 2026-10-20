@@ -1,27 +1,27 @@
 // src/pages/Dashboard/Panels/Developer/AccesosTecnicosCard.jsx
 import { ChevronRight } from 'lucide-react';
 
+// "Backend" y "Frontend" no nombran al proveedor a propósito: si algún día cambia
+// el hosting, solo hay que cambiar la URL de estas dos variables de entorno
+// (VITE_PANEL_BACKEND_URL y VITE_PANEL_FRONTEND_URL, en el entorno del frontend).
+// Mientras no estén definidas, apuntan a los paneles de los proveedores actuales.
 const ACCESOS = [
-    { label: 'Sitio público', href: 'https://distrito3zona13.vercel.app' },
-    { label: 'Render (API)', href: 'https://dashboard.render.com' },
-    { label: 'Vercel (frontend)', href: 'https://vercel.com/dashboard' },
+    { label: 'Backend', href: import.meta.env.VITE_PANEL_BACKEND_URL || 'https://dashboard.render.com' },
+    { label: 'Frontend', href: import.meta.env.VITE_PANEL_FRONTEND_URL || 'https://vercel.com/dashboard' },
     { label: 'Supabase (base y archivos)', href: 'https://supabase.com/dashboard' },
-    { label: 'GitHub · Frontend', href: 'https://github.com/Lucio-Lorenzetti/Sistema-de-Gestion-Distrital-Frontend' },
-    { label: 'GitHub · Backend', href: 'https://github.com/Lucio-Lorenzetti/Sistema-de-Gestion-Distrital-Backend' },
     { label: 'cron-job.org', href: 'https://console.cron-job.org' },
     { label: 'Brevo (correo)', href: 'https://app.brevo.com' },
     { label: 'Google AI Studio (Gemini)', href: 'https://aistudio.google.com' },
-    { label: 'Postman', href: 'https://web.postman.co' },
 ];
 
 const AccesosTecnicosCard = () => (
-    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col gap-5">
+    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col gap-5 h-full">
         <h2 className="text-xl font-black uppercase tracking-tight text-left text-scout-primary">Accesos Técnicos</h2>
         <div className="h-px bg-scout-border" />
         <div className="space-y-2 w-full">
             {ACCESOS.map(({ label, href }) => (
                 <a
-                    key={href}
+                    key={label}
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"

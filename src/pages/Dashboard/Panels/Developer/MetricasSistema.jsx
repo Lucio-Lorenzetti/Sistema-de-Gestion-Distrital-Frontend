@@ -6,7 +6,7 @@ import { ORDEN_RAMAS } from '../../../../utils/ordenRamas';
 const ETIQUETA_ESTADO = { borrador: 'Borrador', enviado: 'En revisión', aprobado: 'Aprobado', rechazado: 'Rechazado' };
 
 const Tarjeta = ({ titulo, children }) => (
-    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col gap-5">
+    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col gap-5 h-full">
         <h2 className="text-xl font-black uppercase tracking-tight text-left text-scout-primary">{titulo}</h2>
         <div className="h-px bg-scout-border" />
         {children}
@@ -84,8 +84,10 @@ const MetricasSistema = ({ metricas, isLoading, isError }) => {
                 />
             </div>
 
+            {/* Fila propia con items-stretch: las tres tarjetas terminan a la misma altura. */}
+            <div className="lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
             <Tarjeta titulo="Personas por Rol">
-                <div className="space-y-3">
+                <div className="flex-1 flex flex-col justify-evenly gap-3">
                     {usuarios_por_rol.map((r) => (
                         <FilaBarra key={r.rol} label={r.rol} valor={r.total} max={maxRol} />
                     ))}
@@ -94,7 +96,7 @@ const MetricasSistema = ({ metricas, isLoading, isError }) => {
             </Tarjeta>
 
             <Tarjeta titulo="Programas por Rama">
-                <div className="space-y-3">
+                <div className="flex-1 flex flex-col justify-evenly gap-3">
                     {ramas.map((r) => (
                         <FilaBarra key={r.rama} label={r.rama} valor={r.total} max={maxRama} />
                     ))}
@@ -109,7 +111,7 @@ const MetricasSistema = ({ metricas, isLoading, isError }) => {
                 {grupos.incompletos.length === 0 ? (
                     <p className="text-xs font-bold text-scout-muted uppercase tracking-tight">Todos los grupos están completos.</p>
                 ) : (
-                    <ul className="space-y-3 max-h-56 overflow-y-auto pr-1">
+                    <ul className="flex-1 min-h-0 space-y-3 max-h-56 overflow-y-auto pr-1">
                         {grupos.incompletos.map((g) => (
                             <li key={g.id} className="text-xs">
                                 <p className="font-bold text-scout-ink uppercase tracking-tight">{g.nombre}</p>
@@ -119,6 +121,7 @@ const MetricasSistema = ({ metricas, isLoading, isError }) => {
                     </ul>
                 )}
             </Tarjeta>
+            </div>
         </>
     );
 };
