@@ -83,7 +83,7 @@ export const SECCIONES_AYUDA = [
                 items: [
                     '"Enviar a revisión" saca el programa de Borrador — a partir de ahí queda congelado para edición.',
                     'Ya en revisión, se usa "Solicitar aprobación" para avisarle al auxiliar que está listo.',
-                    'El auxiliar (Aux Prog Rama/General) o el Director lo "Aprueba" o lo "Rechaza" — un rechazo pide motivo obligatorio.',
+                    'El auxiliar (Aux Prog Rama/General) lo "Aprueba" o lo "Rechaza" — un rechazo pide motivo obligatorio. El Director y el Jefe de Grupo ven los programas, pero no los aprueban ni los comentan.',
                     'Un programa rechazado puede volver a "Borrador" para corregirlo y reenviarlo.',
                 ],
             },
