@@ -115,9 +115,6 @@ const Home = () => {
                                 transition-all duration-300 hover:shadow-xl hover:border-scout-primary flex flex-row items-center gap-4 shadow-sm h-44 md:h-52"
                             >
                                 <div className="flex-1 min-w-0 flex flex-col gap-1">
-                                    <span className="text-[8px] md:text-[9px] font-black text-scout-muted uppercase tracking-widest">
-                                        {n.categoria || 'Novedad'}
-                                    </span>
                                     <h3 className="text-sm md:text-md font-bold uppercase tracking-tight text-scout-primary leading-tight line-clamp-2">
                                         {n.titulo}
                                     </h3>
@@ -161,7 +158,7 @@ const Home = () => {
                             </h2>
                         </div>
                         <p className="text-sm md:text-md text-scout-muted leading-relaxed uppercase tracking-wider font-medium max-w-sm">
-                            Mejorá tus herramientas educativas con los cursos presenciales y virtuales dictados en la Zona 22.
+                            Mejorá tus herramientas educativas con los cursos presenciales y virtuales dictados en la Zona 13.
                         </p>
                         <Link to="/cursos" className="inline-flex items-center gap-4 bg-scout-primary text-white px-8 md:px-12 py-4 md:py-6 rounded-full text-[10px] md:text-[12px] font-black uppercase tracking-widest hover:bg-scout-primary-hover transition-all shadow-xl">
                             Inscribirse a un curso <BookOpen size={18} />

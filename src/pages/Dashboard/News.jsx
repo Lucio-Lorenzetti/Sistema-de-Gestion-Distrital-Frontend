@@ -264,7 +264,7 @@ const News = () => {
                         </div>
                         <div className="md:w-1/2 p-8 md:p-16 overflow-y-auto">
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-scout-muted block mb-4 text-left">
-                                {noticiaExpandida.categoria || 'General'} • {noticiaExpandida.fecha}
+                                {noticiaExpandida.fecha}
                             </span>
                             <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none mb-6 text-scout-ink text-left">
                                 {noticiaExpandida.titulo}
