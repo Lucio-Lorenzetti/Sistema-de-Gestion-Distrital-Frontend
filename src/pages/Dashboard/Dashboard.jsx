@@ -4,6 +4,7 @@ import { RESUMEN_ACCESS, canAccess, ROLES } from './dashboard.permissions';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 
 import GeneralPanel from './Panels/General/GeneralPanel';
+import DeveloperPanel from './Panels/Developer/DeveloperPanel';
 import NoticiasResumenCard from './Resumen/NoticiasResumenCard';
 import CursosResumenCard from './Resumen/CursosResumenCard';
 import DocumentacionResumenCard from './Resumen/DocumentacionResumenCard';
@@ -29,12 +30,25 @@ const Dashboard = () => {
     // Jefe de Grupo también tiene que poder editar su grupo — abajo de todo.
     const esJefeDeGrupo = (user?.roles ?? []).some((r) => r.nombre.toLowerCase() === 'jefe de grupo');
 
-    const visibleResumenes = Object.keys(RESUMEN_ACCESS).filter(
-        (key) => canAccess(RESUMEN_ACCESS, key, role) && RESUMEN_COMPONENTS[key]
-    );
+    // useUserRole() no conoce a Developer y, sin otro rol, lo resuelve como
+    // 'educador' (su default): le mostraba "Mis Programas" y "Comentarios de tu
+    // rama" sin tener rama ni programas. Si es Developer y no es Educador de
+    // verdad, no se le muestran las tarjetas de Educador.
+    const roleNames = (user?.roles ?? []).map((r) => r.nombre.toLowerCase());
+    const esDeveloper = roleNames.includes('developer');
+    const esEducadorDeVerdad = roleNames.includes('educador');
+    const ocultarTarjetasDeEducador = esDeveloper && role === ROLES.EDUCADOR && !esEducadorDeVerdad;
+
+    const visibleResumenes = ocultarTarjetasDeEducador
+        ? []
+        : Object.keys(RESUMEN_ACCESS).filter(
+            (key) => canAccess(RESUMEN_ACCESS, key, role) && RESUMEN_COMPONENTS[key]
+        );
 
     return (
         <DashboardLayout user={user} role={role} roleLabel={roleLabel}>
+            {esDeveloper && <DeveloperPanel />}
+
             {role === ROLES.DIRECTOR && <GeneralPanel />}
 
             {/* Resumen de 3 columnas: noticias, cursos, documentación, Educador, Aux Programa */}
