@@ -4,7 +4,12 @@ import { Link } from 'react-router-dom';
 import imgDefault from '../../assets/noticia-default.jpg';
 import bgHeroDesktop from '../../assets/f-bienvenida.webp';
 import bgHeroMobile from '../../assets/f-bienvenida-mobile.webp';
+import bannerCadis from '../../assets/banner-cadis.webp';
+import bannerCadisMobile from '../../assets/banner-cadis-mobile.webp';
 import api from '../../api/axios';
+
+// Enlace del banner de la home (carpeta de Drive con las fotos del CADIS 2026).
+const BANNER_URL = 'https://drive.google.com/drive/folders/1n6fNREz3KgpPC9UcbCGP0cPcDVOXS6fA?usp=sharing';
 
 // Import de JS (no url() en CSS): así el asset se copia y hashea bien al build.
 // Antes esto vivía como url() en index.css (".hero-bg") pero este bundler no
@@ -140,11 +145,29 @@ const Home = () => {
                 </div>
             </section >
 
-            {/* 2.5. BANNER CAMBIABLE (placeholder para contenido dinámico futuro) */}
-            <section className="bg-scout-border py-10 md:py-14 text-center">
-                <p className="text-lg md:text-2xl font-black uppercase tracking-tight text-scout-ink">
-                    Banner Cambiable
-                </p>
+            {/* 2.5. BANNER CAMBIABLE — hoy: galería de fotos del CADIS 2026.
+                Para cambiarlo: reemplazar la imagen en src/assets y la URL de arriba. */}
+            <section className="bg-white">
+                <a
+                    href={BANNER_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Ver todas las fotos del CADIS 2026 en la galería"
+                    className="block transition-opacity duration-300 hover:opacity-90"
+                >
+                    {/* En celular se usa una versión apilada (texto arriba, logo abajo): la
+                        horizontal queda en una tira de ~40px y el texto no se lee. Mismo
+                        corte (768px) que useEsMobile. */}
+                    <picture>
+                        <source media="(max-width: 767px)" srcSet={bannerCadisMobile} />
+                        <img
+                            src={bannerCadis}
+                            alt="CADIS 2026: podés ver todas las fotos del CADIS en nuestra galería"
+                            className="block w-full h-auto"
+                            loading="lazy"
+                        />
+                    </picture>
+                </a>
             </section>
 
             {/* 3. SECCIÓN CURSOS */}
