@@ -1,4 +1,5 @@
 // src/pages/Dashboard/Panels/Developer/ErroresRecientesCard.jsx
+import { Trash2 } from 'lucide-react';
 import Pagination from '../../../../components/ui/Pagination';
 import { usePaginatedFilter } from '../../../../hooks/usePaginatedFilter';
 import { tiempoRelativo } from '../../../../utils/tiempo';
@@ -8,21 +9,45 @@ const ESTILO_NIVEL = {
 };
 const ESTILO_NIVEL_GRAVE = 'bg-scout-accent-light text-scout-accent';
 
-const ErroresRecientesCard = ({ errores = [], isLoading }) => {
+const ErroresRecientesCard = ({ errores = [], isLoading, onVaciar, vaciando = false, errorAlVaciar = null }) => {
     const { current, page, setPage, totalPages } = usePaginatedFilter(errores, {
         itemsPerPage: 3,
         defaultFilter: 'Todos',
     });
 
+    const handleVaciar = async () => {
+        if (!window.confirm('¿Vaciar los errores recientes? Se borra este registro del panel (no los logs del hosting).')) return;
+        try {
+            await onVaciar();
+            setPage(1); // si no, un error nuevo podría quedar en una página que ya no existe
+        } catch {
+            // el mensaje lo muestra errorAlVaciar
+        }
+    };
+
     return (
         <div className="lg:col-span-2 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 flex flex-col justify-between shadow-sm min-h-[340px] h-full">
             <div className="space-y-6 w-full">
-                <div>
-                    <h2 className="text-xl font-black uppercase tracking-tight text-left text-scout-primary">Errores Recientes</h2>
-                    <p className="text-[10px] text-scout-muted font-medium mt-1">
-                        Advertencias y errores del backend (mails que no salieron, fallos de la IA, excepciones). Se guardan los últimos 25.
-                    </p>
+                <div className="flex items-start justify-between gap-3">
+                    <div>
+                        <h2 className="text-xl font-black uppercase tracking-tight text-left text-scout-primary">Errores Recientes</h2>
+                        <p className="text-[10px] text-scout-muted font-medium mt-1">
+                            Advertencias y errores del backend (mails que no salieron, fallos de la IA, excepciones). Se guardan los últimos 25.
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={handleVaciar}
+                        disabled={vaciando || errores.length === 0}
+                        title="Vaciar errores"
+                        className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl border border-scout-border text-[10px] font-black uppercase tracking-widest text-scout-muted hover:text-scout-accent hover:border-scout-accent/40 hover:bg-scout-accent-light transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-default disabled:hover:text-scout-muted disabled:hover:border-scout-border disabled:hover:bg-transparent"
+                    >
+                        <Trash2 size={13} /> {vaciando ? 'Vaciando...' : 'Vaciar'}
+                    </button>
                 </div>
+                {errorAlVaciar && (
+                    <p className="text-xs font-bold text-scout-accent">No se pudo vaciar: {errorAlVaciar}</p>
+                )}
                 <div className="h-px bg-scout-border" />
 
                 {isLoading ? (

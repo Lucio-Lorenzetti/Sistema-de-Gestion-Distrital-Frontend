@@ -4,7 +4,7 @@ import ErroresRecientesCard from './ErroresRecientesCard';
 import MetricasSistema from './MetricasSistema';
 import AccesosTecnicosCard from './AccesosTecnicosCard';
 import ActividadSistemaCard from '../General/ActividadSistemaCard';
-import { useSistemaEstado, useSistemaMetricas } from './useSistemaDashboard';
+import { useSistemaEstado, useSistemaMetricas, useVaciarErrores } from './useSistemaDashboard';
 
 // Cada fila de tarjetas es su propia grilla con `items-stretch`: las tarjetas de una
 // misma fila terminan siempre a la misma altura, sin importar cuánto contenido tenga cada una.
@@ -15,6 +15,7 @@ const FILA = 'lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch'
 const DeveloperPanel = () => {
     const { estado, isLoading, isError, isFetching, refetch, actualizadoEn } = useSistemaEstado();
     const { metricas, isLoading: cargandoMetricas, isError: errorMetricas } = useSistemaMetricas();
+    const vaciarErrores = useVaciarErrores();
 
     return (
         <>
@@ -27,7 +28,13 @@ const DeveloperPanel = () => {
                     onRefresh={refetch}
                     actualizadoEn={actualizadoEn}
                 />
-                <ErroresRecientesCard errores={estado?.errores_recientes} isLoading={isLoading} />
+                <ErroresRecientesCard
+                    errores={estado?.errores_recientes}
+                    isLoading={isLoading}
+                    onVaciar={vaciarErrores.mutateAsync}
+                    vaciando={vaciarErrores.isPending}
+                    errorAlVaciar={vaciarErrores.isError ? vaciarErrores.error.message : null}
+                />
             </div>
 
             <MetricasSistema metricas={metricas} isLoading={cargandoMetricas} isError={errorMetricas} />

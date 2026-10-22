@@ -1,5 +1,5 @@
 // src/pages/Dashboard/Panels/Developer/useSistemaDashboard.js
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthorizedFetch } from '../../../../hooks/useAuthorizedFetch';
 
 // Salud del sistema (base, cron, servicios, últimos errores). Se refresca solo
@@ -27,4 +27,16 @@ export const useSistemaMetricas = () => {
     });
 
     return { metricas, isLoading, isError };
+};
+
+// Vacía el registro de errores recientes. Al terminar refresca el estado, así la
+// tarjeta se actualiza sola.
+export const useVaciarErrores = () => {
+    const { authorizedFetch } = useAuthorizedFetch();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: () => authorizedFetch('/sistema/errores', { method: 'DELETE' }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sistema', 'estado'] }),
+    });
 };
