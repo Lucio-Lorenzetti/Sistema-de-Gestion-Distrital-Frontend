@@ -15,12 +15,6 @@ const ESTADO_STYLES = {
     Aprobado: 'bg-scout-success text-scout-on-brand',
     Rechazado: 'bg-red-900 text-white',
 
-    // Novedades de revisión del auxiliar de programa (qué le pasó a un programa en revisión)
-    Nuevo: 'bg-scout-primary/90 text-scout-on-brand',
-    Corregido: 'bg-yellow-100 text-yellow-700 border border-yellow-200',
-    Respuesta: 'bg-scout-bg-panel text-scout-primary border border-scout-border',
-    Resuelto: 'bg-scout-success text-scout-on-brand',
-
     // Noticias (News.estado: Borrador | Programada | Publicada — Borrador se
     // comparte con Programas arriba, mismo estilo neutro)
     Programada: 'bg-scout-primary/90 text-scout-on-brand',

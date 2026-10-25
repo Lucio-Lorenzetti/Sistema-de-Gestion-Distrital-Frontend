@@ -5,17 +5,20 @@ import { useProgramas } from '../Panels/Programas/useProgramas';
 import ProgramaListaResumen from '../Panels/Programas/ProgramaListaResumen';
 import NovedadesRevisionResumenCard from './NovedadesRevisionResumenCard';
 
-// Igual que las tarjetas de Noticias / Cursos / Documentación: ninguna pasa de este
-// tope, así el Dashboard del auxiliar entra en la pantalla sin scroll.
-const MAX_FILAS = 6;
+// Cuántas filas entran en cada tarjeta sin que el Dashboard pase del alto de la
+// pantalla: la columna izquierda apila Novedades (3) + Próximos a Aprobar (2).
+const MAX_PROXIMOS = 2;
+const MAX_APROBADOS = 3;
 
 /**
  * Usado tanto por Aux Prog General como por cada Aux de Rama — el backend ya
  * scopea /programas según el rol (General ve todo, cada Aux de Rama solo la suya),
  * así que este componente no necesita saber cuál de los dos es ni chequear rol.
  *
- * Devuelve tres tarjetas que se acomodan en la grilla de 3 columnas del Dashboard:
- * "Novedades" (lo que pasó en revisión), "Próximos a Aprobar" y "Aprobados".
+ * Layout en 2 columnas: izquierda "Novedades en Revisión" + "Próximos a Aprobar"
+ * apilados (lo que requiere una acción), derecha "Aprobados Recientemente"
+ * (informativo). Por eso vive acá y no como resumen aparte: para que la
+ * columna derecha pueda estirarse (h-full) al alto combinado de la izquierda.
  */
 const ProgramasAprobacionResumen = () => {
     const { programas, isLoading } = useProgramas();
@@ -26,41 +29,47 @@ const ProgramasAprobacionResumen = () => {
     const proximosAAprobar = [...programas]
         .filter((p) => p.estado === 'enviado' && p.aprobacion_solicitada_at)
         .sort((a, b) => new Date(a.aprobacion_solicitada_at) - new Date(b.aprobacion_solicitada_at))
-        .slice(0, MAX_FILAS);
+        .slice(0, MAX_PROXIMOS);
 
+    // Informativo, no requiere acción — se muestra con menos peso visual.
     const aprobadosRecientes = [...programas]
         .filter((p) => p.estado === 'aprobado')
         .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-        .slice(0, MAX_FILAS);
+        .slice(0, MAX_APROBADOS);
 
     if (isLoading) {
         return (
-            <div className="md:col-span-3 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm">
+            <div className="lg:col-span-3 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm">
                 <p className="text-xs font-bold text-scout-muted uppercase tracking-widest animate-pulse">Cargando programas...</p>
             </div>
         );
     }
 
     return (
-        <>
-            <NovedadesRevisionResumenCard />
-            <ProgramaListaResumen
-                titulo="Próximos a Aprobar"
-                icon={<Hourglass size={16} />}
-                programas={proximosAAprobar}
-                emptyText="Nadie solicitó una aprobación"
-                fechaCampo="aprobacion_solicitada_at"
-                fechaLabel="Solicitado"
-            />
-            <ProgramaListaResumen
-                titulo="Aprobados"
-                icon={<CheckCircle2 size={16} />}
-                programas={aprobadosRecientes}
-                emptyText="Todavía no hay programas aprobados"
-                fechaCampo="updated_at"
-                fechaLabel="Aprobado"
-            />
-        </>
+        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 flex flex-col gap-6">
+                <NovedadesRevisionResumenCard />
+                <ProgramaListaResumen
+                    titulo="Próximos a Aprobar"
+                    icon={<Hourglass size={16} />}
+                    programas={proximosAAprobar}
+                    emptyText="Nadie solicitó una aprobación todavía"
+                    fechaCampo="aprobacion_solicitada_at"
+                    fechaLabel="Solicitado"
+                />
+            </div>
+            <div className="md:col-span-1">
+                <ProgramaListaResumen
+                    titulo="Programas Aprobados Recientemente"
+                    icon={<CheckCircle2 size={16} />}
+                    programas={aprobadosRecientes}
+                    emptyText="Todavía no hay programas publicados"
+                    fechaCampo="updated_at"
+                    fechaLabel="Aprobado"
+                    compact
+                />
+            </div>
+        </div>
     );
 };
 
