@@ -14,7 +14,7 @@ export const RESUMEN_ACCESS = {
     documentacion: [ROLES.AUX_COMUNICACION, ROLES.DIRECTOR],
     miPerfilPrograma: [ROLES.EDUCADOR],
     comentariosPendientes: [ROLES.EDUCADOR],
-    // "Te Respondieron" para el auxiliar vive anidado adentro de este resumen
+    // "Novedades en Revisión" para el auxiliar vive anidado adentro de este resumen
     // (ProgramasAprobacionResumen), no como entrada aparte — ver ese archivo.
     programasAprobacion: [ROLES.AUX_PROGRAMA],
 };
