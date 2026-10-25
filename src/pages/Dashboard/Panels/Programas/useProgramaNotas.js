@@ -11,10 +11,10 @@ export const useProgramaNotas = (programaId) => {
         enabled: !!programaId,
     });
 
-    const crearHilo = (lineRef, contenido) =>
+    const crearHilo = (lineRef, contenido, lineTexto) =>
         authorizedFetch(`/programas/${programaId}/notas`, {
             method: 'POST',
-            body: { line_ref: lineRef, contenido },
+            body: { line_ref: lineRef, line_texto: lineTexto, contenido },
         }).then(() => refetch());
 
     const responder = (parentId, contenido) =>

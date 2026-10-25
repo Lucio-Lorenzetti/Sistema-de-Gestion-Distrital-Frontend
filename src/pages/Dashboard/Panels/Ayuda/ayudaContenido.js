@@ -88,6 +88,15 @@ export const SECCIONES_AYUDA = [
                 ],
             },
             {
+                subtitulo: 'Corregir un programa con comentarios',
+                items: [
+                    'Si el auxiliar dejó comentarios, entrá a "Revisar y comentar" y usá "Corregir programa": vuelve a Borrador y te lleva al editor. Los comentarios no se pierden.',
+                    'Mientras editás, el botón "Comentarios" del editor abre un panel con los hilos pendientes. Podés responder y marcarlos como resueltos sin salir.',
+                    'Si cambiás una línea que tenía un comentario, el hilo avisa "Esta línea cambió desde el comentario" y muestra el texto original, para que se entienda a qué se refería.',
+                    'Al terminar, volvé a enviarlo a revisión. Los comentarios nuevos solo se pueden hacer con el programa en revisión.',
+                ],
+            },
+            {
                 subtitulo: 'Comentarios y papelera',
                 items: [
                     'Los comentarios se anclan a una línea puntual del programa, en hilos con respuesta y opción de resolver/reabrir.',

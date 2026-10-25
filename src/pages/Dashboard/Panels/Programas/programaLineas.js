@@ -60,6 +60,20 @@ export const splitHtmlEnLineas = (html) => {
     return lineas;
 };
 
+// Texto plano de una línea (sin etiquetas, espacios colapsados, tope de 300). Se guarda
+// junto a cada hilo al comentar (line_texto) y se vuelve a calcular al mostrarlo: si ya
+// no coinciden, la línea cambió o se corrió desde el comentario. El tope es el mismo
+// que aplica el backend al guardarlo.
+export const LINE_TEXTO_MAX = 300;
+
+export const textoPlanoLinea = (linea) => {
+    const html = linea?.contenido || '';
+    const texto = linea?.tipo === 'html'
+        ? new DOMParser().parseFromString(html, 'text/html').body.textContent
+        : html;
+    return (texto || '').replace(/\s+/g, ' ').trim().slice(0, LINE_TEXTO_MAX);
+};
+
 // Una línea es "encabezado en negrita" si es un único <strong>...</strong> sin
 // nada más alrededor (p. ej. la línea generada por linea([{text:'Título', bold:true}])).
 const esEncabezadoBold = (lineaHtml) => /^<strong>[\s\S]*<\/strong>$/i.test(lineaHtml.trim());

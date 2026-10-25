@@ -1,6 +1,6 @@
 // src/pages/Logueado/Programas/HiloComentario.jsx
 import React, { useState } from 'react';
-import { Check, Undo2, ChevronDown, ChevronUp, CornerDownRight } from 'lucide-react';
+import { Check, Undo2, ChevronDown, ChevronUp, CornerDownRight, TriangleAlert } from 'lucide-react';
 import Avatar from '../../../components/ui/Avatar';
 
 const formatFecha = (iso) => {
@@ -31,13 +31,18 @@ const Comentario = ({ nota, esRaiz }) => (
 // Un hilo = comentario raíz + respuestas lineales (sin anidar), como los
 // comentarios de línea de un Merge Request. puedeComentar ya viene calculado
 // por la página contra la misma matriz de roles que exige el backend.
-const HiloComentario = ({ hilo, puedeComentar, onResponder, onToggleResuelta }) => {
+// textoActual: texto de la línea a la que hoy apunta el hilo (null si no hay línea que
+// compararle). Si difiere del que se comentó, se avisa que la línea cambió.
+// mostrarTextoOriginal: para hilos sin línea a la vista, muestra a qué texto se referían.
+const HiloComentario = ({ hilo, puedeComentar, onResponder, onToggleResuelta, textoActual = null, mostrarTextoOriginal = false }) => {
     const [respuesta, setRespuesta] = useState('');
     const [enviando, setEnviando] = useState(false);
     const [error, setError] = useState(null);
     const [colapsado, setColapsado] = useState(false);
 
     const tieneRespuestas = hilo.replies?.length > 0;
+    // Los hilos anteriores a esta función no guardaron el texto: no hay con qué comparar.
+    const lineaCambio = !!hilo.line_texto && textoActual !== null && textoActual !== hilo.line_texto;
 
     const handleResponder = async () => {
         if (!respuesta.trim()) return;
@@ -102,6 +107,21 @@ const HiloComentario = ({ hilo, puedeComentar, onResponder, onToggleResuelta }) 
 
             {!colapsado && (
                 <div className="p-3 flex flex-col gap-2">
+                    {(lineaCambio || (mostrarTextoOriginal && hilo.line_texto)) && (
+                        <div className={`rounded-xl border px-3 py-2 text-[11px] leading-snug ${
+                            lineaCambio ? 'border-amber-500/30 bg-amber-500/10' : 'border-scout-border bg-scout-bg-panel/60'
+                        }`}>
+                            {lineaCambio && (
+                                <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-amber-600 mb-1">
+                                    <TriangleAlert size={12} /> Esta línea cambió desde el comentario
+                                </p>
+                            )}
+                            <p className="text-scout-muted">
+                                <span className="font-black uppercase tracking-widest text-[10px]">Se comentó sobre: </span>
+                                <span className="italic text-scout-ink">«{hilo.line_texto}»</span>
+                            </p>
+                        </div>
+                    )}
                     <Comentario nota={hilo} esRaiz={!tieneRespuestas} />
 
                     {tieneRespuestas && (

@@ -1,13 +1,13 @@
 // src/pages/Logueado/Programas/RevisarPrograma.jsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Layers, Users, Tag, MessageSquarePlus, Lock, MessagesSquare, Download, BadgeCheck, CheckCircle2, XCircle } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Layers, Users, Tag, MessageSquarePlus, Lock, MessagesSquare, Download, BadgeCheck, CheckCircle2, XCircle, Pencil } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useAuthorizedFetch } from '../../../hooks/useAuthorizedFetch';
 import api from '../../../api/axios';
 import EstadoBadge from '../../../components/ui/EstadoBadge';
 import RechazarProgramaModal from '../../../components/ui/RechazarProgramaModal';
-import { getLineasPrograma } from '../../Dashboard/Panels/Programas/programaLineas';
+import { getLineasPrograma, textoPlanoLinea } from '../../Dashboard/Panels/Programas/programaLineas';
 import { useProgramaNotas } from '../../Dashboard/Panels/Programas/useProgramaNotas';
 import HiloComentario from './HiloComentario';
 
@@ -63,6 +63,18 @@ const esColaboradorPrograma = (programa, user) => {
 const puedeSolicitarAprobacionPrograma = (programa, user) =>
     programa?.estado === 'enviado' && esColaboradorPrograma(programa, user);
 
+// Misma regla que ProgramPolicy::responder(): contestar y resolver hilos existentes.
+// En revisión, los mismos que comentan; en borrador, el equipo del programa (para
+// contestar "corregido" mientras lo ajustan, sin reenviarlo).
+const puedeResponderPrograma = (programa, user) => {
+    if (programa?.estado === 'borrador') return esColaboradorPrograma(programa, user);
+    return puedeComentarPrograma(programa, user);
+};
+
+// El equipo corrige el programa mientras está en revisión o en borrador.
+const puedeCorregirPrograma = (programa, user) =>
+    ['enviado', 'borrador'].includes(programa?.estado) && esColaboradorPrograma(programa, user);
+
 const puedeAprobarPrograma = (programa, user) => {
     if (programa?.estado !== 'enviado') return false;
 
@@ -80,7 +92,7 @@ const puedeAprobarPrograma = (programa, user) => {
 const esInicioAnexos = (linea) =>
     linea.tipo === 'html' && linea.contenido.replace(/<[^>]+>/g, '').trim() === 'ANEXOS';
 
-const LineaConHilos = ({ linea, hilos, puedeComentar, onAbrirComposer, composerAbierto, onResponder, onToggleResuelta, children }) => (
+const LineaConHilos = ({ linea, hilos, puedeComentar, puedeResponder, onAbrirComposer, composerAbierto, onResponder, onToggleResuelta, children }) => (
     <div className={`py-0.5 ${esInicioAnexos(linea) ? 'mt-2 pt-2 border-t border-scout-border' : ''}`}>
         <div className="group relative flex items-start gap-2 rounded-lg px-2 py-0.5 hover:bg-scout-bg-card transition-colors">
             {puedeComentar && (
@@ -109,9 +121,10 @@ const LineaConHilos = ({ linea, hilos, puedeComentar, onAbrirComposer, composerA
             <HiloComentario
                 key={hilo.id}
                 hilo={hilo}
-                puedeComentar={puedeComentar}
+                puedeComentar={puedeResponder}
                 onResponder={onResponder}
                 onToggleResuelta={onToggleResuelta}
+                textoActual={textoPlanoLinea(linea)}
             />
         ))}
     </div>
@@ -119,6 +132,7 @@ const LineaConHilos = ({ linea, hilos, puedeComentar, onAbrirComposer, composerA
 
 const RevisarPrograma = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const user = useAuthStore((state) => state.user);
     const { authorizedFetch } = useAuthorizedFetch();
 
@@ -152,6 +166,8 @@ const RevisarPrograma = () => {
 
     const lineas = useMemo(() => getLineasPrograma(programa), [programa]);
     const puedeComentar = useMemo(() => puedeComentarPrograma(programa, user), [programa, user]);
+    const puedeResponder = useMemo(() => puedeResponderPrograma(programa, user), [programa, user]);
+    const puedeCorregir = useMemo(() => puedeCorregirPrograma(programa, user), [programa, user]);
     const puedeSolicitarAprobacion = useMemo(() => puedeSolicitarAprobacionPrograma(programa, user), [programa, user]);
     const puedeAprobar = useMemo(() => puedeAprobarPrograma(programa, user), [programa, user]);
 
@@ -180,12 +196,12 @@ const RevisarPrograma = () => {
         setComposerTexto('');
     }, []);
 
-    const handleCrearHilo = async (lineRef) => {
+    const handleCrearHilo = async (linea) => {
         if (!composerTexto.trim()) return;
         setEnviandoComposer(true);
         setError(null);
         try {
-            await crearHilo(lineRef, composerTexto.trim());
+            await crearHilo(linea.lineRef, composerTexto.trim(), textoPlanoLinea(linea));
             setComposerLineRef(null);
             setComposerTexto('');
         } catch (err) {
@@ -231,6 +247,30 @@ const RevisarPrograma = () => {
         } catch (err) {
             setError(err.message);
         } finally {
+            setAccionandoEstado(false);
+        }
+    };
+
+    // En revisión el contenido está congelado (para no correr los anclajes de los
+    // comentarios), así que corregir implica volver a borrador primero. Los comentarios
+    // se conservan y quedan a la vista en el editor.
+    const handleCorregir = async () => {
+        const editor = `/gestion-programas/editar/${programa.tipo}/${id}`;
+
+        if (programa.estado === 'borrador') {
+            navigate(editor);
+            return;
+        }
+
+        if (!window.confirm('El programa vuelve a borrador para poder corregirlo. Los comentarios se conservan. Cuando termines, tenés que volver a enviarlo a revisión. ¿Continuar?')) return;
+
+        setAccionandoEstado(true);
+        setError(null);
+        try {
+            await authorizedFetch(`/programas/${id}/estado`, { method: 'PATCH', body: { estado: 'borrador' } });
+            navigate(editor);
+        } catch (err) {
+            setError(err.message);
             setAccionandoEstado(false);
         }
     };
@@ -310,6 +350,18 @@ const RevisarPrograma = () => {
                             <Download size={13} /> PDF
                         </button>
 
+                        {puedeCorregir && (
+                            <button
+                                type="button"
+                                onClick={handleCorregir}
+                                disabled={accionandoEstado}
+                                title="Corregir el programa conservando los comentarios"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-scout-primary/30 text-[10px] font-black uppercase tracking-widest text-scout-primary hover:bg-scout-primary/10 transition-colors cursor-pointer disabled:opacity-40"
+                            >
+                                <Pencil size={13} /> Corregir programa
+                            </button>
+                        )}
+
                         {puedeSolicitarAprobacion && (
                             <button
                                 type="button"
@@ -357,7 +409,11 @@ const RevisarPrograma = () => {
                     Autor: <span className="text-scout-ink">{programa.owner?.nombre_visible || programa.owner?.name || 'Sin asignar'}</span>
                 </p>
 
-                {programa.estado !== 'enviado' && (
+                {programa.estado === 'borrador' && puedeResponder ? (
+                    <div className="mt-5 px-4 py-3 bg-scout-bg-panel border border-scout-border rounded-2xl flex items-center gap-2 text-[10px] font-bold text-scout-muted uppercase tracking-wide">
+                        <Pencil size={12} /> Programa en borrador: podés corregirlo, responder y resolver los comentarios. Para sumar comentarios nuevos tiene que volver a revisión.
+                    </div>
+                ) : programa.estado !== 'enviado' && (
                     <div className="mt-5 px-4 py-3 bg-scout-bg-panel border border-scout-border rounded-2xl flex items-center gap-2 text-[10px] font-bold text-scout-muted uppercase tracking-wide">
                         <Lock size={12} /> Los comentarios están congelados: el programa no está en revisión.
                     </div>
@@ -389,6 +445,7 @@ const RevisarPrograma = () => {
                                             linea={linea}
                                             hilos={hilos}
                                             puedeComentar={puedeComentar}
+                                            puedeResponder={puedeResponder}
                                             onAbrirComposer={abrirComposer}
                                             composerAbierto={composerLineRef === linea.lineRef}
                                             onResponder={responder}
@@ -401,13 +458,13 @@ const RevisarPrograma = () => {
                                                         autoFocus
                                                         value={composerTexto}
                                                         onChange={(e) => setComposerTexto(e.target.value)}
-                                                        onKeyDown={(e) => { if (e.key === 'Enter') handleCrearHilo(linea.lineRef); }}
+                                                        onKeyDown={(e) => { if (e.key === 'Enter') handleCrearHilo(linea); }}
                                                         placeholder="Escribí un comentario sobre esta línea..."
                                                         className="flex-1 border border-scout-border rounded-xl px-3 py-2 text-xs bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                                     />
                                                     <button
                                                         type="button"
-                                                        onClick={() => handleCrearHilo(linea.lineRef)}
+                                                        onClick={() => handleCrearHilo(linea)}
                                                         disabled={enviandoComposer || !composerTexto.trim()}
                                                         className="px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-scout-primary text-white hover:bg-scout-primary-hover transition-colors disabled:opacity-40 cursor-pointer shrink-0"
                                                     >
@@ -438,9 +495,10 @@ const RevisarPrograma = () => {
                             <HiloComentario
                                 key={hilo.id}
                                 hilo={hilo}
-                                puedeComentar={puedeComentar}
+                                puedeComentar={puedeResponder}
                                 onResponder={responder}
                                 onToggleResuelta={toggleResuelta}
+                                mostrarTextoOriginal
                             />
                         ))}
                         </div>

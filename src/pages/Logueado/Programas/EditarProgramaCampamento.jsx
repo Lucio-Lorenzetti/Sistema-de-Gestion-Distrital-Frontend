@@ -5,6 +5,7 @@ import { CalendarDays, RefreshCw, Send, MapPin, Wallet, Bus } from 'lucide-react
 import api from '../../../api/axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 import RichTextToolbar from '../../../components/ui/RichTextToolbar';
+import PanelComentariosPrograma from './PanelComentariosPrograma';
 import {
     parseFechaLocal,
     obtenerDiasRango,
@@ -295,6 +296,7 @@ const EditarProgramaCampamento = () => {
 
     return (
         <div className="h-full w-full flex flex-col bg-scout-bg-panel font-sans selection:bg-scout-primary selection:text-white p-6 md:p-10 overflow-hidden text-left">
+            <PanelComentariosPrograma programaId={id} />
             <div
                 className="bg-scout-bg-panel text-left relative"
                 style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '1rem' }}
