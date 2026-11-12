@@ -35,7 +35,7 @@ const RecoverPassword = () => {
         setIsLoading(true);
         try {
             await api.post('/forgot-password', { email: email.trim() });
-            navigate('/correo-enviado');
+            navigate('/correo-enviado', { state: { email: email.trim() } });
         } catch (err) {
             console.error(err);
             setError(mensajeDeError(err, 'No se pudo enviar el correo.'));

@@ -5,6 +5,15 @@
 // tipo: 'nuevo' | 'mejora' | 'fix'
 export const CHANGELOG = [
   {
+    version: '1.3.1',
+    fecha: '2026-11-12',
+    titulo: 'Reenviar el mail de recuperación',
+    cambios: [
+      { tipo: 'fix', texto: 'El botón "¿No recibiste el correo?" de la pantalla "Correo enviado" no hacía nada. Ahora reenvía el mail a la misma dirección (con una espera de 60 segundos entre envíos) y avisa cuando lo hizo o si algo falló.' },
+      { tipo: 'mejora', texto: 'La pantalla "Correo enviado" muestra a qué dirección (enmascarada) se mandó el mail.' },
+    ],
+  },
+  {
     version: '1.3.0',
     fecha: '2026-11-12',
     titulo: 'Seguridad de la cuenta',
