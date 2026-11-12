@@ -351,11 +351,10 @@ const EditarProgramaCFA = () => {
     const diaActivoObj = dias.find((d) => d.id === diaActivoId);
 
     return (
-        <div className="h-full w-full flex flex-col bg-scout-bg-panel font-sans selection:bg-scout-primary selection:text-white p-6 md:p-10 overflow-hidden text-left">
+        <div className="min-h-full lg:h-full w-full flex flex-col bg-scout-bg-panel font-sans selection:bg-scout-primary selection:text-white p-4 sm:p-6 md:p-10 lg:overflow-hidden text-left">
             <PanelComentariosPrograma programaId={id} />
             <div
-                className="bg-scout-bg-panel text-left relative"
-                style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '1rem' }}
+                className="bg-scout-bg-panel text-left relative flex flex-col lg:h-full lg:overflow-hidden p-0 sm:p-4"
             >
                 <div className="border-b border-scout-border pb-4 shrink-0">
                     <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
@@ -379,7 +378,7 @@ const EditarProgramaCFA = () => {
 
                 <form
                     onSubmit={handleSubmit}
-                    className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto mt-6"
+                    className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto mt-6"
                 >
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 shrink-0">
                         <div className="flex flex-col space-y-4">

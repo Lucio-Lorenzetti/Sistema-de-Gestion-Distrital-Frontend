@@ -6,7 +6,7 @@ import { ORDEN_RAMAS } from '../../../../utils/ordenRamas';
 const ETIQUETA_ESTADO = { borrador: 'Borrador', enviado: 'En revisión', aprobado: 'Aprobado', rechazado: 'Rechazado' };
 
 const Tarjeta = ({ titulo, children }) => (
-    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col gap-5 h-full">
+    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm flex flex-col gap-5 h-full">
         <h2 className="text-xl font-black uppercase tracking-tight text-left text-scout-primary">{titulo}</h2>
         <div className="h-px bg-scout-border" />
         {children}

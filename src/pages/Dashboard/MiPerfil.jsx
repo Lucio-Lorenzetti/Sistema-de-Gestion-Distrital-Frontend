@@ -146,8 +146,7 @@ const MiPerfil = () => {
 
     return (
         <div
-            className="bg-scout-bg-panel text-left relative"
-            style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '2rem' }}
+            className="bg-scout-bg-panel text-left relative flex flex-col min-h-full lg:h-full lg:overflow-hidden p-4 sm:p-6 lg:p-8"
         >
             <div className="border-b border-scout-border pb-3 shrink-0">
                 <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">

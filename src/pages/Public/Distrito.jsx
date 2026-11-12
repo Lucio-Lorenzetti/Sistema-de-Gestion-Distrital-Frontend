@@ -153,7 +153,7 @@ const Distrito = () => {
                     {cargando ? estadoVacio('Cargando...') : error ? estadoVacio('No se pudo cargar el Consejo Distrital.') : consejo.length === 0 ? estadoVacio('Todavía no hay integrantes cargados.') : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                         {consejo.map((pers) => (
-                            <div key={`${pers.user_id}-${pers.rol}-${pers.rama}`} className="p-8 rounded-[2rem] border border-[var(--color-scout-border)] bg-[var(--color-scout-bg-panel)]/50 hover:shadow-xl transition-all text-left">
+                            <div key={`${pers.user_id}-${pers.rol}-${pers.rama}`} className="p-5 sm:p-8 rounded-[2rem] border border-[var(--color-scout-border)] bg-[var(--color-scout-bg-panel)]/50 hover:shadow-xl transition-all text-left">
                                 <span className="text-[9px] font-black uppercase text-[var(--color-scout-muted)] block mb-2">{pers.rol}{pers.rama && ` · ${pers.rama}`}</span>
                                 <NombreScout persona={pers} className="mb-4" />
                                 <a href={`mailto:${pers.email}`} className="text-[10px] font-black uppercase text-[var(--color-scout-primary)] border-b border-[var(--color-scout-primary)]/10 hover:border-[var(--color-scout-primary)] transition-colors">Contactar</a>

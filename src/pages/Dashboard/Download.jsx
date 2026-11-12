@@ -91,8 +91,7 @@ const Bibliografia = () => {
 
     return (
         <div
-            className="bg-scout-bg-panel text-left relative"
-            style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '2.5rem' }}
+            className="bg-scout-bg-panel text-left relative flex flex-col min-h-full lg:h-full lg:overflow-hidden p-4 sm:p-6 lg:p-10"
         >
             {/* HEADER */}
             <div className="border-b border-scout-border pb-4 shrink-0 flex items-end justify-between flex-wrap gap-3">
@@ -146,7 +145,7 @@ const Bibliografia = () => {
                 {vistaPapelera ? (
                     <PapeleraDocumentacionTable items={papelera} isLoading={isLoadingPapelera} onRestaurado={handleRestaurado} />
                 ) : (
-                <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col" style={{ minHeight: 0 }}>
+                <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm flex flex-col" style={{ minHeight: 0 }}>
                     <div className="flex items-center justify-between shrink-0">
                         <h2 className="text-xl font-black uppercase tracking-tight text-scout-primary shrink-0">Biblioteca Disponible</h2>
                         <div className="relative" ref={filtroRef}>
@@ -185,7 +184,7 @@ const Bibliografia = () => {
                         </div>
                     ) : (
                         <div className="overflow-x-auto mt-6 flex-1">
-                            <table className="w-full text-left border-collapse">
+                            <table className="w-full min-w-[640px] text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-scout-border text-[10px] font-black uppercase tracking-widest text-scout-muted">
                                         <th className="pb-3 font-black">Título</th>
@@ -265,7 +264,7 @@ const Bibliografia = () => {
             {itemExpandido && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-scout-primary/60 backdrop-blur-md" onClick={() => setExpandedId(null)} />
-                    <div className="relative bg-scout-bg-card w-full max-w-xl rounded-[3rem] overflow-hidden shadow-2xl p-8 md:p-12 animate-in zoom-in-95 duration-300 text-left">
+                    <div className="relative bg-scout-bg-card w-full max-w-xl rounded-[3rem] overflow-hidden shadow-2xl p-6 pt-16 md:p-12 animate-in zoom-in-95 duration-300 text-left">
                         <button onClick={() => setExpandedId(null)} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-white rounded-full hover:scale-110 transition-transform cursor-pointer">
                             <X size={20} />
                         </button>

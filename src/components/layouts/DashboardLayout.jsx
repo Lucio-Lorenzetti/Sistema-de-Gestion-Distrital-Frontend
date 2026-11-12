@@ -4,14 +4,14 @@ const DashboardLayout = ({ user, role, roleLabel, children }) => {
     const isFullHeight = FULL_HEIGHT_ROLES.includes(role);
     const userName = user?.name || '-';
 
+    // En desktop (lg) los roles "full height" ocupan el alto del <main> y
+    // scrollean por dentro; en mobile todo fluye y scrollea la página entera,
+    // porque las tarjetas apiladas no entran en una sola pantalla.
     return (
         <div
-            className="bg-scout-bg-panel text-left relative"
-            style={
-                isFullHeight
-                    ? { height: '100%', overflowY: 'auto', display: 'flex', flexDirection: 'column', padding: '2.5rem' }
-                    : { minHeight: '100%', padding: '2.5rem' }
-            }
+            className={`bg-scout-bg-panel text-left relative min-h-full p-4 sm:p-6 lg:p-10 ${
+                isFullHeight ? 'flex flex-col lg:h-full lg:overflow-y-auto' : ''
+            }`}
         >
             <div className="border-b border-scout-border pb-4 shrink-0">
                 <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
@@ -23,8 +23,9 @@ const DashboardLayout = ({ user, role, roleLabel, children }) => {
             </div>
 
             <div
-                className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-10"
-                style={isFullHeight ? { flex: 1, minHeight: 0, alignItems: 'stretch' } : { alignItems: 'start' }}
+                className={`grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-6 lg:mt-10 ${
+                    isFullHeight ? 'lg:flex-1 lg:min-h-0 lg:items-stretch' : 'items-start'
+                }`}
             >
                 {children}
             </div>

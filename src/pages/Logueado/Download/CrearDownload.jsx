@@ -57,10 +57,9 @@ const CrearBibliografia = () => {
     };
 
     return (
-        <div className="h-full w-full flex flex-col bg-scout-bg-panel font-sans selection:bg-scout-primary selection:text-white p-6 md:p-10 overflow-hidden text-left">
+        <div className="min-h-full lg:h-full w-full flex flex-col bg-scout-bg-panel font-sans selection:bg-scout-primary selection:text-white p-4 sm:p-6 md:p-10 lg:overflow-hidden text-left">
             <div
-                className="bg-scout-bg-panel text-left relative"
-                style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '1rem' }}
+                className="bg-scout-bg-panel text-left relative flex flex-col lg:h-full lg:overflow-hidden p-0 sm:p-4"
             >
                 {/* HEADER */}
                 <div className="border-b border-scout-border pb-4 shrink-0">
@@ -88,7 +87,7 @@ const CrearBibliografia = () => {
                 <form
                     ref={formRef}
                     onSubmit={handleSubmit}
-                    className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto mt-6"
+                    className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto mt-6"
                 >
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 flex-1">
                         
@@ -98,7 +97,7 @@ const CrearBibliografia = () => {
                                 <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-2 block">
                                     Tipo de Recurso
                                 </label>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <button
                                         type="button"
                                         onClick={() => setTipo('archivo')}

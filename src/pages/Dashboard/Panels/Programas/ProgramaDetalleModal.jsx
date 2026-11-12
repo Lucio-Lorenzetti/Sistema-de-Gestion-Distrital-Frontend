@@ -60,7 +60,7 @@ const ProgramaDetalleModal = ({ programa, onClose }) => {
             <button onClick={onClose} className="absolute top-6 right-6 z-10 p-2 bg-scout-primary text-white rounded-full hover:scale-110 transition-transform">
                 <X size={20} />
             </button>
-            <div className="p-8 md:p-16 overflow-y-auto">
+            <div className="p-6 pt-16 md:p-16 overflow-y-auto">
                 <div className="flex items-center gap-3 mb-4 flex-wrap">
                     <EstadoBadge estado={ESTADO_LABELS[programa.estado] || programa.estado} />
                     <span className="text-[10px] font-black uppercase tracking-[0.25em] text-scout-muted flex items-center gap-1">

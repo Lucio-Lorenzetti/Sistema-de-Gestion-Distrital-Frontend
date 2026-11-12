@@ -1,2 +1,2 @@
-// Versión de la app mostrada en el footer público y en el sidebar. Actualizar acá antes de cada release.
-export const APP_VERSION = '1.0.0';
+// Versión de la app mostrada en el footer público y en el sidebar. Actualizar acá antes de cada release y sumar la entrada en src/changelog.js.
+export const APP_VERSION = '1.1.0';

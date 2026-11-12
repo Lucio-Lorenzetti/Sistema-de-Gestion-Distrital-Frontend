@@ -54,7 +54,7 @@ const AsignarRolModal = ({ usuario, onClose, onAsignado }) => {
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-scout-bg-card w-full max-w-md rounded-[2rem] p-8 shadow-2xl border border-scout-border animate-in zoom-in-95 duration-200">
+            <div className="relative bg-scout-bg-card w-full max-w-md rounded-[2rem] p-5 sm:p-8 shadow-2xl border border-scout-border animate-in zoom-in-95 duration-200">
                 <button onClick={onClose} className="absolute top-5 right-5 p-1.5 rounded-full text-scout-muted hover:text-scout-primary hover:bg-scout-bg-panel transition-colors cursor-pointer">
                     <X size={16} />
                 </button>

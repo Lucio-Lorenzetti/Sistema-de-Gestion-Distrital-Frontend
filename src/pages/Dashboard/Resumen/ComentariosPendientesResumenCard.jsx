@@ -13,7 +13,7 @@ const ComentariosPendientesResumenCard = () => {
     const { comentarios, isLoading } = useComentariosPendientes();
 
     return (
-        <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm lg:col-span-3">
+        <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm lg:col-span-3">
             <h3 className="text-sm font-black uppercase tracking-tight text-scout-primary flex items-center gap-2">
                 <MessageCircle size={16} /> Comentarios a Resolver en tu Rama
             </h3>

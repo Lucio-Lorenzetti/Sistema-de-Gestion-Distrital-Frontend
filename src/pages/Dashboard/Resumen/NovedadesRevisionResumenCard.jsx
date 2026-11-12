@@ -32,7 +32,7 @@ const NovedadesRevisionResumenCard = () => {
     const filas = novedades.filter((n) => LABEL_POR_TIPO[n.tipo]).slice(0, MAX_FILAS);
 
     return (
-        <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm">
+        <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm">
             <h3 className="text-sm font-black uppercase tracking-tight text-scout-primary flex items-center gap-2">
                 <Bell size={16} /> Novedades en Revisión
             </h3>

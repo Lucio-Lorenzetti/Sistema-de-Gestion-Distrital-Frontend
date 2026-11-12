@@ -16,7 +16,7 @@ const EducadorResumenCard = () => {
     const misPublicados = misProgramas.filter((p) => p.estado === 'aprobado').length;
 
     return (
-        <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm lg:col-span-3">
+        <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm lg:col-span-3">
             <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-scout-bg-panel border border-scout-border rounded-2xl flex items-center justify-center text-scout-primary">
                     <UserCircle2 size={22} />

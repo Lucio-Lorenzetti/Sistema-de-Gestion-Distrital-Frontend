@@ -71,7 +71,7 @@ const SolicitudesRolTable = ({ solicitudes, isLoading, onCambio }) => {
                 </div>
             ) : (
                 <div className="overflow-x-auto overflow-y-auto mt-4 flex-1" style={{ maxHeight: 220 }}>
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full min-w-[640px] text-left border-collapse">
                         <thead>
                             <tr className="border-b border-scout-border text-[10px] font-black uppercase tracking-widest text-scout-muted">
                                 <th className="pb-3 font-black">Usuario</th>

@@ -94,8 +94,7 @@ const News = () => {
 
     return (
         <div
-            className="bg-scout-bg-panel text-left relative"
-            style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '2.5rem' }}
+            className="bg-scout-bg-panel text-left relative flex flex-col min-h-full lg:h-full lg:overflow-hidden p-4 sm:p-6 lg:p-10"
         >
             {/* HEADER */}
             <div className="border-b border-scout-border pb-4 shrink-0 flex items-end justify-between flex-wrap gap-3">
@@ -149,7 +148,7 @@ const News = () => {
                 {vistaPapelera ? (
                     <PapeleraNoticiasTable noticias={papelera} isLoading={isLoadingPapelera} onRestaurado={handleRestaurado} />
                 ) : (
-                <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col" style={{ minHeight: 0 }}>
+                <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm flex flex-col" style={{ minHeight: 0 }}>
                     <div className="flex items-center justify-between shrink-0">
                         <h2 className="text-xl font-black uppercase tracking-tight text-scout-primary shrink-0">Noticias Publicadas</h2>
                         <div className="relative" ref={filtroRef}>
@@ -188,7 +187,7 @@ const News = () => {
                         </div>
                     ) : (
                         <div className="overflow-x-auto mt-6 flex-1">
-                            <table className="w-full text-left border-collapse">
+                            <table className="w-full min-w-[640px] text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-scout-border text-[10px] font-black uppercase tracking-widest text-scout-muted">
                                         <th className="pb-3 font-black">Título</th>
@@ -262,7 +261,7 @@ const News = () => {
                         <div className="md:w-1/2 h-64 md:h-auto bg-scout-bg-panel">
                             <img src={noticiaExpandida.imagen || imgDefault} className="w-full h-full object-cover" alt={noticiaExpandida.titulo} />
                         </div>
-                        <div className="md:w-1/2 p-8 md:p-16 overflow-y-auto">
+                        <div className="md:w-1/2 p-6 md:p-16 overflow-y-auto">
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-scout-muted block mb-4 text-left">
                                 {noticiaExpandida.fecha}
                             </span>

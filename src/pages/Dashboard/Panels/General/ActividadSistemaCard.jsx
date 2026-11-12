@@ -16,7 +16,7 @@ const ActividadSistemaCard = ({ itemsPerPage = 3 }) => {
     });
 
     return (
-        <div className="lg:col-span-2 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 flex flex-col justify-between shadow-sm min-h-[310px] h-full">
+        <div className="lg:col-span-2 bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 flex flex-col justify-between shadow-sm min-h-[310px] h-full">
             <div className="space-y-6 w-full">
                 <h2 className="text-xl font-black uppercase tracking-tight text-left text-scout-primary">Actividad del Sistema</h2>
                 <div className="h-px bg-scout-border" />

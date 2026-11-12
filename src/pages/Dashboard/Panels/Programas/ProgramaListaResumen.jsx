@@ -12,7 +12,7 @@ const formatFecha = (iso) => {
 // programa. "compact" es la variante de menor peso visual (p. ej. "Aprobados Recientemente",
 // que es informativo pero no requiere acción, a diferencia de "Próximos a Aprobar").
 const ProgramaListaResumen = ({ titulo, icon, programas, emptyText, fechaCampo, fechaLabel, compact = false }) => (
-    <div className={`h-full flex flex-col bg-scout-bg-card rounded-[2rem] border border-scout-border shadow-sm ${compact ? 'p-6' : 'p-8'}`}>
+    <div className={`h-full flex flex-col bg-scout-bg-card rounded-[2rem] border border-scout-border shadow-sm ${compact ? 'p-6' : 'p-5 sm:p-8'}`}>
         <h3 className={`font-black uppercase tracking-tight flex items-center gap-2 ${
             compact ? 'text-xs text-scout-muted' : 'text-sm text-scout-primary'
         }`}>

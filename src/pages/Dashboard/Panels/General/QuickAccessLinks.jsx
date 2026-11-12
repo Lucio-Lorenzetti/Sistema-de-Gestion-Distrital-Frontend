@@ -3,7 +3,7 @@ import { ChevronRight } from 'lucide-react';
 import QuickLink from '../../../../components/ui/QuickLink';
 
 const QuickAccessLinks = () => (
-    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 space-y-6 shadow-sm flex flex-col justify-between h-full min-h-[310px]">
+    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 space-y-6 shadow-sm flex flex-col justify-between h-full min-h-[310px]">
         <div className="space-y-4 w-full">
             <h2 className="text-xl font-black uppercase tracking-tight text-left text-scout-primary">Acceso Rápido</h2>
             <div className="h-px bg-scout-border" />

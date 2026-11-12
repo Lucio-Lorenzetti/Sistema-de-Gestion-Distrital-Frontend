@@ -39,7 +39,7 @@ const ProgramasAprobacionResumen = () => {
 
     if (isLoading) {
         return (
-            <div className="lg:col-span-3 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm">
+            <div className="lg:col-span-3 bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm">
                 <p className="text-xs font-bold text-scout-muted uppercase tracking-widest animate-pulse">Cargando programas...</p>
             </div>
         );

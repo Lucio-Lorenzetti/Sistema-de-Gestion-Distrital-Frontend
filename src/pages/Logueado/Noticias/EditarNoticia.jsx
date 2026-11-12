@@ -118,10 +118,9 @@ const EditarNoticia = () => {
     }
 
     return (
-        <div className="h-full w-full flex flex-col bg-scout-bg-panel font-sans selection:bg-scout-primary selection:text-white p-6 md:p-10 overflow-hidden text-left">
+        <div className="min-h-full lg:h-full w-full flex flex-col bg-scout-bg-panel font-sans selection:bg-scout-primary selection:text-white p-4 sm:p-6 md:p-10 lg:overflow-hidden text-left">
             <div
-                className="bg-scout-bg-panel text-left relative"
-                style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '0rem' }}
+                className="bg-scout-bg-panel text-left relative flex flex-col lg:h-full lg:overflow-hidden p-0"
             >
 
                 {/* HEADER */}
@@ -146,7 +145,7 @@ const EditarNoticia = () => {
                     </div>
                 )}
 
-                <form ref={formRef} onSubmit={(e) => e.preventDefault()} className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto">
+                <form ref={formRef} onSubmit={(e) => e.preventDefault()} className="flex-1 bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm flex flex-col min-h-0 overflow-y-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
                         {/* COLUMNA IZQUIERDA */}

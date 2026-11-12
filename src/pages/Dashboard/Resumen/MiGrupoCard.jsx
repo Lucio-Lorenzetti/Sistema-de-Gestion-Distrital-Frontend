@@ -118,7 +118,7 @@ const MiGrupoCard = () => {
 
     if (cargando) {
         return (
-            <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm">
+            <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm">
                 <p className="text-xs font-bold text-scout-muted uppercase tracking-widest animate-pulse">Cargando...</p>
             </div>
         );
@@ -126,14 +126,14 @@ const MiGrupoCard = () => {
 
     if (!grupo) {
         return (
-            <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm">
+            <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm">
                 <p className="text-xs font-bold text-scout-accent">{error || 'No se pudo cargar tu grupo.'}</p>
             </div>
         );
     }
 
     return (
-        <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm">
+        <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm">
             <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
                 <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-scout-bg-panel border border-scout-border rounded-2xl flex items-center justify-center text-scout-primary">

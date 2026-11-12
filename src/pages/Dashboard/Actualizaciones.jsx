@@ -5,6 +5,7 @@ import { useFeatureRequests } from './Panels/Actualizaciones/useFeatureRequests'
 import PeticionCard from './Panels/Actualizaciones/PeticionCard';
 import PrioridadSelector from './Panels/Actualizaciones/PrioridadSelector';
 import AsistenteIaChat from './Panels/Actualizaciones/AsistenteIaChat';
+import HistorialVersiones from './Panels/Actualizaciones/HistorialVersiones';
 import { APP_VERSION } from '../../version';
 
 const BotonAccion = ({ onClick, icon, label, tono = 'default' }) => {
@@ -90,8 +91,7 @@ const Actualizaciones = () => {
 
     return (
         <div
-            className="bg-scout-bg-panel text-left relative"
-            style={{ display: 'flex', flexDirection: 'column', padding: '2.5rem' }}
+            className="bg-scout-bg-panel text-left relative flex flex-col p-4 sm:p-6 lg:p-10"
         >
             <div className="border-b border-scout-border pb-4 shrink-0">
                 <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">
@@ -107,7 +107,7 @@ const Actualizaciones = () => {
                 </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0" style={{ height: '50vh' }}>
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4 shrink-0 lg:h-[50vh]">
                 <form onSubmit={handleAgregarIdea} className="bg-scout-bg-card rounded-2xl border border-scout-border p-5 shadow-sm flex flex-col h-full min-h-0">
                     <label className="text-xs font-black uppercase tracking-widest text-scout-primary mb-2 block shrink-0">
                         Agregar tu idea
@@ -120,7 +120,7 @@ const Actualizaciones = () => {
                         value={idea}
                         onChange={(e) => setIdea(e.target.value)}
                         placeholder="Ej: agregar adjuntos reales en Programas..."
-                        className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none flex-1 min-h-0"
+                        className="w-full border border-scout-border rounded-xl p-3 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none flex-1 min-h-[8rem] lg:min-h-0"
                     />
                     <div className="mt-3 shrink-0">
                         <PrioridadSelector value={prioridad} onChange={setPrioridad} />
@@ -179,6 +179,8 @@ const Actualizaciones = () => {
                     </>
                 )}
             </div>
+
+            <HistorialVersiones />
         </div>
     );
 };

@@ -1,11 +1,11 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, LayoutDashboard, FileText, FolderArchive, GraduationCap, Megaphone, Users, UserCircle, HelpCircle, Settings, Rocket, Lightbulb, LogOut } from 'lucide-react';
+import { X, Home, LayoutDashboard, FileText, FolderArchive, GraduationCap, Megaphone, Users, UserCircle, HelpCircle, Settings, Rocket, Lightbulb, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { APP_VERSION } from '../../version';
 import { getPermisos } from '../../utils/permisos';
 
-const Sidebar = () => {
+const Sidebar = ({ abierto = false, onCerrar = () => {} }) => {
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
@@ -43,14 +43,36 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-scout-bg-card border-r border-scout-border flex flex-col fixed h-full">
-      <div className="p-6">
+    <>
+      {/* Fondo oscuro del drawer (solo mobile) */}
+      <div
+        onClick={onCerrar}
+        aria-hidden="true"
+        className={`fixed inset-0 z-30 bg-scout-scrim/50 backdrop-blur-sm transition-opacity duration-200 lg:hidden ${
+          abierto ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      />
+
+      <aside
+        className={`w-64 max-w-[85vw] bg-scout-bg-card border-r border-scout-border flex flex-col fixed inset-y-0 left-0 z-40 transition-transform duration-200 ease-out lg:translate-x-0 ${
+          abierto ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+        }`}
+      >
+      <div className="p-6 flex items-start justify-between shrink-0">
         <h1 className="text-lg font-bold text-scout-primary tracking-tight">
           Distrito 3 <span className="text-scout-muted font-medium block text-xs italic">Bahía Blanca</span>
         </h1>
+        <button
+          type="button"
+          onClick={onCerrar}
+          className="lg:hidden p-1.5 -mr-2 -mt-1 rounded-lg text-scout-muted hover:text-scout-primary hover:bg-scout-bg-panel transition-colors cursor-pointer"
+          aria-label="Cerrar menú"
+        >
+          <X size={20} />
+        </button>
       </div>
 
-      <nav className="flex-1 px-4 space-y-1">
+      <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => (
           <NavLink
             key={item.name}
@@ -68,7 +90,7 @@ const Sidebar = () => {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-scout-border">
+      <div className="p-4 border-t border-scout-border shrink-0">
         <p className="text-left text-[10px] font-bold text-scout-muted uppercase tracking-widest mb-2">
           Versión: v{APP_VERSION}
         </p>
@@ -80,7 +102,8 @@ const Sidebar = () => {
           <span>Cerrar sesión</span>
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 };
 

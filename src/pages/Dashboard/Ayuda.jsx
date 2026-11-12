@@ -10,8 +10,7 @@ const Ayuda = () => {
 
     return (
         <div
-            className="bg-scout-bg-panel text-left relative"
-            style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '2.5rem' }}
+            className="bg-scout-bg-panel text-left relative flex flex-col min-h-full lg:h-full lg:overflow-hidden p-4 sm:p-6 lg:p-10"
         >
             <div className="border-b border-scout-border pb-4 shrink-0">
                 <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-scout-muted block mb-0.5">

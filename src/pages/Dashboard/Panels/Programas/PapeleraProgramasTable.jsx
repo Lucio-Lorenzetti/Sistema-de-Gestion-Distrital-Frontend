@@ -34,7 +34,7 @@ const PapeleraProgramasTable = ({ programas, isLoading, onRestaurado }) => {
     };
 
     return (
-        <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col" style={{ minHeight: 0 }}>
+        <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm flex flex-col" style={{ minHeight: 0 }}>
             {error && (
                 <div className="mb-5 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">
                     {error}
@@ -57,7 +57,7 @@ const PapeleraProgramasTable = ({ programas, isLoading, onRestaurado }) => {
                 </div>
             ) : (
                 <div className="overflow-x-auto mt-6 flex-1">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full min-w-[640px] text-left border-collapse">
                         <thead>
                             <tr className="border-b border-scout-border text-[10px] font-black uppercase tracking-widest text-scout-muted">
                                 <th className="pb-3 font-black">Título</th>

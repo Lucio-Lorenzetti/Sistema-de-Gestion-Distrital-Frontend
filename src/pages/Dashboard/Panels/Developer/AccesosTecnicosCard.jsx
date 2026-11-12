@@ -15,7 +15,7 @@ const ACCESOS = [
 ];
 
 const AccesosTecnicosCard = () => (
-    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-8 shadow-sm flex flex-col gap-5 h-full">
+    <div className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-5 sm:p-8 shadow-sm flex flex-col gap-5 h-full">
         <h2 className="text-xl font-black uppercase tracking-tight text-left text-scout-primary">Accesos Técnicos</h2>
         <div className="h-px bg-scout-border" />
         <div className="space-y-2 w-full">

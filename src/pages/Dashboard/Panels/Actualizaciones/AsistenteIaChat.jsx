@@ -45,7 +45,7 @@ const AsistenteIaChat = () => {
     };
 
     return (
-        <div className="bg-scout-bg-card rounded-2xl border border-scout-border shadow-sm flex flex-col h-full min-h-0">
+        <div className="bg-scout-bg-card rounded-2xl border border-scout-border shadow-sm flex flex-col h-[26rem] lg:h-full min-h-0">
             <div className="px-5 py-4 border-b border-scout-border shrink-0">
                 <h2 className="text-xs font-black uppercase tracking-widest text-scout-primary flex items-center gap-2">
                     <Sparkles size={13} /> Asistente IA
