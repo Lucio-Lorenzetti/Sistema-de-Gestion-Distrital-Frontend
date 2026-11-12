@@ -2,7 +2,10 @@ import React, { useState, useRef } from 'react';
 import { UploadCloud, Send, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../../api/axios';
+import { mensajeDeError } from '../../../utils/mensajeDeError';
 import { useAuthStore } from '../../../store/useAuthStore';
+import AvisoAutoguardado from '../../../components/ui/AvisoAutoguardado';
+import { leerBorrador, useAutoguardado } from '../../../hooks/useAutoguardado';
 
 const CrearNoticia = () => {
     const user = useAuthStore((state) => state.user);
@@ -23,11 +26,19 @@ const CrearNoticia = () => {
         return palabras.length > 50 ? `${primeras50}...` : primeras50;
     };
 
-    const [formData, setFormData] = useState({
-        titulo: '',
-        fecha: getCurrentDate(),
-        copete: '',
-        cuerpo: ''
+    const [borrador] = useState(() => leerBorrador('noticia'));
+    const [formData, setFormData] = useState(() => {
+        const base = { titulo: '', fecha: getCurrentDate(), copete: '', cuerpo: '' };
+        if (!borrador) return base;
+        const guardado = borrador.datos;
+        // El campo de fecha no deja elegir el pasado: si la guardada ya venció, vuelve a hoy.
+        return { ...base, ...guardado, fecha: guardado.fecha >= base.fecha ? guardado.fecha : base.fecha };
+    });
+    const aviso = useAutoguardado({
+        clave: 'noticia',
+        datos: formData,
+        borrador,
+        tieneContenido: (d) => Boolean(d.titulo.trim() || d.copete.trim() || d.cuerpo.trim()),
     });
     const [imagen, setImagen] = useState(null);
     const [preview, setPreview] = useState(null);
@@ -80,10 +91,11 @@ const CrearNoticia = () => {
             await api.post('/news', payload, {
                 headers: { 'Content-Type': undefined }
             });
+            aviso.limpiar();
             navigate('/noticias-internas');
         } catch (err) {
             console.error('Error completo:', err.response);
-            const errorMsg = err.response?.data?.message || err.message;
+            const errorMsg = mensajeDeError(err, err.message);
             setError(`No se pudo guardar la noticia como ${estadoDeseado}: ` + errorMsg);
         } finally {
             setIsLoading(false);
@@ -110,6 +122,8 @@ const CrearNoticia = () => {
                         </p>
                     )}
                 </div>
+
+                <AvisoAutoguardado {...aviso} nota="La imagen de portada no se guarda: volvé a elegirla." />
 
                 {/* ERROR */}
                 {error && (

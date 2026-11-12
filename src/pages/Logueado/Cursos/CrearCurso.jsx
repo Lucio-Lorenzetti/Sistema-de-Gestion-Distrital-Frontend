@@ -2,7 +2,10 @@ import React, { useState, useRef } from 'react';
 import { Send } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../../api/axios';
+import { mensajeDeError } from '../../../utils/mensajeDeError';
 import { useAuthStore } from '../../../store/useAuthStore';
+import AvisoAutoguardado from '../../../components/ui/AvisoAutoguardado';
+import { leerBorrador, useAutoguardado } from '../../../hooks/useAutoguardado';
 
 const CURSOS_ENDPOINT = '/courses';
 const RAMAS_OPTIONS = ['Pre-menores', 'Manada', 'Unidad', 'Caminantes', 'Rovers'];
@@ -20,7 +23,8 @@ const CrearCurso = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const [formData, setFormData] = useState({
+    const [borrador] = useState(() => leerBorrador('curso'));
+    const [formData, setFormData] = useState(() => ({
         titulo: '',
         descripcion: '',
         link_formulario: '',
@@ -32,6 +36,16 @@ const CrearCurso = () => {
         costo: '',
         modalidad: 'Presencial', // Valor por defecto
         formador: '',
+        ...borrador?.datos,
+    }));
+    const aviso = useAutoguardado({
+        clave: 'curso',
+        datos: formData,
+        borrador,
+        tieneContenido: (d) => Boolean(
+            d.titulo.trim() || d.descripcion.trim() || d.link_formulario.trim()
+            || String(d.lugar).trim() || String(d.costo).trim() || d.formador.trim() || d.ramas.length
+        ),
     });
 
     const handleChange = (e) => {
@@ -90,10 +104,11 @@ const CrearCurso = () => {
 
         try {
             await api.post(CURSOS_ENDPOINT, payload);
+            aviso.limpiar();
             navigate('/gestion-cursos/administrar');
         } catch (err) {
             console.error('Error completo:', err.response);
-            const errorMsg = err.response?.data?.message || err.message;
+            const errorMsg = mensajeDeError(err, err.message);
             setError('No se pudo crear el curso: ' + errorMsg);
         } finally {
             setIsLoading(false);
@@ -120,6 +135,8 @@ const CrearCurso = () => {
                         </p>
                     )}
                 </div>
+
+                <AvisoAutoguardado {...aviso} />
 
                 {/* ERROR */}
                 {error && (

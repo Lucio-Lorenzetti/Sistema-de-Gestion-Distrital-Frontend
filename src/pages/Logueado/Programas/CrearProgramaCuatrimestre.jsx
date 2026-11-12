@@ -1,8 +1,11 @@
 // src/pages/Logueado/Programas/CrearProgramaCuatrimestre.jsx
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { CalendarDays, RefreshCw, Send, ArrowLeft } from 'lucide-react';
 import api from '../../../api/axios';
+import { mensajeDeError } from '../../../utils/mensajeDeError';
+import AvisoAutoguardado from '../../../components/ui/AvisoAutoguardado';
+import { leerBorrador, borrarBorrador, useAutoguardado } from '../../../hooks/useAutoguardado';
 import RichTextToolbar from '../../../components/ui/RichTextToolbar';
 import {
     parseFechaLocal,
@@ -86,10 +89,26 @@ const CrearProgramaCuatrimestre = () => {
     const datosPasoUno = location.state;
     const contenidoRef = useRef(null);
 
-    const [fechaInicio, setFechaInicio] = useState('');
-    const [fechaFin, setFechaFin] = useState('');
-    const [contenidoVacio, setContenidoVacio] = useState(true);
+    const [borrador] = useState(() => leerBorrador('programa-cuatrimestre'));
+    const [fechaInicio, setFechaInicio] = useState(borrador?.datos.fechaInicio ?? '');
+    const [fechaFin, setFechaFin] = useState(borrador?.datos.fechaFin ?? '');
+    const [contenidoHtml, setContenidoHtml] = useState(borrador?.datos.contenidoHtml ?? '');
+    const [contenidoVacio, setContenidoVacio] = useState(!borrador?.datos.contenidoHtml);
     const [error, setError] = useState(null);
+    const aviso = useAutoguardado({
+        clave: 'programa-cuatrimestre',
+        datos: { fechaInicio, fechaFin, contenidoHtml },
+        borrador,
+        tieneContenido: (d) => Boolean(d.fechaInicio || d.fechaFin || d.contenidoHtml.replace(/<[^>]*>/g, '').trim()),
+    });
+
+    // El contenido es un editor (contentEditable) sin estado propio: se espeja en
+    // `contenidoHtml` para poder autoguardarlo, y al abrir se vuelve a inyectar.
+    useEffect(() => {
+        if (contenidoRef.current && borrador?.datos.contenidoHtml) {
+            contenidoRef.current.innerHTML = borrador.datos.contenidoHtml;
+        }
+    }, [borrador]);
 
     const sabadosCount = useMemo(() => {
         const inicio = parseFechaLocal(fechaInicio);
@@ -135,6 +154,7 @@ const CrearProgramaCuatrimestre = () => {
         const lineas = buildTemplateLineas(datosPasoUno, inicio, fin);
         if (contenidoRef.current) {
             contenidoRef.current.innerHTML = lineasToHtml(lineas);
+            setContenidoHtml(contenidoRef.current.innerHTML);
         }
         setContenidoVacio(false);
     };
@@ -143,6 +163,7 @@ const CrearProgramaCuatrimestre = () => {
         const texto = contenidoRef.current?.innerText ?? '';
         setContenidoVacio(texto.trim().length === 0);
         sincronizarActividades(contenidoRef.current);
+        setContenidoHtml(contenidoRef.current?.innerHTML ?? '');
     };
 
     const handleSubmit = async (e) => {
@@ -178,11 +199,13 @@ const CrearProgramaCuatrimestre = () => {
             const response = await api.post('/programas', payload);
 
             if (response.status === 201 || response.status === 200) {
+                aviso.limpiar();
+                borrarBorrador('programa-paso1');
                 navigate('/gestion-programas');
             }
         } catch (err) {
             console.error('Error al guardar el programa:', err);
-            const errorMsg = err.response?.data?.message || 'Ocurrió un error al guardar el programa.';
+            const errorMsg = mensajeDeError(err, 'Ocurrió un error al guardar el programa.');
             setError(errorMsg);
         }
     };
@@ -203,6 +226,8 @@ const CrearProgramaCuatrimestre = () => {
                         {datosPasoUno.titulo}
                     </p>
                 </div>
+
+                <AvisoAutoguardado {...aviso} />
 
                 {error && (
                     <div className="mb-4 mt-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">

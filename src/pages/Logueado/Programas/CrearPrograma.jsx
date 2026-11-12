@@ -3,6 +3,12 @@ import React, { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ClipboardList, Send } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
+import Select from '../../../components/ui/Select';
+import { getPermisos } from '../../../utils/permisos';
+import { useRamasCatalogo } from '../../Dashboard/Panels/Usuarios/useRamasCatalogo';
+import { useGruposCatalogo } from '../../Dashboard/Panels/Programas/useGruposCatalogo';
+import AvisoAutoguardado from '../../../components/ui/AvisoAutoguardado';
+import { leerBorrador, useAutoguardado } from '../../../hooks/useAutoguardado';
 
 // A dónde redirige cada tipo, una vez que definamos cada sub-formulario.
 const TIPO_OPTIONS = [
@@ -16,11 +22,32 @@ const CrearPrograma = () => {
     const user = useAuthStore((state) => state.user);
     const formRef = useRef(null);
 
-    const [titulo, setTitulo] = useState('');
-    const [educadoresACargo, setEducadoresACargo] = useState('');
-    const [diagnostico, setDiagnostico] = useState('');
-    const [objetivos, setObjetivos] = useState('');
-    const [tipo, setTipo] = useState(null);
+    const [borrador] = useState(() => leerBorrador('programa-paso1'));
+    const [titulo, setTitulo] = useState(borrador?.datos.titulo ?? '');
+    const [educadoresACargo, setEducadoresACargo] = useState(borrador?.datos.educadoresACargo ?? '');
+    const [diagnostico, setDiagnostico] = useState(borrador?.datos.diagnostico ?? '');
+    const [objetivos, setObjetivos] = useState(borrador?.datos.objetivos ?? '');
+    const [tipo, setTipo] = useState(borrador?.datos.tipo ?? null);
+
+    // Rama y grupo del programa: para un Educador salen de su rol (el back los
+    // toma del usuario y no los deja cambiar). Solo el Developer, que no tiene
+    // rama propia, los elige acá.
+    const esDeveloper = getPermisos(user).esDeveloper;
+    const { catalogoRamas } = useRamasCatalogo();
+    const { catalogoGrupos } = useGruposCatalogo();
+    const [ramaId, setRamaId] = useState(borrador?.datos.ramaId ?? user?.rama_id ?? '');
+    const [grupoId, setGrupoId] = useState(borrador?.datos.grupoId ?? user?.grupo_id ?? '');
+    const ramaNombre = catalogoRamas.find((r) => String(r.id) === String(ramaId))?.nombre ?? user?.rama?.nombre;
+    const grupoNombre = catalogoGrupos.find((g) => String(g.id) === String(grupoId))?.nombre ?? user?.grupo?.nombre;
+
+    const aviso = useAutoguardado({
+        clave: 'programa-paso1',
+        datos: { titulo, educadoresACargo, diagnostico, objetivos, tipo, ramaId, grupoId },
+        borrador,
+        tieneContenido: (d) => Boolean(
+            d.titulo.trim() || d.educadoresACargo.trim() || d.diagnostico.trim() || d.objetivos.trim() || d.tipo
+        ),
+    });
     const [error, setError] = useState(null);
 
     const handleSubmit = (e) => {
@@ -28,6 +55,11 @@ const CrearPrograma = () => {
 
         if (formRef.current && !formRef.current.checkValidity()) {
             formRef.current.reportValidity();
+            return;
+        }
+
+        if (esDeveloper && (!ramaId || !grupoId)) {
+            setError('Elegí la rama y el grupo a los que pertenece el programa.');
             return;
         }
 
@@ -42,7 +74,11 @@ const CrearPrograma = () => {
         // No pega a la API acá — pasa los datos ya cargados al sub-formulario
         // correspondiente vía location.state, que es el que hace el POST real.
         navigate(tipoSeleccionado.route, {
-            state: { titulo, educadoresACargo, diagnostico, objetivos, tipo },
+            state: {
+                titulo, educadoresACargo, diagnostico, objetivos, tipo,
+                // Solo viajan si los eligió el Developer; para el resto el back los ignora.
+                ...(esDeveloper ? { rama_id: Number(ramaId), grupo_id: Number(grupoId) } : {}),
+            },
         });
     };
 
@@ -62,11 +98,13 @@ const CrearPrograma = () => {
                     {user && (
                         <p className="text-[10px] font-bold text-scout-muted uppercase tracking-widest mt-1">
                             Creando como: {user.name}
-                            {user.rama?.nombre ? ` • Rama ${user.rama.nombre}` : ''}
-                            {user.grupo?.nombre ? ` • Grupo ${user.grupo.nombre}` : ''}
+                            {ramaNombre ? ` • Rama ${ramaNombre}` : ''}
+                            {grupoNombre ? ` • Grupo ${grupoNombre}` : ''}
                         </p>
                     )}
                 </div>
+
+                <AvisoAutoguardado {...aviso} />
 
                 {/* ERROR */}
                 {error && (
@@ -94,7 +132,7 @@ const CrearPrograma = () => {
                                     value={titulo}
                                     onChange={(e) => setTitulo(e.target.value)}
                                     required
-                                    placeholder={"Ej: Programa Primer Cuatrimestre de " + (user?.rama?.nombre || 'Rama') + " (" + (user?.grupo?.nombre || 'Grupo') + ")" + " 202x"}
+                                    placeholder={"Ej: Programa Primer Cuatrimestre de " + (ramaNombre || 'Rama') + " (" + (grupoNombre || 'Grupo') + ")" + " 202x"}
                                     className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
@@ -117,6 +155,32 @@ Fernando perez millan (San Bernardo Leal) - I.M.`}
                                     className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors resize-none min-h-[65px]"
                                 />
                             </div>
+
+                            {esDeveloper && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-4 px-4 pt-4 pb-0 rounded-2xl border border-scout-primary/30 bg-scout-primary/5">
+                                    <p className="sm:col-span-2 text-xs font-bold text-scout-muted leading-relaxed mb-4">
+                                        Como Developer elegís a qué rama y grupo pertenece el programa. Para el resto de los usuarios sale de su rol.
+                                    </p>
+                                    <Select
+                                        id="programa-rama"
+                                        label="Rama"
+                                        required
+                                        value={ramaId}
+                                        onChange={(e) => setRamaId(e.target.value)}
+                                        options={catalogoRamas.map((r) => ({ value: r.id, label: r.nombre }))}
+                                        placeholder="Elegí la rama"
+                                    />
+                                    <Select
+                                        id="programa-grupo"
+                                        label="Grupo"
+                                        required
+                                        value={grupoId}
+                                        onChange={(e) => setGrupoId(e.target.value)}
+                                        options={catalogoGrupos.map((g) => ({ value: g.id, label: g.nombre }))}
+                                        placeholder="Elegí el grupo"
+                                    />
+                                </div>
+                            )}
 
                             <div>
                                 <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-1.5 block">

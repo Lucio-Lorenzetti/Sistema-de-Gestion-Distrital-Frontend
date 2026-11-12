@@ -5,6 +5,21 @@
 // tipo: 'nuevo' | 'mejora' | 'fix'
 export const CHANGELOG = [
   {
+    version: '1.2.0',
+    fecha: '2026-11-12',
+    titulo: 'Autoguardado, programas del Developer y errores claros',
+    cambios: [
+      { tipo: 'nuevo', texto: 'Autoguardado al crear programas (Cuatrimestre, Campamento y CFA), noticias, cursos y material de la Biblioteca: lo que escribís se guarda solo en tu dispositivo.' },
+      { tipo: 'nuevo', texto: 'Si cerrás la pestaña, se corta la conexión o se recarga la página, al volver a abrir el formulario recuperás lo que habías cargado, con la opción de descartarlo y empezar de cero.' },
+      { tipo: 'mejora', texto: 'El borrador se borra solo cuando el contenido se guarda de verdad, y también se guarda al pasar el celular a otra app.' },
+      { tipo: 'mejora', texto: 'Cada usuario ve solo sus borradores, y los que tienen más de 30 días se descartan solos.' },
+      { tipo: 'mejora', texto: 'Las imágenes y archivos adjuntos (portada de noticia, PDF de Biblioteca) no se guardan: hay que volver a elegirlos, y el aviso lo recuerda.' },
+      { tipo: 'nuevo', texto: 'El Developer puede crear programas eligiendo a qué rama y grupo pertenecen. Es el único que puede elegirlos: para el resto salen de su rol y el servidor no deja cambiarlos.' },
+      { tipo: 'mejora', texto: 'Errores claros al guardar programas, noticias y cursos: mensajes en español que dicen qué falta o qué pasó (sin conexión, error del servidor, campo vacío), en vez de textos técnicos en inglés.' },
+      { tipo: 'fix', texto: 'Crear un programa siendo Developer fallaba con un error del servidor porque no tenía rama asignada. Ahora se elige la rama y el grupo, y quien no tiene rama recibe un aviso que explica qué hacer.' },
+    ],
+  },
+  {
     version: '1.1.0',
     fecha: '2026-11-12',
     titulo: 'Todo el sitio en mobile',

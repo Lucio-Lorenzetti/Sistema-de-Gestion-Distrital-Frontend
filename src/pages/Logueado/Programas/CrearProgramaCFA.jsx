@@ -3,6 +3,9 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { CalendarDays, RefreshCw, Send, ArrowLeft, MapPin, Wallet, Bus } from 'lucide-react';
 import api from '../../../api/axios';
+import { mensajeDeError } from '../../../utils/mensajeDeError';
+import AvisoAutoguardado from '../../../components/ui/AvisoAutoguardado';
+import { leerBorrador, borrarBorrador, useAutoguardado } from '../../../hooks/useAutoguardado';
 import RichTextToolbar from '../../../components/ui/RichTextToolbar';
 import {
     parseFechaLocal,
@@ -102,14 +105,24 @@ const CrearProgramaCFA = () => {
     const datosPasoUno = location.state;
     const contenidoRef = useRef(null);
 
-    const [fechaInicio, setFechaInicio] = useState('');
-    const [fechaFin, setFechaFin] = useState('');
-    const [lugar, setLugar] = useState('');
-    const [valor, setValor] = useState('');
-    const [transporte, setTransporte] = useState('');
+    const [borrador] = useState(() => leerBorrador('programa-cfa'));
+    const [fechaInicio, setFechaInicio] = useState(borrador?.datos.fechaInicio ?? '');
+    const [fechaFin, setFechaFin] = useState(borrador?.datos.fechaFin ?? '');
+    const [lugar, setLugar] = useState(borrador?.datos.lugar ?? '');
+    const [valor, setValor] = useState(borrador?.datos.valor ?? '');
+    const [transporte, setTransporte] = useState(borrador?.datos.transporte ?? '');
     const [diaActivoId, setDiaActivoId] = useState(null);
-    const [contenidosPorDia, setContenidosPorDia] = useState({});
+    const [contenidosPorDia, setContenidosPorDia] = useState(borrador?.datos.contenidosPorDia ?? {});
     const [error, setError] = useState(null);
+    const aviso = useAutoguardado({
+        clave: 'programa-cfa',
+        datos: { fechaInicio, fechaFin, lugar, valor, transporte, contenidosPorDia },
+        borrador,
+        tieneContenido: (d) => Boolean(
+            d.fechaInicio || d.fechaFin || d.lugar.trim() || d.valor.trim() || d.transporte.trim()
+            || Object.values(d.contenidosPorDia).some((html) => html?.replace(/<[^>]*>/g, '').trim())
+        ),
+    });
 
     const dias = useMemo(() => {
         const inicio = parseFechaLocal(fechaInicio);
@@ -268,11 +281,13 @@ const CrearProgramaCFA = () => {
             const response = await api.post('/programas', payload);
 
             if (response.status === 201 || response.status === 200) {
+                aviso.limpiar();
+                borrarBorrador('programa-paso1');
                 navigate('/gestion-programas');
             }
         } catch (err) {
             console.error('Error al guardar el programa:', err);
-            const errorMsg = err.response?.data?.message || 'Ocurrió un error al guardar el programa.';
+            const errorMsg = mensajeDeError(err, 'Ocurrió un error al guardar el programa.');
             setError(errorMsg);
         }
     };
@@ -295,6 +310,8 @@ const CrearProgramaCFA = () => {
                         {datosPasoUno.titulo}
                     </p>
                 </div>
+
+                <AvisoAutoguardado {...aviso} />
 
                 {error && (
                     <div className="mb-4 mt-4 px-5 py-4 bg-scout-accent-light border border-scout-accent/20 rounded-2xl text-xs font-bold text-scout-accent uppercase tracking-wide shrink-0">

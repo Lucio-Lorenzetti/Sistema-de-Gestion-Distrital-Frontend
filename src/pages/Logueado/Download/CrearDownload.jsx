@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FileText, LinkIcon, Upload, ArrowLeft, Send } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
+import AvisoAutoguardado from '../../../components/ui/AvisoAutoguardado';
+import { leerBorrador, useAutoguardado } from '../../../hooks/useAutoguardado';
 import { useAuthorizedFetch } from '../../../hooks/useAuthorizedFetch';
 
 const BIBLIOGRAFIA_ENDPOINT = '/bibliografia';
@@ -12,11 +14,18 @@ const CrearBibliografia = () => {
     const user = useAuthStore((state) => state.user);
     const formRef = useRef(null);
 
-    const [tipo, setTipo] = useState('archivo');
-    const [nombre, setNombre] = useState('');
-    const [descripcion, setDescripcion] = useState('');
+    const [borrador] = useState(() => leerBorrador('biblioteca'));
+    const [tipo, setTipo] = useState(borrador?.datos.tipo ?? 'archivo');
+    const [nombre, setNombre] = useState(borrador?.datos.nombre ?? '');
+    const [descripcion, setDescripcion] = useState(borrador?.datos.descripcion ?? '');
     const [archivo, setArchivo] = useState(null);
-    const [link, setLink] = useState('');
+    const [link, setLink] = useState(borrador?.datos.link ?? '');
+    const aviso = useAutoguardado({
+        clave: 'biblioteca',
+        datos: { tipo, nombre, descripcion, link },
+        borrador,
+        tieneContenido: (d) => Boolean(d.nombre.trim() || d.descripcion.trim() || d.link.trim()),
+    });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
 
@@ -47,7 +56,10 @@ const CrearBibliografia = () => {
             method: 'POST',
             body: formData,
         })
-            .then(() => navigate('/library'))
+            .then(() => {
+                aviso.limpiar();
+                navigate('/library');
+            })
             .catch((err) => {
                 console.error('Error al publicar:', err);
                 const errorMsg = err.response?.data?.message || err.message;
@@ -75,6 +87,8 @@ const CrearBibliografia = () => {
                         </p>
                     )}
                 </div>
+
+                <AvisoAutoguardado {...aviso} nota="El archivo adjunto no se guarda: volvé a elegirlo." />
 
                 {/* ERROR */}
                 {error && (
