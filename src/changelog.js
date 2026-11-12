@@ -5,6 +5,20 @@
 // tipo: 'nuevo' | 'mejora' | 'fix'
 export const CHANGELOG = [
   {
+    version: '1.3.0',
+    fecha: '2026-11-12',
+    titulo: 'Seguridad de la cuenta',
+    cambios: [
+      { tipo: 'nuevo', texto: 'Recuperar la contraseña con confirmación: en vez de escribir el correo a ciegas, se muestra a qué dirección (enmascarada) se va a enviar el mail y se manda recién al aceptar. Si ya escribiste tu correo en el login, no hace falta repetirlo.' },
+      { tipo: 'nuevo', texto: 'En Mi Perfil, botón "¿No recordás tu contraseña actual? Cambiala con un mail": te manda el link a la dirección registrada de tu cuenta, sin escribir nada.' },
+      { tipo: 'nuevo', texto: 'Aviso por mail cuando cambia la contraseña de tu cuenta, y cuando cambia tu correo (este último va a la dirección anterior), para enterarte si no fuiste vos.' },
+      { tipo: 'mejora', texto: 'Al cambiar la contraseña o el correo se cierran las sesiones abiertas en otros dispositivos. Al restablecer con el link del mail se cierran todas.' },
+      { tipo: 'mejora', texto: 'Mensajes de error en español y sin textos técnicos en Mi Perfil, en el cambio de contraseña y en el restablecimiento (por ejemplo, cuando el link venció).' },
+      { tipo: 'fix', texto: 'Cualquiera con la sesión abierta podía cambiar el correo de la cuenta sin confirmar y quedarse con ella usando "Olvidé mi contraseña". Ahora cambiar el correo exige la contraseña actual.' },
+      { tipo: 'fix', texto: 'La tarjeta de contraseña de Mi Perfil mostraba una barra de scroll cuando aparecía un mensaje.' },
+    ],
+  },
+  {
     version: '1.2.0',
     fecha: '2026-11-12',
     titulo: 'Autoguardado, programas del Developer y errores claros',

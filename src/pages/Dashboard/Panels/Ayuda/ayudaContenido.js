@@ -15,6 +15,8 @@ export const SECCIONES_AYUDA = [
                 items: [
                     'En "Mi Perfil" podés cambiar tu nombre, tótem/nombre de caza, correo y contraseña.',
                     'La foto de perfil se recorta antes de subirse — elegís qué parte de la imagen queda visible.',
+                    'Para cambiar el correo se te pide la contraseña actual. Al cambiar el correo o la contraseña cerramos tus sesiones en otros dispositivos y te avisamos por mail (en el cambio de correo, a la dirección anterior), para que te enteres si no fuiste vos.',
+                    'Si no te acordás de tu contraseña, tanto en el login ("Olvidé mi contraseña") como en Mi Perfil te mostramos a qué dirección enviamos el mail y lo mandamos recién cuando aceptás. El link llega siempre al correo registrado en la cuenta y vence a los 60 minutos.',
                 ],
             },
             {

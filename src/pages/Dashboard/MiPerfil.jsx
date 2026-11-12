@@ -10,6 +10,8 @@ import { claseColorRol } from './Panels/Usuarios/rolColores';
 import { rolesVisibles, nombreRolConScope } from './Panels/Usuarios/rolDisplay';
 import { useGruposCatalogo } from './Panels/Programas/useGruposCatalogo';
 import { useRamasCatalogo } from './Panels/Usuarios/useRamasCatalogo';
+import { mensajeDeError } from '../../utils/mensajeDeError';
+import { enmascararEmail } from '../../utils/enmascararEmail';
 
 const getIniciales = (name) =>
     (name || '?').trim().split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
@@ -28,6 +30,10 @@ const MiPerfil = () => {
     const [guardandoPerfil, setGuardandoPerfil] = useState(false);
     const [errorPerfil, setErrorPerfil] = useState(null);
     const [okPerfil, setOkPerfil] = useState(false);
+    // Cambiar el correo exige la contraseña actual (el correo es la llave de
+    // "Olvidé mi contraseña": quien lo cambia se queda con la cuenta).
+    const [currentPasswordPerfil, setCurrentPasswordPerfil] = useState('');
+    const cambiaCorreo = email.trim() !== (user?.email || '');
 
     const [mostrarSolicitarRol, setMostrarSolicitarRol] = useState(false);
     const [solicitudEnviada, setSolicitudEnviada] = useState(false);
@@ -44,6 +50,12 @@ const MiPerfil = () => {
     const [errorPassword, setErrorPassword] = useState(null);
     const [okPassword, setOkPassword] = useState(false);
 
+    // "No recuerdo mi contraseña actual": el link llega al correo registrado.
+    const [confirmandoMail, setConfirmandoMail] = useState(false);
+    const [enviandoMail, setEnviandoMail] = useState(false);
+    const [mailEnviado, setMailEnviado] = useState(false);
+    const [errorMail, setErrorMail] = useState(null);
+
     const [subiendoFoto, setSubiendoFoto] = useState(false);
     const [errorFoto, setErrorFoto] = useState(null);
     const [imagenARecortar, setImagenARecortar] = useState(null);
@@ -57,11 +69,21 @@ const MiPerfil = () => {
         setOkPerfil(false);
         setGuardandoPerfil(true);
         try {
-            const actualizado = await authorizedFetch('/me/perfil', { method: 'PUT', body: { name, totem: totem || null, email } });
+            const actualizado = await authorizedFetch('/me/perfil', {
+                method: 'PUT',
+                body: {
+                    name,
+                    totem: totem || null,
+                    email: email.trim(),
+                    ...(cambiaCorreo ? { current_password: currentPasswordPerfil } : {}),
+                },
+            });
             setUser({ ...user, ...actualizado });
-            setOkPerfil(true);
+            setEmail(actualizado.email ?? email.trim());
+            setCurrentPasswordPerfil('');
+            setOkPerfil(cambiaCorreo ? 'correo' : 'ok');
         } catch (err) {
-            setErrorPerfil(err.message);
+            setErrorPerfil(mensajeDeError(err, 'No se pudo guardar el perfil.'));
         } finally {
             setGuardandoPerfil(false);
         }
@@ -82,9 +104,25 @@ const MiPerfil = () => {
             setPasswordConfirmation('');
             setOkPassword(true);
         } catch (err) {
-            setErrorPassword(err.message);
+            setErrorPassword(mensajeDeError(err, 'No se pudo cambiar la contraseña.'));
         } finally {
             setGuardandoPassword(false);
+        }
+    };
+
+    const handleEnviarMailDeRecuperacion = async () => {
+        setErrorMail(null);
+        setEnviandoMail(true);
+        try {
+            // Mismo endpoint que "Olvidé mi contraseña", pero con el correo de la cuenta
+            // en la que ya estás: no se escribe nada y el link llega a tu dirección registrada.
+            await authorizedFetch('/forgot-password', { method: 'POST', body: { email: user?.email } });
+            setConfirmandoMail(false);
+            setMailEnviado(true);
+        } catch (err) {
+            setErrorMail(mensajeDeError(err, 'No se pudo enviar el correo.'));
+        } finally {
+            setEnviandoMail(false);
         }
     };
 
@@ -195,12 +233,16 @@ const MiPerfil = () => {
                         </div>
                     </div>
 
-                    <form onSubmit={handleCambiarPassword} className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-6 shadow-sm flex-1 min-h-0 overflow-y-auto">
+                    <form onSubmit={handleCambiarPassword} className="sin-scrollbar bg-scout-bg-card rounded-[2rem] border border-scout-border p-6 shadow-sm flex-1 min-h-0 overflow-y-auto">
                         <h2 className="text-xs font-black uppercase tracking-widest text-scout-primary mb-3 flex items-center gap-2">
                             <KeyRound size={13} /> Cambiar contraseña
                         </h2>
-                        {errorPassword && <p className="text-xs font-bold text-scout-accent mb-3">{errorPassword}</p>}
-                        {okPassword && <p className="text-xs font-bold text-scout-success mb-3">Contraseña actualizada correctamente.</p>}
+                        {errorPassword && <p className="text-sm font-bold text-scout-accent mb-3">{errorPassword}</p>}
+                        {okPassword && (
+                            <p className="text-sm font-bold text-scout-success mb-3 leading-relaxed">
+                                Contraseña actualizada. Cerramos tus sesiones en otros dispositivos y te enviamos un aviso por mail.
+                            </p>
+                        )}
                         <div className="grid grid-cols-1 gap-3">
                             <div>
                                 <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-1.5 block">Contraseña actual</label>
@@ -242,15 +284,68 @@ const MiPerfil = () => {
                         >
                             {guardandoPassword ? 'Guardando...' : 'Cambiar contraseña'}
                         </button>
+
+                        <div className="mt-5 pt-4 border-t border-scout-border">
+                            {!confirmandoMail && !mailEnviado && (
+                                <button
+                                    type="button"
+                                    onClick={() => { setErrorMail(null); setConfirmandoMail(true); }}
+                                    className="text-sm font-bold text-scout-primary hover:underline cursor-pointer text-left"
+                                >
+                                    ¿No recordás tu contraseña actual? Cambiala con un mail
+                                </button>
+                            )}
+
+                            {confirmandoMail && (
+                                <div className="rounded-2xl border border-scout-primary/30 bg-scout-primary/5 p-4">
+                                    <p className="text-sm font-bold text-scout-ink leading-relaxed">
+                                        Te vamos a enviar un mail a{' '}
+                                        <span className="text-scout-primary break-all">{enmascararEmail(user?.email)}</span>,
+                                        la dirección registrada en tu cuenta, con un link para elegir una contraseña nueva. ¿Aceptás?
+                                    </p>
+                                    {errorMail && <p className="text-sm font-bold text-scout-accent mt-2">{errorMail}</p>}
+                                    <div className="flex flex-wrap gap-2 mt-3">
+                                        <button
+                                            type="button"
+                                            onClick={handleEnviarMailDeRecuperacion}
+                                            disabled={enviandoMail}
+                                            className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-scout-primary text-white hover:bg-scout-primary-hover transition-colors cursor-pointer disabled:opacity-40"
+                                        >
+                                            {enviandoMail ? 'Enviando...' : 'Aceptar y enviar'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setConfirmandoMail(false)}
+                                            className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border border-scout-border text-scout-muted hover:text-scout-primary transition-colors cursor-pointer"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {mailEnviado && (
+                                <p className="text-sm font-bold text-scout-success leading-relaxed">
+                                    Listo: te enviamos el mail a {enmascararEmail(user?.email)}. Revisá tu casilla (y la carpeta de spam);
+                                    el link vence en 60 minutos.
+                                </p>
+                            )}
+                        </div>
                     </form>
                 </div>
 
                 {/* Columna derecha: datos personales + mis roles, lado a lado */}
                 <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-6 min-h-0">
-                    <form onSubmit={handleGuardarPerfil} className="bg-scout-bg-card rounded-[2rem] border border-scout-border p-6 shadow-sm overflow-y-auto">
+                    <form onSubmit={handleGuardarPerfil} className="sin-scrollbar bg-scout-bg-card rounded-[2rem] border border-scout-border p-6 shadow-sm overflow-y-auto">
                         <h2 className="text-xs font-black uppercase tracking-widest text-scout-primary mb-3">Datos personales</h2>
-                        {errorPerfil && <p className="text-xs font-bold text-scout-accent mb-3">{errorPerfil}</p>}
-                        {okPerfil && <p className="text-xs font-bold text-scout-success mb-3">Perfil actualizado correctamente.</p>}
+                        {errorPerfil && <p className="text-sm font-bold text-scout-accent mb-3">{errorPerfil}</p>}
+                        {okPerfil && (
+                            <p className="text-sm font-bold text-scout-success mb-3 leading-relaxed">
+                                {okPerfil === 'correo'
+                                    ? 'Correo actualizado. Cerramos tus sesiones en otros dispositivos y avisamos a la dirección anterior.'
+                                    : 'Perfil actualizado correctamente.'}
+                            </p>
+                        )}
                         <div className="grid grid-cols-1 gap-3">
                             <div>
                                 <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-1.5 block">Nombre y apellido</label>
@@ -284,6 +379,24 @@ const MiPerfil = () => {
                                     className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
                                 />
                             </div>
+                            {cambiaCorreo && (
+                                <div>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-scout-muted mb-1.5 block">
+                                        Contraseña actual <span className="normal-case font-medium text-scout-muted/70">(para confirmar el cambio de correo)</span>
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={currentPasswordPerfil}
+                                        onChange={(e) => setCurrentPasswordPerfil(e.target.value)}
+                                        autoComplete="current-password"
+                                        required
+                                        className="w-full border border-scout-border rounded-xl p-2.5 text-sm bg-scout-bg-panel/50 text-scout-ink font-medium focus:outline-none focus:border-scout-primary transition-colors"
+                                    />
+                                    <p className="text-xs text-scout-muted font-medium mt-1.5 leading-relaxed">
+                                        Por seguridad, al cambiar el correo cerramos tus sesiones en otros dispositivos y avisamos a la dirección anterior.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                         <button
                             type="submit"

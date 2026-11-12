@@ -24,7 +24,9 @@ export function useAuthorizedFetch() {
         } catch (err) {
             if (err.response) {
                 const detail = err.response.data?.message || JSON.stringify(err.response.data?.errors || err.response.data) || err.response.statusText;
-                throw new Error(`Request failed: ${err.response.status} - ${detail}`);
+                const error = new Error(`Request failed: ${err.response.status} - ${detail}`);
+                error.response = err.response; // ver utils/mensajeDeError.js
+                throw error;
             }
             throw err;
         }

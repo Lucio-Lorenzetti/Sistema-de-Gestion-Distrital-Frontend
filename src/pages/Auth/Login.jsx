@@ -54,7 +54,7 @@ const Login = () => {
         <Input label="Correo electrónico" id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" required />
         <Input label="Contraseña" id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="**********" required />
         <div className="text-center mb-6">
-          <Link to="/recuperar-contrasena" className="text-sm text-scout-primary hover:text-scout-primary-hover underline">
+          <Link to="/recuperar-contrasena" state={{ email }} className="text-sm text-scout-primary hover:text-scout-primary-hover underline">
             Olvidé mi contraseña
           </Link>
         </div>
